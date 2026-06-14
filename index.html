@@ -227,7 +227,7 @@ label{font-weight:bold}
         <div>
           <label>Phone Number</label>
           <input id="phone" placeholder="Example: 0123456789" />
-          <div class="hint">Stage 1 uses this only to avoid repeated registration on this demo device.</div>
+          <div class="hint">Used only to help avoid repeated registrations during Stage 1.</div>
         </div>
       </div>
       <h3>Choose 3 dreams</h3>
@@ -291,7 +291,15 @@ label{font-weight:bold}
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  where,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAa5nAU4yfy3CKQN_1qvUsmt7Ng2kTc2S4",
@@ -306,7 +314,21 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const dreams = ["🤝 Greater Unity","📚 Better Education","🌳 More Trees","👨‍👩‍👧 Stronger Families","❤️ Healthier Lifestyle","🏥 Better Healthcare Access","💼 More Job Opportunities","🚀 More Local Entrepreneurs","♻️ Cleaner Environment","🌺 More Green Parks","💡 More Innovation","✨ A Brighter Future"];
+const dreams = [
+  "🤝 Greater Unity",
+  "📚 Better Education",
+  "🌳 More Trees",
+  "👨‍👩‍👧 Stronger Families",
+  "❤️ Healthier Lifestyle",
+  "🏥 Better Healthcare Access",
+  "💼 More Job Opportunities",
+  "🚀 More Local Entrepreneurs",
+  "♻️ Cleaner Environment",
+  "🌺 More Green Parks",
+  "💡 More Innovation",
+  "✨ A Brighter Future"
+];
+
 let selected = [];
 let members = [];
 
@@ -340,10 +362,15 @@ function initDreams(){
     div.textContent=d;
     div.onclick=()=>{
       if(selected.includes(d)){
-        selected=selected.filter(x=>x!==d); div.classList.remove("selected");
+        selected=selected.filter(x=>x!==d);
+        div.classList.remove("selected");
       }else{
-        if(selected.length>=3){ alert("Please choose only 3 dreams."); return; }
-        selected.push(d); div.classList.add("selected");
+        if(selected.length>=3){
+          alert("Please choose only 3 dreams.");
+          return;
+        }
+        selected.push(d);
+        div.classList.add("selected");
       }
     };
     box.appendChild(div);
@@ -360,24 +387,35 @@ function tierFor(n){
 
 async function loadMembers(){
   try{
-    const q = query(collection(db, "members"), orderBy("memberNo", "asc"));
-    const snap = await getDocs(q);
+    const snap = await getDocs(collection(db, "members"));
     members = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    members.sort((a,b)=>{
+      const aa = Number(a.memberNo || a.no || 0);
+      const bb = Number(b.memberNo || b.no || 0);
+      return aa - bb;
+    });
+
     updateCount();
     renderMembers();
     renderDreamStats();
     updateToken();
   }catch(err){
-    console.error(err);
+    console.error("Load members failed:", err);
     document.getElementById("count").textContent = "!";
   }
+}
+
+function normalisePhone(phone){
+  return String(phone || "").replace(/[\s\-()+]/g,"");
 }
 
 async function plantLeaf(){
   const name=document.getElementById("name").value.trim();
   const country=document.getElementById("country").value;
   const region=document.getElementById("region").value.trim();
-  const phone=document.getElementById("phone").value.trim().replace(/\s+/g,"");
+  const phoneRaw=document.getElementById("phone").value.trim();
+  const phone=normalisePhone(phoneRaw);
   const msg=document.getElementById("msg");
 
   if(!name || !country || !phone || selected.length!==3){
@@ -390,41 +428,46 @@ async function plantLeaf(){
   try{
     const dupQ = query(collection(db, "members"), where("phone", "==", phone));
     const dupSnap = await getDocs(dupQ);
+
     if(!dupSnap.empty){
       msg.textContent="This phone number has already planted a leaf.";
       return;
     }
 
     await loadMembers();
-    const no = members.length + 1;
-    const tier=tierFor(no);
 
-    const member={
-      nickname:name,
-      name:name,
-      country:country,
-      region:region,
-      phone:phone,
-      dreams:[...selected],
-      memberNo:no,
-      no:no,
-      tier:tier[0],
-      meaning:tier[1],
-      createdAt:serverTimestamp(),
-      date:new Date().toLocaleDateString()
+    const no = members.length + 1;
+    const tier = tierFor(no);
+
+    const member = {
+      nickname: name,
+      name: name,
+      country: country,
+      region: region,
+      phone: phone,
+      dreams: [...selected],
+      memberNo: no,
+      no: no,
+      tier: tier[0],
+      meaning: tier[1],
+      createdAt: serverTimestamp(),
+      createdDate: new Date().toISOString()
     };
 
     await addDoc(collection(db, "members"), member);
+
     localStorage.setItem("eog_stage1_last_phone", phone);
 
     msg.textContent="Your leaf has been planted. Your token is ready.";
+
     await loadMembers();
     const latest = members.find(m=>m.phone===phone) || member;
     updateToken(latest);
+
     setTimeout(()=>show("token"),500);
   }catch(err){
-    console.error(err);
-    msg.textContent="Could not plant leaf yet. Please check Firestore rules or internet connection.";
+    console.error("Plant leaf failed:", err);
+    msg.textContent="Could not plant leaf yet. Please check Firestore Rules, then try again.";
   }
 }
 
@@ -434,34 +477,47 @@ function updateToken(m){
     if(phone) m = members.find(x=>x.phone===phone);
   }
   if(!m) return;
-  const no = m.memberNo || m.no || 0;
-  document.getElementById("tokenTier").textContent=m.tier || "THE BELIEVER";
-  document.getElementById("tokenMeaning").textContent=m.meaning || "Believed in the journey before the destination could be seen.";
-  document.getElementById("tokenNo").textContent="#"+String(no).padStart(4,"0");
-  document.getElementById("tokenName").textContent=(m.nickname || m.name)+" • "+placeOf(m)+" • Every leaf matters.";
+
+  const no = Number(m.memberNo || m.no || 0);
+  document.getElementById("tokenTier").textContent = m.tier || "THE BELIEVER";
+  document.getElementById("tokenMeaning").textContent = m.meaning || "Believed in the journey before the destination could be seen.";
+  document.getElementById("tokenNo").textContent = "#"+String(no).padStart(4,"0");
+  document.getElementById("tokenName").textContent = (m.nickname || m.name || "Believer")+" • "+placeOf(m)+" • Every leaf matters.";
 }
 
 function renderMembers(){
   const box=document.getElementById("members");
-  if(!members.length){ box.innerHTML="<p>No leaves planted yet. Be the first.</p>"; return; }
-  box.innerHTML=members.slice(0,100).map(m=>{
-    const no = m.memberNo || m.no || 0;
+
+  if(!members.length){
+    box.innerHTML="<p>No leaves planted yet. Be the first.</p>";
+    return;
+  }
+
+  box.innerHTML = members.slice(0,100).map(m=>{
+    const no = Number(m.memberNo || m.no || 0);
     return `<div class="member">🌿 <b>${escapeHtml(m.nickname || m.name || "Believer")}</b><br><small>${escapeHtml(m.tier || "THE BELIEVER")} • #${String(no).padStart(4,"0")}<br>${escapeHtml(placeOf(m))}</small></div>`;
   }).join("");
 }
 
 function renderDreamStats(){
   const counts={};
+
   members.forEach(m=>{
     const ds = Array.isArray(m.dreams) ? m.dreams : [];
-    ds.forEach(d=>counts[d]=(counts[d]||0)+1);
+    ds.forEach(d=>{
+      counts[d] = (counts[d] || 0) + 1;
+    });
   });
-  const entries=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
-  document.getElementById("dreamStats").innerHTML = entries.length ? entries.map(([d,c])=>`<div class="dream-row">${d}<br><b>${c}</b> ${c===1?"leaf":"leaves"}</div>`).join("") : "<p>No dreams planted yet.</p>";
+
+  const entries = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+
+  document.getElementById("dreamStats").innerHTML = entries.length
+    ? entries.map(([d,c])=>`<div class="dream-row">${d}<br><b>${c}</b> ${c===1 ? "leaf" : "leaves"}</div>`).join("")
+    : "<p>No dreams planted yet.</p>";
 }
 
 function updateCount(){
-  document.getElementById("count").textContent=members.length;
+  document.getElementById("count").textContent = members.length;
 }
 
 function placeOf(m){
@@ -469,7 +525,13 @@ function placeOf(m){
 }
 
 function escapeHtml(text){
-  return String(text || "").replace(/[&<>"']/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]));
+  return String(text || "").replace(/[&<>"']/g, m=>({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    "\"":"&quot;",
+    "'":"&#039;"
+  }[m]));
 }
 
 initDreams();
