@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="manifest" href="manifest.json">
+
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<meta name="theme-color" content="#8DBA3D">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Eye of Garden — Stage 1</title>
+<style>
+:root{
+  --paper:#f7f1e5;
+  --paper2:#fffaf0;
+  --ink:#274433;
+  --muted:#657765;
+  --leaf:#6f9b72;
+  --leaf2:#3f744e;
+  --gold:#c6a45b;
+  --soft:#e7decf;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family: Georgia, "Times New Roman", serif;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 12% 8%, rgba(118,156,99,.22), transparent 28%),
+    radial-gradient(circle at 90% 18%, rgba(198,164,91,.18), transparent 24%),
+    radial-gradient(circle at 50% 100%, rgba(111,155,114,.14), transparent 30%),
+    linear-gradient(180deg,#fff9ed,var(--paper));
+  min-height:100vh;
+}
+.wrap{max-width:1080px;margin:auto;padding:22px}
+.hero{
+  min-height:88vh;
+  display:grid;
+  grid-template-columns:1fr 1.05fr;
+  gap:28px;
+  align-items:center;
+}
+small.kicker{letter-spacing:.22em;text-transform:uppercase;color:#6b7c68}
+h1{font-size:clamp(44px,8vw,88px);line-height:.9;margin:12px 0}
+.tagline{font-size:clamp(18px,2.4vw,28px);max-width:640px}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+button{
+  border:0;
+  background:var(--leaf2);
+  color:white;
+  padding:13px 21px;
+  border-radius:999px;
+  cursor:pointer;
+  font-family:inherit;
+  font-size:16px;
+  box-shadow:0 9px 22px rgba(40,80,50,.15);
+}
+button.secondary{background:#fff;color:var(--leaf2);border:1px solid rgba(63,116,78,.25)}
+button:active{transform:translateY(1px)}
+.counter{
+  margin-top:22px;
+  background:rgba(255,250,240,.86);
+  border:1px solid rgba(63,116,78,.12);
+  border-radius:24px;
+  padding:18px;
+  box-shadow:0 10px 28px rgba(70,70,40,.08);
+}
+.counter b{font-size:34px}
+.garden-art{
+  position:relative;
+  min-height:570px;
+}
+.stem{
+  position:absolute;left:50%;top:62px;width:7px;height:430px;
+  background:linear-gradient(var(--leaf),var(--leaf2));
+  border-radius:9px;
+  transform:rotate(-8deg);
+  opacity:.72;
+}
+.leaf{
+  position:absolute;
+  width:200px;
+  min-height:84px;
+  padding:18px 22px;
+  background:linear-gradient(135deg,#9ab883,#4f8158);
+  color:#fff;
+  border-radius:70% 22% 72% 24%;
+  box-shadow:inset 0 8px 16px rgba(255,255,255,.20), 0 16px 30px rgba(45,85,50,.18);
+  transform:rotate(var(--r));
+  cursor:pointer;
+  transition:.25s ease;
+}
+.leaf:hover{transform:rotate(var(--r)) translateY(-7px) scale(1.035)}
+.leaf b{display:block;font-size:19px}
+.leaf span{font-size:12px;opacity:.94}
+.l1{left:42px;top:76px;--r:-14deg}
+.l2{right:20px;top:132px;--r:14deg;border-radius:24% 72% 24% 72%}
+.l3{left:0;top:252px;--r:10deg}
+.l4{right:46px;top:314px;--r:-18deg;border-radius:24% 72% 24% 72%}
+.l5{left:118px;top:426px;--r:-6deg}
+.firefly{
+  position:absolute;width:9px;height:9px;border-radius:50%;background:#f2d77b;
+  box-shadow:0 0 14px #f2d77b;opacity:.85;animation:float 4s infinite ease-in-out;
+}
+.f1{right:130px;top:78px}.f2{left:92px;top:195px;animation-delay:1s}.f3{right:220px;top:432px;animation-delay:2s}
+@keyframes float{50%{transform:translateY(-15px);opacity:.43}}
+.section{display:none;padding:32px 0}
+.section.active{display:block}
+.panel{
+  background:rgba(255,250,240,.88);
+  border:1px solid rgba(63,116,78,.13);
+  border-radius:30px;
+  padding:25px;
+  box-shadow:0 11px 30px rgba(70,70,40,.08);
+  margin:18px 0;
+}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+input,select{
+  width:100%;
+  padding:13px;
+  border-radius:15px;
+  border:1px solid #cfc4b2;
+  background:#fffdf7;
+  font-size:16px;
+  font-family:inherit;
+}
+label{font-weight:bold}
+.hint{color:var(--muted);font-size:13px}
+.dreams{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}
+.choice{
+  padding:12px;
+  border-radius:17px;
+  background:#fff;
+  border:1px solid #d8ccb8;
+  cursor:pointer;
+  transition:.18s ease;
+}
+.choice:hover{transform:translateY(-2px)}
+.choice.selected{background:#dfead8;border-color:#6d946c}
+.token{
+  width:188px;height:330px;border-radius:35px;margin:18px auto;padding:20px 14px;text-align:center;
+  background:linear-gradient(180deg,#fff8df,#dfead8);
+  border:2px solid rgba(63,116,78,.22);
+  box-shadow:0 18px 35px rgba(50,80,50,.18);
+  position:relative;
+}
+.hole{width:28px;height:28px;border-radius:50%;background:var(--paper);margin:0 auto 16px;border:2px solid #b8aa8a}
+.tier{font-size:24px;font-weight:bold;margin:10px 0;color:#315d3d}
+.meaning{font-size:12px;color:#536b55;line-height:1.35}
+.num{margin-top:18px;font-size:20px;color:#8c6a1d}
+.leaf-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.member{
+  background:#fff;
+  border:1px solid #d8ccb8;
+  border-radius:21px;
+  padding:13px;
+}
+.dream-row{background:#fff;border:1px solid #d8ccb8;border-radius:18px;padding:13px 15px;margin:10px 0}
+.seed-text p{font-size:18px}
+.seed-question{font-size:22px;font-weight:bold;color:#34583d}
+.footer{text-align:center;padding:36px;color:#6e765e}
+@media(max-width:780px){
+  .hero{grid-template-columns:1fr;min-height:auto;padding-top:26px}
+  .garden-art{min-height:530px}
+  .grid,.dreams{grid-template-columns:1fr}
+  h1{font-size:52px}
+  .leaf{width:180px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section id="home" class="hero">
+    <div>
+      <small class="kicker">Eye of Garden</small>
+      <h1>Plant<br>Your Leaf</h1>
+      <p class="tagline"><b>Can small actions from millions of people change something big?</b></p>
+      <div class="actions">
+        <button onclick="show('plant')">🌱 Plant Your Leaf</button>
+        <button class="secondary" onclick="show('garden')">🌳 Explore The Garden</button>
+      </div>
+      <div class="counter">
+        <b id="count">0</b> leaves planted so far.<br>
+        <small>Stage 1 goal: first 100 Founding Believers.</small>
+      </div>
+    </div>
+
+    <div class="garden-art">
+      <div class="stem"></div>
+      <div class="firefly f1"></div><div class="firefly f2"></div><div class="firefly f3"></div>
+      <div class="leaf l1" onclick="show('plant')"><b>Plant</b><span>Start with one leaf</span></div>
+      <div class="leaf l2" onclick="show('dreams')"><b>Dreams</b><span>Growing dreams</span></div>
+      <div class="leaf l3" onclick="show('token')"><b>Token</b><span>Your digital identity</span></div>
+      <div class="leaf l4" onclick="show('garden')"><b>Garden</b><span>See planted leaves</span></div>
+      <div class="leaf l5" onclick="show('dream')"><b>Our Dream</b><span>The idea behind this Garden</span></div>
+    </div>
+  </section>
+
+  <section id="plant" class="section">
+    <button class="secondary" onclick="showHome()">← Back to Garden</button>
+    <div class="panel">
+      <h2>🌱 Plant Your Leaf</h2>
+      <p><b>Plant a leaf, choose your dreams, and become one of the first 100 Believers.</b></p>
+      <div class="grid">
+        <div>
+          <label>Name / Nickname</label>
+          <input id="name" placeholder="Example: Ali" />
+        </div>
+        <div>
+          <label>Country</label>
+          <select id="country">
+            <option value="">Select country</option>
+            <option>Malaysia</option><option>Singapore</option><option>Indonesia</option><option>Thailand</option>
+            <option>Philippines</option><option>Vietnam</option><option>Brunei</option><option>Cambodia</option>
+            <option>Laos</option><option>Myanmar</option><option>India</option><option>China</option>
+            <option>Japan</option><option>South Korea</option><option>Australia</option><option>New Zealand</option>
+            <option>United Kingdom</option><option>United States</option><option>Canada</option><option>Other</option>
+
+          </select>
+        </div>
+        <div>
+          <label>State / Region <span class="hint">(optional)</span></label>
+          <input id="region" placeholder="Example: Selangor, Tokyo, Victoria" />
+        </div>
+        <div>
+          <label>Phone Number</label>
+          <input id="phone" placeholder="Example: 0123456789" />
+          <div class="hint">Used only to help protect the first 100 Believers from repeated registrations.</div>
+        </div>
+      </div>
+      <h3>Choose 3 dreams</h3>
+      <div class="dreams" id="dreamChoices"></div>
+      <br>
+      <button onclick="plantLeaf()">Plant Your Leaf</button>
+      <p id="msg"></p>
+    </div>
+  </section>
+
+  <section id="dreams" class="section">
+    <button class="secondary" onclick="showHome()">← Back to Garden</button>
+    <div class="panel">
+      <h2>🌿 Growing Dreams</h2>
+      <div id="dreamStats"></div>
+    </div>
+  </section>
+
+  <section id="token" class="section">
+    <button class="secondary" onclick="showHome()">← Back to Garden</button>
+    <div class="panel">
+      <h2>⭐ My Digital Token</h2>
+      <div class="token" id="tokenCard">
+        <div class="hole"></div>
+        <div>🌿 Eye of Garden</div>
+        <div class="tier" id="tokenTier">Plant a leaf first</div>
+        <div class="meaning" id="tokenMeaning">Your token will appear here.</div>
+        <div class="num" id="tokenNo">#----</div>
+        <hr>
+        <small id="tokenName">Every leaf matters.</small>
+      </div>
+    </div>
+  </section>
+
+  <section id="garden" class="section">
+    <button class="secondary" onclick="showHome()">← Back to Garden</button>
+    <div class="panel">
+      <h2>🌳 Founding Believers</h2>
+      <p>Every Founding Believer becomes one leaf in the Garden.</p>
+      <div class="leaf-list" id="members"></div>
+    </div>
+  </section>
+
+  <section id="dream" class="section">
+    <button class="secondary" onclick="showHome()">← Back to Garden</button>
+    <div class="panel seed-text">
+      <h2>🌿 Our Dream</h2>
+      <p>Every great tree begins as a small seed.</p>
+      <p>This Garden grows with every Believer who chooses to plant a leaf.</p>
+      <p class="seed-question">Can small actions from millions of people change something big?</p>
+      <p>This Garden celebrates hope, kindness, dreams, and community.</p>
+      <p>🌱 No person is too small.<br>
+      🌱 No action is too small.<br>
+      🌱 No dream is too small.<br>
+      🌱 Every leaf matters.</p>
+    </div>
+  </section>
+
+  <div class="footer">🌿 Eye of Garden — Global Stage 1</div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  where,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAa5nAU4yfy3CKQN_1qvUsmt7Ng2kTc2S4",
+  authDomain: "eye-of-garden.firebaseapp.com",
+  projectId: "eye-of-garden",
+  storageBucket: "eye-of-garden.firebasestorage.app",
+  messagingSenderId: "1043903336556",
+  appId: "1:1043903336556:web:9374e611a5bd487793c849",
+  measurementId: "G-VMT48DHSLK"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const dreams = [
+  "🤝 Greater Unity",
+  "📚 Better Education",
+  "🌳 More Trees",
+  "👨‍👩‍👧 Stronger Families",
+  "❤️ Healthier Lifestyle",
+  "🏥 Better Healthcare Access",
+  "💼 More Job Opportunities",
+  "🚀 More Local Entrepreneurs",
+  "♻️ Cleaner Environment",
+  "🌺 More Green Parks",
+  "💡 More Innovation",
+  "✨ A Brighter Future"
+];
+
+let selected = [];
+let members = [];
+
+window.show = show;
+window.showHome = showHome;
+window.plantLeaf = plantLeaf;
+
+function show(id){
+  document.querySelector(".hero").style.display = "none";
+  document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  if(id==="garden") renderMembers();
+  if(id==="dreams") renderDreamStats();
+  if(id==="token") updateToken();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function showHome(){
+  document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+  document.querySelector(".hero").style.display = "grid";
+  updateCount();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function initDreams(){
+  const box=document.getElementById("dreamChoices");
+  box.innerHTML="";
+  dreams.forEach(d=>{
+    const div=document.createElement("div");
+    div.className="choice";
+    div.textContent=d;
+    div.onclick=()=>{
+      if(selected.includes(d)){
+        selected=selected.filter(x=>x!==d);
+        div.classList.remove("selected");
+      }else{
+        if(selected.length>=3){
+          alert("Please choose only 3 dreams.");
+          return;
+        }
+        selected.push(d);
+        div.classList.add("selected");
+      }
+    };
+    box.appendChild(div);
+  });
+}
+
+function tierFor(n){
+  if(n<=100) return ["THE SPARK","Ignited the first light that transformed an idea into a movement."];
+  if(n<=1000) return ["THE BELIEVER","Believed in the journey before the destination could be seen."];
+  if(n<=10000) return ["THE BUILDER","Helped build the foundation for future growth."];
+  if(n<=100000) return ["THE CHANGEMAKER","Turned individual actions into collective impact."];
+  return ["THE LEGACY","Became part of a story that will continue beyond today."];
+}
+
+async function loadMembers(){
+  try{
+    const snap = await getDocs(collection(db, "members"));
+    members = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    members.sort((a,b)=>{
+      const aa = Number(a.memberNo || a.no || 0);
+      const bb = Number(b.memberNo || b.no || 0);
+      return aa - bb;
+    });
+
+    updateCount();
+    renderMembers();
+    renderDreamStats();
+    updateToken();
+  }catch(err){
+    console.error("Load members failed:", err);
+    document.getElementById("count").textContent = "!";
+  }
+}
+
+function normaliseName(name){
+  return String(name || "").trim().toLowerCase().replace(/\s+/g," ");
+}
+
+function normalisePhone(phone){
+  return String(phone || "").replace(/[\s\-()+]/g,"");
+}
+
+async function plantLeaf(){
+  const name=document.getElementById("name").value.trim();
+  const country=document.getElementById("country").value;
+  const region=document.getElementById("region").value.trim();
+  const phoneRaw=document.getElementById("phone").value.trim();
+  const phone=normalisePhone(phoneRaw);
+  const msg=document.getElementById("msg");
+
+  if(!name || !country || !phone || selected.length!==3){
+    msg.textContent="Please enter name, country, phone number, and choose exactly 3 dreams.";
+    return;
+  }
+
+  if(name.length < 3){
+    msg.textContent="Please enter a name or nickname with at least 3 characters.";
+    return;
+  }
+
+  if(phone.length < 7){
+    msg.textContent="Please enter a valid phone number.";
+    return;
+  }
+
+  msg.textContent="Planting your leaf...";
+
+  try{
+    const cleanName = normaliseName(name);
+
+    const dupQ = query(collection(db, "members"), where("phone", "==", phone));
+    const dupSnap = await getDocs(dupQ);
+
+    if(!dupSnap.empty){
+      msg.textContent="This phone number has already planted a leaf.";
+      return;
+    }
+
+    const nickQ = query(collection(db, "members"), where("nicknameKey", "==", cleanName));
+    const nickSnap = await getDocs(nickQ);
+
+    if(!nickSnap.empty){
+      msg.textContent="This nickname has already been used. Please choose another nickname.";
+      return;
+    }
+
+    await loadMembers();
+
+    const highestNo = members.reduce((max,m)=>{
+      const n = Number(m.memberNo || m.no || 0);
+      return n > max ? n : max;
+    },0);
+
+    const no = highestNo + 1;
+    const tier = tierFor(no);
+
+    const member = {
+      nickname: name,
+      nicknameKey: cleanName,
+      name: name,
+      country: country,
+      region: region,
+      phone: phone,
+      dreams: [...selected],
+      memberNo: no,
+      no: no,
+      tier: tier[0],
+      meaning: tier[1],
+      createdAt: serverTimestamp(),
+      createdDate: new Date().toISOString()
+    };
+
+    await addDoc(collection(db, "members"), member);
+
+    localStorage.setItem("eog_stage1_last_phone", phone);
+
+    msg.textContent="Your leaf has been planted. Your token is ready.";
+
+    await loadMembers();
+    const latest = members.find(m=>m.phone===phone) || member;
+    updateToken(latest);
+
+    setTimeout(()=>show("token"),500);
+  }catch(err){
+    console.error("Plant leaf failed:", err);
+    msg.textContent="Could not plant leaf yet. Please check Firestore Rules, then try again.";
+  }
+}
+
+function updateToken(m){
+  if(!m){
+    const phone = localStorage.getItem("eog_stage1_last_phone");
+    if(phone) m = members.find(x=>x.phone===phone);
+  }
+  if(!m) return;
+
+  const no = Number(m.memberNo || m.no || 0);
+  document.getElementById("tokenTier").textContent = m.tier || "THE BELIEVER";
+  document.getElementById("tokenMeaning").textContent = m.meaning || "Believed in the journey before the destination could be seen.";
+  document.getElementById("tokenNo").textContent = "#"+String(no).padStart(4,"0");
+  document.getElementById("tokenName").textContent = (m.nickname || m.name || "Believer")+" • "+placeOf(m)+" • Every leaf matters.";
+}
+
+function renderMembers(){
+  const box=document.getElementById("members");
+
+  if(!members.length){
+    box.innerHTML="<p>No leaves planted yet. Be the first.</p>";
+    return;
+  }
+
+  box.innerHTML = members.slice(0,100).map(m=>{
+    const no = Number(m.memberNo || m.no || 0);
+    return `<div class="member">🌿 <b>${escapeHtml(m.nickname || m.name || "Believer")}</b><br><small>${escapeHtml(m.tier || "THE BELIEVER")} • #${String(no).padStart(4,"0")}<br>${escapeHtml(placeOf(m))}</small></div>`;
+  }).join("");
+}
+
+function renderDreamStats(){
+  const counts={};
+
+  members.forEach(m=>{
+    const ds = Array.isArray(m.dreams) ? m.dreams : [];
+    ds.forEach(d=>{
+      counts[d] = (counts[d] || 0) + 1;
+    });
+  });
+
+  const entries = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+
+  document.getElementById("dreamStats").innerHTML = entries.length
+    ? entries.map(([d,c])=>`<div class="dream-row">${d}<br><b>${c}</b> ${c===1 ? "leaf" : "leaves"}</div>`).join("")
+    : "<p>No dreams planted yet.</p>";
+}
+
+function updateCount(){
+  document.getElementById("count").textContent = members.length;
+}
+
+function placeOf(m){
+  return [m.region, m.country || m.state].filter(Boolean).join(", ");
+}
+
+function escapeHtml(text){
+  return String(text || "").replace(/[&<>"']/g, m=>({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    "\"":"&quot;",
+    "'":"&#039;"
+  }[m]));
+}
+
+initDreams();
+loadMembers();
+</script>
+</body>
+</html>
