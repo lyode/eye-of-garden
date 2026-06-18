@@ -45,6 +45,33 @@ body{
 small.kicker{letter-spacing:.22em;text-transform:uppercase;color:#6b7c68}
 h1{font-size:clamp(44px,8vw,88px);line-height:.9;margin:12px 0}
 .tagline{font-size:clamp(18px,2.4vw,28px);max-width:640px}
+  .garden-evolution{
+  margin-top:18px;
+  margin-bottom:18px;
+}
+
+.evolution-note{
+  font-size:12px;
+  opacity:.45;
+  letter-spacing:2px;
+  margin-bottom:18px;
+  font-weight:300;
+}
+
+.evolution-question{
+  font-size:clamp(28px,4vw,52px);
+  line-height:1.15;
+  font-weight:700;
+  max-width:700px;
+  margin-bottom:22px;
+}
+
+.evolution-memory{
+  font-size:13px;
+  opacity:.35;
+  line-height:1.7;
+  font-style:italic;
+}
 .actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
 button{
   border:0;
@@ -252,8 +279,24 @@ small.kicker,.mini-title,.book-badge{
     <div>
       <small class="kicker">Eye of Garden</small>
       <h1>Plant<br>Your Leaf</h1>
-      <p class="tagline"><b>Can small actions from millions of people change something big?</b></p>
-      <div class="actions">
+      <div class="garden-evolution">
+
+  <div class="evolution-note">
+    something changed after seventeen.
+  </div>
+
+  <div class="evolution-question">
+    Can many small actions create something meaningful?
+  </div>
+
+  <div class="evolution-memory">
+    originally it was;
+    <br><br>
+    Can small actions from millions of people
+    change something big?
+  </div>
+
+</div>      <div class="actions">
         <button onclick="show('plant')">🌱 Plant Your Leaf</button>
         <button class="secondary" onclick="show('journal')">📖 Founder Journal</button>
         <button class="secondary" onclick="show('question')">💭 Garden Question</button>
