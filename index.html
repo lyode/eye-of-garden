@@ -868,9 +868,47 @@ async function plantLeaf(){
     msg.textContent="Could not plant leaf yet. Please check Firestore Rules, then try again.";
   }
 }
+async function sendGardenThought(){
+  const name = document.getElementById("tellName").value.trim();
+  const message = document.getElementById("tellMessage").value.trim();
+  const msg = document.getElementById("tellMsg");
 
+  const replies = [
+    "👁️ Iris noticed your message. She will visit the Garden later and spend some time with your words. 🌱",
+    "👁️ Your message has reached Iris. She may not reply immediately, but she will take a look when she returns to the Garden this evening. 🌱",
+    "👁️ Your message has been placed in the Garden. Iris will discover it when she walks through later. 🌱",
+    "👁️ Iris saw that you reached out. She will read your message when the Garden becomes quiet this evening. 🌱",
+    "👁️ The Garden is listening. Your words are safely resting here until Iris returns. 🌱"
+  ];
 
-async function inviteNewLeaf(){
+  if(message.length < 5){
+    msg.textContent = "Please leave a little more for the Garden.";
+    return;
+  }
+
+  msg.textContent = "Sending to Iris...";
+
+  try{
+    await addDoc(collection(db, "gardenThoughts"), {
+      name: name || "Anonymous Leaf",
+      message: message,
+      createdAt: serverTimestamp(),
+      createdDate: new Date().toISOString()
+    });
+
+    document.getElementById("tellMessage").value = "";
+
+    const reply = replies[Math.floor(Math.random() * replies.length)];
+
+    msg.textContent = reply;
+    alert(reply);
+
+  }catch(err){
+    console.error("Tell the Garden failed:", err);
+    msg.textContent = "The Garden could not receive this yet. Please try again.";
+  }
+}
+  async function inviteNewLeaf(){
   const myMember = getMyMember();
   const myNo = myMember ? Number(myMember.memberNo || myMember.no || 0) : 0;
   const inviteUrl = myNo > 0
