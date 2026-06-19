@@ -299,6 +299,7 @@ small.kicker,.mini-title,.book-badge{
         <button onclick="show('plant')">🌱 Plant Your Leaf</button>
         <button class="secondary" onclick="show('journal')">📖 Founder Journal</button>
         <button class="secondary" onclick="show('question')">💭 Garden Question</button>
+  <button class="secondary" onclick="show('tell')">👁️ Tell The Garden</button>
       </div>
       <div class="counter">
         <b id="count">0</b> leaves planted so far.<br>
@@ -522,7 +523,29 @@ small.kicker,.mini-title,.book-badge{
       </div>
     </div>
   </section>
+<section id="tell" class="section">
+  <button class="secondary" onclick="showHome()">← Back to Garden</button>
+  <div class="panel seed-text">
+    <h2>👁️ Tell The Garden</h2>
+    <p>A thought, question, story, or suggestion may be left here.</p>
 
+    <label>Name / Leaf No. <span class="hint">(optional)</span></label>
+    <input id="tellName" placeholder="Example: Sabrina #0026" />
+
+    <br><br>
+
+    <label>Your Message</label>
+    <textarea id="tellMessage" placeholder="Tell Iris what is on your mind..." style="width:100%;min-height:150px;padding:13px;border-radius:15px;border:1px solid #cfc4b2;background:#fffdf7;font-size:16px;font-family:inherit;"></textarea>
+
+    <br><br>
+
+    <button onclick="sendGardenThought()">Send to Iris</button>
+    <p id="tellMsg" class="hint"></p>
+  </div>
+  <div class="page-nav center">
+    <button class="secondary" onclick="showHome()">← Back to Garden</button>
+  </div>
+</section>
   <section id="question" class="section">
     <div class="page-nav">
       <button class="secondary" onclick="showHome()">← Back to Garden</button>
@@ -613,6 +636,7 @@ window.show = show;
 window.showHome = showHome;
 window.plantLeaf = plantLeaf;
 window.inviteNewLeaf = inviteNewLeaf;
+  window.sendGardenThought = sendGardenThought;
 window.nextQuestionStory = nextQuestionStory;
 window.prevQuestionStory = prevQuestionStory;
 window.nextJournal = nextJournal;
