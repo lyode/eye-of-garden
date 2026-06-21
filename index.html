@@ -702,16 +702,6 @@ const dreams = [
 let selected = [];
 let members = [];
 
-window.show = show;
-window.showHome = showHome;
-window.plantLeaf = plantLeaf;
-window.inviteNewLeaf = inviteNewLeaf;
-  window.sendGardenThought = sendGardenThought;
-window.nextQuestionStory = nextQuestionStory;
-window.prevQuestionStory = prevQuestionStory;
-window.nextJournal = nextJournal;
-window.prevJournal = prevJournal;
-
 function show(id){
   document.querySelector(".hero").style.display = "none";
   document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
@@ -1894,6 +1884,16 @@ renderQuestionStoryBook();
 renderJournalBook();
 setupBookSwipes();
 loadMembers();
+  window.show = show;
+window.showHome = showHome;
+window.plantLeaf = plantLeaf;
+window.inviteNewLeaf = inviteNewLeaf;
+window.sendGardenThought = sendGardenThought;
+window.nextQuestionStory = nextQuestionStory;
+window.prevQuestionStory = prevQuestionStory;
+  window.openQuestionStory = openQuestionStory;
+window.nextJournal = nextJournal;
+window.prevJournal = prevJournal;
 </script>
 </body>
 </html>
