@@ -544,6 +544,7 @@ small.kicker,.mini-title,.book-badge{
           <button class="secondary" onclick="prevJournal()">← Previous</button>
           <button onclick="nextJournal()">Next →</button>
         </div>
+        <div class="book-page" id="journalPageBottom">Page 1 / 1</div>
     -
         <div class="swipe-hint">Swipe left / right to flip the Founder Journal</div>
       </div>
@@ -635,6 +636,7 @@ small.kicker,.mini-title,.book-badge{
           <button class="secondary" onclick="prevQuestionStory()">← Previous</button>
           <button onclick="nextQuestionStory()">Next →</button>
         </div>
+        <div class="book-page" id="qsPageBottom">Page 1 / 1</div>
         <div class="swipe-hint">Swipe left / right to flip the Garden book</div>
       </div>
       <div class="share-nudge">
@@ -1790,6 +1792,7 @@ function renderQuestionStoryBook(){
   const item = questionStoryEntries[questionStoryIndex];
   document.getElementById("qsBadge").textContent = item.badge;
   document.getElementById("qsPage").textContent = `Page ${questionStoryIndex + 1} / ${questionStoryEntries.length}`;
+}
   const qsBottom = document.getElementById("qsPageBottom");
 if(qsBottom) qsBottom.textContent = `Page ${questionStoryIndex + 1} / ${questionStoryEntries.length}`;
   body.innerHTML = item.body;
