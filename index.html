@@ -1792,7 +1792,14 @@ function renderQuestionStoryBook(){
   function openQuestionStory(index){
     questionStoryIndex = index - 1;
     renderQuestionStoryBook();
+
+    const card = document.getElementById("questionBookCard");
+    if(card){
+        card.scrollIntoView({behavior:"smooth", block:"start"});
+    }
 }
+
+window.openQuestionStory = openQuestionStory;
 function nextQuestionStory(){ questionStoryIndex = (questionStoryIndex + 1) % questionStoryEntries.length; renderQuestionStoryBook(); }
 function prevQuestionStory(){ questionStoryIndex = (questionStoryIndex - 1 + questionStoryEntries.length) % questionStoryEntries.length; renderQuestionStoryBook(); }
 
