@@ -204,6 +204,22 @@ label{font-weight:bold}
   margin:4px 0;
   font-size:16px;
 }
+  .story-link{
+    display:block;
+    width:100%;
+    text-align:left;
+    background:none;
+    border:none;
+    padding:6px 0;
+    font-size:16px;
+    color:#34583d;
+    cursor:pointer;
+}
+
+.story-link:hover{
+    color:#2d7a45;
+    text-decoration:underline;
+}
 .seed-question{font-size:22px;font-weight:bold;color:#34583d}
 
 .share-nudge{background:#fffdf8;border:1px dashed #b7aa90;border-radius:24px;padding:18px;margin:18px 0;text-align:center}
@@ -578,13 +594,13 @@ small.kicker,.mini-title,.book-badge{
 
 <p><b>Opened Pages</b></p>
 
-<p>✅ #001</p>
-<p>✅ #002</p>
-<p>✅ #003</p>
-<p>✅ #004</p>
-<p>✅ #005 The Empty Bench</p>
-<p>✅ #006 The House That Forgot Its Owner</p>
-<p>✅ #007 The Cat That Refused To Stay Lost</p>
+<button class="story-link" onclick="openQuestionStory(1)">✅ #001 The First Small Bridge</button>
+<button class="story-link" onclick="openQuestionStory(2)">✅ #002 Suspended Coffee</button>
+<button class="story-link" onclick="openQuestionStory(3)">✅ #003 The Bag Beside The Bin</button>
+<button class="story-link" onclick="openQuestionStory(4)">✅ #004 The Broken Pot</button>
+<button class="story-link" onclick="openQuestionStory(5)">✅ #005 The Room Nobody Could Open</button>
+<button class="story-link" onclick="openQuestionStory(6)">✅ #006 The House That Forgot Its Owner</button>
+<button class="story-link" onclick="openQuestionStory(7)">✅ #007 The Cat That Refused To Stay Lost</button>
 
 <hr>
 
@@ -1772,6 +1788,10 @@ function renderQuestionStoryBook(){
   document.getElementById("qsPage").textContent = `Page ${questionStoryIndex + 1} / ${questionStoryEntries.length}`;
   body.innerHTML = item.body;
   animateBook("questionBookCard");
+}
+  function openQuestionStory(index){
+    questionStoryIndex = index - 1;
+    renderQuestionStoryBook();
 }
 function nextQuestionStory(){ questionStoryIndex = (questionStoryIndex + 1) % questionStoryEntries.length; renderQuestionStoryBook(); }
 function prevQuestionStory(){ questionStoryIndex = (questionStoryIndex - 1 + questionStoryEntries.length) % questionStoryEntries.length; renderQuestionStoryBook(); }
