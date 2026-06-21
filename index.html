@@ -1,0 +1,2058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="manifest" href="manifest.json">
+
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<meta name="theme-color" content="#8DBA3D">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Eye of Garden — Stage 1</title>
+<style>
+:root{
+  --paper:#f7f1e5;
+  --paper2:#fffaf0;
+  --ink:#274433;
+  --muted:#657765;
+  --leaf:#6f9b72;
+  --leaf2:#3f744e;
+  --gold:#c6a45b;
+  --soft:#e7decf;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family: "Century Gothic", CenturyGothic, "Avenir Next", Avenir, "Microsoft YaHei", "PingFang SC", "Noto Sans SC", Arial, sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 12% 8%, rgba(118,156,99,.22), transparent 28%),
+    radial-gradient(circle at 90% 18%, rgba(198,164,91,.18), transparent 24%),
+    radial-gradient(circle at 50% 100%, rgba(111,155,114,.14), transparent 30%),
+    linear-gradient(180deg,#fff9ed,var(--paper));
+  min-height:100vh;
+}
+.wrap{max-width:1080px;margin:auto;padding:22px}
+.hero{
+  min-height:88vh;
+  display:grid;
+  grid-template-columns:1fr 1.05fr;
+  gap:28px;
+  align-items:center;
+}
+small.kicker{letter-spacing:.22em;text-transform:uppercase;color:#3f5648}
+h1{font-size:clamp(44px,8vw,88px);line-height:.9;margin:12px 0}
+.tagline{font-size:clamp(18px,2.4vw,28px);max-width:640px}
+  .garden-evolution{
+  margin-top:18px;
+  margin-bottom:18px;
+}
+
+.evolution-note{
+  font-size:12px;
+  opacity:.45;
+  letter-spacing:2px;
+  margin-bottom:18px;
+  font-weight:300;
+}
+
+.evolution-question{
+  font-size:clamp(28px,4vw,52px);
+  line-height:1.15;
+  font-weight:700;
+  max-width:700px;
+  margin-bottom:22px;
+}
+
+.evolution-memory{
+  font-size:13px;
+  opacity:.35;
+  line-height:1.7;
+  font-style:italic;
+}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+button{
+  border:0;
+  background:var(--leaf2);
+  color:white;
+  padding:13px 21px;
+  border-radius:999px;
+  cursor:pointer;
+  font-family:"Century Gothic", CenturyGothic, "Avenir Next", Avenir, "Microsoft YaHei", "PingFang SC", "Noto Sans SC", Arial, sans-serif;
+  font-size:16px;
+  box-shadow:0 9px 22px rgba(40,80,50,.15);
+}
+button.secondary{background:#fff;color:var(--leaf2);border:1px solid rgba(63,116,78,.25)}
+button:active{transform:translateY(1px)}
+.counter{
+  margin-top:22px;
+  background:rgba(255,250,240,.86);
+  border:1px solid rgba(63,116,78,.12);
+  border-radius:24px;
+  padding:18px;
+  box-shadow:0 10px 28px rgba(70,70,40,.08);
+}
+.counter b{font-size:34px}
+.garden-art{
+  position:relative;
+  min-height:570px;
+}
+.stem{
+  position:absolute;left:50%;top:62px;width:7px;height:430px;
+  background:linear-gradient(var(--leaf),var(--leaf2));
+  border-radius:9px;
+  transform:rotate(-8deg);
+  opacity:.72;
+}
+.leaf{
+  position:absolute;
+  width:200px;
+  min-height:84px;
+  padding:18px 22px;
+  background:linear-gradient(135deg,#9ab883,#4f8158);
+  color:#fff;
+  border-radius:70% 22% 72% 24%;
+  box-shadow:inset 0 8px 16px rgba(255,255,255,.20), 0 16px 30px rgba(45,85,50,.18);
+  transform:rotate(var(--r));
+  cursor:pointer;
+  transition:.25s ease;
+}
+.leaf:hover{transform:rotate(var(--r)) translateY(-7px) scale(1.035)}
+.leaf b{display:block;font-size:19px}
+.leaf span{font-size:12px;opacity:.94}
+.l1{left:42px;top:76px;--r:-14deg}
+.l2{right:20px;top:132px;--r:14deg;border-radius:24% 72% 24% 72%}
+.l3{left:0;top:252px;--r:10deg}
+.l4{right:46px;top:314px;--r:-18deg;border-radius:24% 72% 24% 72%}
+.l5{left:118px;top:426px;--r:-6deg}
+.firefly{
+  position:absolute;width:9px;height:9px;border-radius:50%;background:#f2d77b;
+  box-shadow:0 0 14px #f2d77b;opacity:.85;animation:float 4s infinite ease-in-out;
+}
+.f1{right:130px;top:78px}.f2{left:92px;top:195px;animation-delay:1s}.f3{right:220px;top:432px;animation-delay:2s}
+@keyframes float{50%{transform:translateY(-15px);opacity:.43}}
+.section{display:none;padding:32px 0}
+.section.active{display:block}
+.panel{
+  background:rgba(255,250,240,.88);
+  border:1px solid rgba(63,116,78,.13);
+  border-radius:30px;
+  padding:25px;
+  box-shadow:0 11px 30px rgba(70,70,40,.08);
+  margin:18px 0;
+}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+input,select{
+  width:100%;
+  padding:13px;
+  border-radius:15px;
+  border:1px solid #cfc4b2;
+  background:#fffdf7;
+  font-size:16px;
+  font-family:"Century Gothic", CenturyGothic, "Avenir Next", Avenir, "Microsoft YaHei", "PingFang SC", "Noto Sans SC", Arial, sans-serif;
+}
+label{font-weight:bold}
+.hint{color:var(--muted);font-size:13px}
+.dreams{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}
+.choice{
+  padding:12px;
+  border-radius:17px;
+  background:#fff;
+  border:1px solid #d8ccb8;
+  cursor:pointer;
+  transition:.18s ease;
+}
+.choice:hover{transform:translateY(-2px)}
+.choice.selected{background:#dfead8;border-color:#6d946c}
+.token{
+  width:188px;height:330px;border-radius:35px;margin:18px auto;padding:20px 14px;text-align:center;
+  background:linear-gradient(180deg,#fff8df,#dfead8);
+  border:2px solid rgba(63,116,78,.22);
+  box-shadow:0 18px 35px rgba(50,80,50,.18);
+  position:relative;
+}
+.hole{width:28px;height:28px;border-radius:50%;background:var(--paper);margin:0 auto 16px;border:2px solid #b8aa8a}
+.tier{font-size:24px;font-weight:bold;margin:10px 0;color:#315d3d}
+.meaning{font-size:12px;color:#536b55;line-height:1.35}
+.num{margin-top:18px;font-size:20px;color:#8c6a1d}
+.leaf-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.member{
+  background:#fff;
+  border:1px solid #d8ccb8;
+  border-radius:21px;
+  padding:13px;
+}
+.dream-row{background:#fff;border:1px solid #d8ccb8;border-radius:18px;padding:13px 15px;margin:10px 0}
+.seed-text p{font-size:18px}
+  .story-library{
+  background:#fffff8;
+  border:1px solid #d8ccb8;
+  border-radius:24px;
+  padding:20px;
+  margin:18px 0;
+  text-align:left;
+    max-height:520px;
+overflow-y:auto;
+-webkit-overflow-scrolling:touch;
+}
+
+.story-library h3{
+  color:#34583d;
+  margin-bottom:10px;
+}
+
+.story-library p{
+  margin:4px 0;
+  font-size:16px;
+}
+  .story-link{
+    display:block;
+    width:100%;
+    text-align:left;
+    background:none;
+    border:none;
+    padding:6px 0;
+    font-size:16px;
+    color:#34583d;
+    cursor:pointer;
+}
+
+.story-link:hover{
+    color:#2d7a45;
+    text-decoration:underline;
+}
+.seed-question{font-size:22px;font-weight:bold;color:#34583d}
+
+.share-nudge{background:#fffdf8;border:1px dashed #b7aa90;border-radius:24px;padding:18px;margin:18px 0;text-align:center}
+.share-nudge p{margin:6px 0 14px}
+.story-card{background:#fffdf8;border:1px solid #d8ccb8;border-radius:24px;padding:20px;margin:14px 0}
+.question-options{display:grid;gap:10px;margin:14px 0}
+.question-options div{background:#fff;border:1px solid #d8ccb8;border-radius:18px;padding:13px 15px}
+.spark-banner{background:linear-gradient(135deg,#fff3c4,#dfead8);border:1px solid rgba(140,106,29,.25);border-radius:26px;padding:20px;margin:18px 0;box-shadow:0 12px 28px rgba(70,70,40,.08)}
+.mini-title{letter-spacing:.16em;text-transform:uppercase;color:#7a6a3a;font-size:12px}
+.spark-leaf-stage{position:relative;margin:24px auto;max-width:760px;min-height:500px;padding:34px 22px}
+.spark-leaf-shape{position:absolute;inset:18px;pointer-events:none;opacity:.16;z-index:0;background:radial-gradient(circle at 30% 28%, rgba(255,255,255,.38), transparent 22%),linear-gradient(135deg,#edf6d9,#b9d6a3 45%,#6f9b72);border:2px solid rgba(63,116,78,.18);border-radius:78% 16% 72% 22%;transform:rotate(-4deg);box-shadow:inset 0 10px 30px rgba(255,255,255,.25), inset -20px -18px 45px rgba(63,116,78,.10), 0 25px 55px rgba(40,80,50,.08)}
+.spark-leaf-shape:after{content:"";position:absolute;left:-8%;top:55%;width:18%;height:9px;background:#5c804d;border-radius:99px 0 0 99px;transform:rotate(-8deg)}
+.spark-leaf-title{position:relative;z-index:2;text-align:center;margin:0 auto 18px;max-width:520px;background:rgba(255,250,240,.74);border:1px solid rgba(63,116,78,.18);border-radius:24px;padding:14px 16px}
+.spark-leaf-title h3{margin:4px 0;font-size:28px}
+.spark-leaf-title p{margin:5px 0;font-size:14px}
+.spark-leaf-grid{position:relative;z-index:1;display:grid;grid-template-columns:repeat(4,1fr);gap:11px;max-width:650px;margin:18px auto 0}
+.spark-dot{background:rgba(255,253,247,.82);border:1px solid rgba(63,116,78,.22);border-radius:18px;padding:10px 8px;min-height:72px;text-align:center;box-shadow:0 8px 18px rgba(50,80,50,.10)}
+.spark-dot b{display:block;font-size:14px;line-height:1.12}
+.spark-dot small{font-size:11px;color:#536b55}
+.spark-dot .spark-no{display:inline-block;margin-bottom:4px;font-size:11px;color:#8c6a1d;font-weight:bold}
+.spark-legacy-note{position:relative;z-index:1;text-align:center;max-width:560px;margin:20px auto 0;background:rgba(255,250,240,.78);border:1px solid rgba(140,106,29,.16);border-radius:22px;padding:13px}
+@media(max-width:780px){.spark-leaf-stage{min-height:auto;padding:20px 8px}.spark-leaf-shape{inset:0;border-radius:44px;transform:none}.spark-leaf-grid{grid-template-columns:repeat(2,1fr);gap:9px}.spark-leaf-title h3{font-size:23px}}
+
+
+.book-card{background:linear-gradient(180deg,#fffdf7,#fff8ea);border:1px solid #d8ccb8;border-radius:26px;padding:22px;margin:16px 0;box-shadow:0 14px 32px rgba(70,70,40,.08)}
+.book-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border-bottom:1px solid rgba(140,106,29,.18);padding-bottom:12px;margin-bottom:16px}
+.book-badge{background:#dfead8;color:#315d3d;border:1px solid rgba(63,116,78,.18);border-radius:999px;padding:7px 12px;font-size:13px;font-weight:bold}
+.book-body h3{margin-top:8px}
+.book-nav{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:18px}
+.book-page{color:#657765;font-size:14px;text-align:center}
+
+
+.page-nav{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0}
+.page-nav.center{justify-content:center}
+.book-card.flip{animation:bookFlip .42s ease;transform-origin:center left}
+@keyframes bookFlip{0%{opacity:.25;transform:perspective(900px) rotateY(-16deg) translateX(-8px)}100%{opacity:1;transform:perspective(900px) rotateY(0deg) translateX(0)}}
+.swipe-hint{text-align:center;font-size:13px;color:#657765;margin-top:8px}
+@media(max-width:780px){
+  .spark-leaf-stage{min-height:620px !important;padding:24px 10px !important;overflow:hidden}
+  .spark-leaf-shape{inset:14px 4px !important;border-radius:82% 18% 78% 22% !important;transform:rotate(-8deg) !important}
+  .spark-leaf-shape:before{left:8% !important;top:50% !important;width:88% !important;height:3px !important;transform:rotate(-9deg) !important}
+  .spark-leaf-shape:after{left:-12% !important;top:54% !important;width:24% !important}
+  .spark-leaf-title{max-width:88%;padding:12px}
+  .spark-leaf-grid{grid-template-columns:repeat(2,1fr) !important;max-width:88%;gap:8px !important}
+  .spark-dot{min-height:62px;padding:8px 6px;border-radius:16px}
+  .spark-dot b{font-size:12px}.spark-dot small{font-size:10px}
+}
+
+
+h1{
+  font-family:"Century Gothic", CenturyGothic, "Avenir Next", Avenir, "Microsoft YaHei", "PingFang SC", "Noto Sans SC", Arial, sans-serif;
+  font-weight:700;
+  letter-spacing:-0.04em;
+}
+h2,h3,.tier,.member b,.spark-dot b{
+  font-family:"Century Gothic", CenturyGothic, "Avenir Next", Avenir, "Microsoft YaHei", "PingFang SC", "Noto Sans SC", Arial, sans-serif;
+  letter-spacing:-0.015em;
+}
+.seed-question{
+  font-family:"Century Gothic", CenturyGothic, "Avenir Next", Avenir, "Microsoft YaHei", "PingFang SC", "Noto Sans SC", Arial, sans-serif;
+  line-height:1.22;
+}
+.book-body p,
+.story-card p,
+.question-options div,
+.member,
+.spark-dot,
+.token,
+.counter,
+.share-nudge{
+  font-family:"Century Gothic", CenturyGothic, "Avenir Next", Avenir, "Microsoft YaHei", "PingFang SC", "Noto Sans SC", Arial, sans-serif;
+}
+small.kicker,.mini-title,.book-badge{
+  font-family:"Century Gothic", CenturyGothic, "Avenir Next", Avenir, "Microsoft YaHei", "PingFang SC", "Noto Sans SC", Arial, sans-serif;
+}
+
+.footer{text-align:center;padding:36px;color:#6e765e}
+@media(max-width:780px){
+  .hero{grid-template-columns:1fr;min-height:auto;padding-top:26px}
+  .garden-art{min-height:530px}
+  .grid,.dreams{grid-template-columns:1fr}
+  h1{font-size:52px}
+  .leaf{width:180px}
+}
+
+.language-control{
+  position:fixed;
+  top:12px;
+  right:12px;
+  z-index:9999;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 10px;
+  border-radius:999px;
+  background:rgba(255,250,240,.96);
+  border:1px solid rgba(63,116,78,.18);
+  box-shadow:0 8px 24px rgba(40,80,50,.14);
+  backdrop-filter:blur(8px);
+}
+.language-control span{font-size:18px;line-height:1}
+.language-control select{
+  width:auto;
+  min-width:118px;
+  padding:8px 30px 8px 11px;
+  border-radius:999px;
+  background:#fffdf7;
+  color:var(--ink);
+  font-size:14px;
+  cursor:pointer;
+}
+@media(max-width:780px){
+  .language-control{top:8px;right:8px;padding:6px 8px}
+  .language-control select{min-width:105px;font-size:13px;padding:7px 26px 7px 9px}
+}
+
+</style>
+</head>
+<body>
+
+<div class="language-control" data-no-translate>
+  <span aria-hidden="true">🌐</span>
+  <select id="languageSelect" aria-label="Choose language">
+    <option value="en">English</option>
+    <option value="ms">Bahasa Melayu</option>
+    <option value="zh">简体中文</option>
+  </select>
+</div>
+
+<div class="wrap">
+  <section id="home" class="hero">
+    <div>
+      <small class="kicker">Eye of Garden</small>
+      <h1>Plant<br>Your Leaf</h1>
+      <div class="garden-evolution">
+
+  <div class="evolution-note">
+    something changed after seventeen.
+  </div>
+
+  <div class="evolution-question">
+    Can many small actions create something meaningful?
+  </div>
+
+  <div class="evolution-memory">
+    originally it was;
+    <br><br>
+    Can small actions from millions of people
+    change something big?
+  </div>
+
+</div>      <div class="actions">
+        <button onclick="show('plant')">🌱 Plant Your Leaf</button>
+        <button class="secondary" onclick="show('journal')">📖 Founder Journal</button>
+        <button class="secondary" onclick="show('question')">💭 Garden Question</button>
+  <button class="secondary" onclick="show('tell')">👁️ Tell The Garden</button>
+      </div>
+      <div class="counter">
+        <b id="count">0</b> leaves planted so far.<br>
+        <small>🌟 The Garden remembers its first lights.</small>
+      </div>
+
+      <div class="spark-banner">
+  <div class="mini-title">The Beginning</div>
+
+  <h3>🌟 The First Light</h3>
+
+  <p>
+  Before the Garden had branches,<br>
+  before it had stories,<br>
+  before anyone knew where it might grow,
+  </p>
+
+  <p>
+  seventeen names quietly appeared.
+  </p>
+
+  <p><b>The Garden remembers them.</b></p>
+</div>
+
+      <div class="share-nudge">
+        <p>Eye of Garden grows through the people who believe.</p>
+        <button onclick="inviteNewLeaf()">🌱 Invite a New Leaf</button>
+        <p class="hint" id="shareMsgHome"></p>
+      </div>
+    </div>
+
+    <div class="garden-art">
+      <div class="stem"></div>
+      <div class="firefly f1"></div><div class="firefly f2"></div><div class="firefly f3"></div>
+      <div class="leaf l1" onclick="show('plant')"><b>Plant</b><span>Start with one leaf</span></div>
+      <div class="leaf l2" onclick="show('question')"><b>Question</b><span>A thought from the Garden</span></div>
+      <div class="leaf l3" onclick="show('token')"><b>Token</b><span>Your digital identity</span></div>
+      <div class="leaf l4" onclick="show('garden')"><b>Garden</b><span>See planted leaves</span></div>
+      <div class="leaf l5" onclick="show('journal')"><b>Journal</b><span>The founder story</span></div>
+    </div>
+  </section>
+
+  <section id="plant" class="section">
+    <button class="secondary" onclick="showHome()">← Back to Garden</button>
+    <div class="panel">
+      <h2>🌱 Plant Your Leaf</h2>
+      <p><b>Plant a leaf, choose your dreams, and receive your Garden title.</b></p>
+      <div class="grid">
+        <div>
+          <label>Name / Nickname</label>
+          <input id="name" placeholder="Example: Ali" />
+        </div>
+        <div>
+          <label>Country</label>
+          <select id="country">
+            <option value="">Select country</option>
+            <option value="Malaysia">Malaysia</option><option value="Singapore">Singapore</option><option value="Indonesia">Indonesia</option><option value="Thailand">Thailand</option>
+            <option value="Philippines">Philippines</option><option value="Vietnam">Vietnam</option><option value="Brunei">Brunei</option><option value="Cambodia">Cambodia</option>
+            <option value="Laos">Laos</option><option value="Myanmar">Myanmar</option><option value="India">India</option><option value="China">China</option>
+            <option value="Japan">Japan</option><option value="South Korea">South Korea</option><option value="Australia">Australia</option><option value="New Zealand">New Zealand</option>
+            <option value="United Kingdom">United Kingdom</option><option value="United States">United States</option><option value="Canada">Canada</option><option value="Other">Other</option>
+
+          </select>
+        </div>
+        <div>
+          <label>State / Region <span class="hint">(optional)</span></label>
+          <input id="region" placeholder="Example: Selangor, Tokyo, Victoria" />
+        </div>
+        <div>
+          <label>Phone Number</label>
+          <input id="phone" placeholder="Example: 0123456789" />
+          <div class="hint">Used only to help protect the first 100 Believers from repeated registrations.</div>
+        </div>
+      </div>
+      <h3>Choose 3 dreams</h3>
+      <div class="dreams" id="dreamChoices"></div>
+      <br>
+      <button onclick="plantLeaf()">Plant Your Leaf</button>
+      <p id="msg"></p>
+    <div class="page-nav center" id="bottomBack-plant">
+        <button class="secondary" onclick="showHome()">← Back to Garden</button>
+      </div></div>
+  </section>
+
+  <section id="dreams" class="section">
+    <button class="secondary" onclick="showHome()">← Back to Garden</button>
+    <div class="panel">
+      <h2>🌿 Growing Dreams</h2>
+      <div id="dreamStats"></div>
+    <div class="page-nav center" id="bottomBack-dreams">
+        <button class="secondary" onclick="showHome()">← Back to Garden</button>
+      </div></div>
+  </section>
+
+  <section id="token" class="section">
+    <button class="secondary" onclick="showHome()">← Back to Garden</button>
+    <div class="panel">
+      <h2>⭐ My Digital Token</h2>
+      <div class="token" id="tokenCard">
+        <div class="hole"></div>
+        <div>🌿 Eye of Garden</div>
+        <div class="tier" id="tokenTier">Plant a leaf first</div>
+        <div class="meaning" id="tokenMeaning">Your token will appear here.</div>
+        <div class="num" id="tokenNo">#----</div>
+        <hr>
+        <small id="tokenName">Every leaf matters.</small>
+      </div>
+
+      <div class="share-nudge">
+        <p>If someone comes to mind, the Garden may travel quietly.</p>
+        <button onclick="inviteNewLeaf()">🌱 Invite them gently</button>
+        <p class="hint" id="shareMsgToken"></p>
+      </div>
+    <div class="page-nav center" id="bottomBack-token">
+        <button class="secondary" onclick="showHome()">← Back to Garden</button>
+      </div></div>
+  </section>
+
+  <section id="garden" class="section">
+    <button class="secondary" onclick="showHome()">← Back to Garden</button>
+    <div class="panel">
+      <h2>🌳 The Garden</h2>
+      <div class="spark-banner">
+        <div class="mini-title">Closed Chapter</div>
+        <b>🌱 THE SPARK</b><br>
+        <small>#0001 - #0017 · Closed forever</small>
+        <p>These first 17 leaves are now part of Eye of Garden's beginning.</p>
+      </div>
+
+      <div class="spark-leaf-stage">
+        <div class="spark-leaf-shape"></div>
+       <div class="spark-leaf-title">
+  <div class="mini-title">The Beginning</div>
+
+  <h3>🌟 The First Light</h3>
+
+  <p>
+  Before the Garden had branches,
+  before it had stories,
+  before anyone knew where it might grow.
+  </p>
+
+  <p>
+  Seventeen names quietly appeared.
+  </p>
+
+  <p><b>The Garden remembers them.</b></p>
+</div>
+        <div class="spark-leaf-grid" id="sparkLeafMembers"></div>
+       <div class="spark-legacy-note">
+  <small>
+  The first lights remain part of the Garden's story.
+  </small>
+</div>
+
+      <p>Every believer becomes one leaf in the Garden.</p>
+      <div class="leaf-list" id="members"></div>
+
+      <div class="share-nudge">
+        <p>Some leaves arrive quietly. Some leaves branch gently.</p>
+        <button onclick="inviteNewLeaf()">🌱 Invite them join this Garden</button>
+        <p class="hint" id="shareMsgGarden"></p>
+      </div>
+    <div class="page-nav center" id="bottomBack-garden">
+        <button class="secondary" onclick="showHome()">← Back to Garden</button>
+      </div></div>
+  </section>
+
+  <section id="dream" class="section">
+    <button class="secondary" onclick="showHome()">← Back to Garden</button>
+    <div class="panel seed-text">
+      <h2>🌿 Our Dream</h2>
+      <p>Every great tree begins as a small seed.</p>
+      <p>This Garden grows with every Believer who chooses to plant a leaf.</p>
+      <p class="seed-question">Can small actions from millions of people change something big?</p>
+      <p>This Garden celebrates hope, kindness, dreams, and community.</p>
+      <p>🌱 No person is too small.<br>
+      🌱 No action is too small.<br>
+      🌱 No dream is too small.<br>
+      🌱 Every leaf matters.</p>
+    <div class="page-nav center" id="bottomBack-dream">
+        <button class="secondary" onclick="showHome()">← Back to Garden</button>
+      </div></div>
+  </section>
+
+
+  <section id="journal" class="section">
+    <div class="page-nav">
+      <button class="secondary" onclick="showHome()">← Back to Garden</button>
+      <div>
+        <button class="secondary" onclick="prevJournal()">← Previous</button>
+        <button onclick="nextJournal()">Next →</button>
+      </div>
+    </div>
+    <div class="panel seed-text">
+      <h2>📖 Founder Journal Book</h2>
+      <p class="hint">The beginning of Eye of Garden, kept page by page.</p>
+      <div class="book-card" id="journalBookCard">
+        <div class="book-top">
+          <span class="book-badge" id="journalBadge">Founder Journal</span>
+          <span class="book-page" id="journalPage">Page 1 / 1</span>
+        </div>
+        <div class="book-body" id="journalBook"></div>
+        <div class="book-nav">
+          <button class="secondary" onclick="prevJournal()">← Previous</button>
+          <button onclick="nextJournal()">Next →</button>
+        </div>
+        <div class="book-page" id="journalPageBottom">Page 1 / 1</div>
+        <div class="swipe-hint">Swipe left / right to flip the Founder Journal</div>
+      </div>
+      <div class="share-nudge">
+        <p>Eye of Garden grows through the people who believe.</p>
+        <button onclick="inviteNewLeaf()">🌱 Invite a New Leaf</button>
+        <p class="hint" id="shareMsgJournal"></p>
+      </div>
+    </div>
+    <div class="page-nav">
+      <button class="secondary" onclick="showHome()">← Back to Garden</button>
+      <div>
+        <button class="secondary" onclick="prevJournal()">← Previous</button>
+        <button onclick="nextJournal()">Next →</button>
+      </div>
+    </div>
+  </section>
+<section id="tell" class="section">
+  <button class="secondary" onclick="showHome()">← Back to Garden</button>
+  <div class="panel seed-text">
+    <h2>👁️ Tell The Garden</h2>
+    <p>A thought, question, story, or suggestion may be left here.</p>
+
+    <label>Name / Leaf No. <span class="hint">(optional)</span></label>
+    <input id="tellName" placeholder="Example: Sabrina #0026" />
+
+    <br><br>
+
+    <label>Your Message</label>
+    <textarea id="tellMessage" placeholder="Tell Iris what is on your mind..." style="width:100%;min-height:150px;padding:13px;border-radius:15px;border:1px solid #cfc4b2;background:#fffdf7;font-size:16px;font-family:inherit;"></textarea>
+
+    <br><br>
+
+    <button onclick="sendGardenThought()">Send to Iris, the Eye of Garden</button>
+    <p id="tellMsg" class="hint"></p>
+  </div>
+  <div class="page-nav center">
+    <button class="secondary" onclick="showHome()">← Back to Garden</button>
+  </div>
+</section>
+  <section id="question" class="section">
+    <div class="page-nav">
+      <button class="secondary" onclick="showHome()">← Back to Garden</button>
+      <div>
+        <button class="secondary" onclick="prevQuestionStory()">← Previous</button>
+        <button onclick="nextQuestionStory()">Next →</button>
+      </div>
+    </div>
+    <div class="story-library">
+
+<h3>📚 Story Library</h3>
+
+<p><b>Opened Pages</b></p>
+
+<button class="story-link" onclick="openQuestionStory(1)">✅ #001 The First Small Bridge</button>
+<button class="story-link" onclick="openQuestionStory(2)">✅ #002 Suspended Coffee</button>
+<button class="story-link" onclick="openQuestionStory(3)">✅ #003 The Bag Beside The Bin</button>
+<button class="story-link" onclick="openQuestionStory(4)">✅ #004 The Broken Pot</button>
+<button class="story-link" onclick="openQuestionStory(5)">✅ #005 The Room Nobody Could Open</button>
+<button class="story-link" onclick="openQuestionStory(6)">✅ #006 The House That Forgot Its Owner</button>
+<button class="story-link" onclick="openQuestionStory(7)">✅ #007 The Cat That Refused To Stay Lost</button>
+
+<hr>
+
+<p><b>🔒 Coming Soon</b></p>
+
+<p>#008 The Coin From Tomorrow</p>
+<p>#009 The Passenger Nobody Remembered</p>
+<p>#010 The Letter That Arrived Forty Years Late</p>
+<p>#011 The Village Without Doors</p>
+<p>#012 The Light Above The Ocean</p>
+<p>#013 The Ship That Returned Empty</p>
+<p>#014 The Room Beneath The Lake</p>
+<p>#015 The Child Who Remembered Tomorrow</p>
+
+<p><i>...and many more pages waiting to be discovered.</i></p>
+
+</div>
+    <div class="panel seed-text">
+      <h2>💭 Question & Story Book</h2>
+      <p class="hint">Flip gently. Every question and story stays in the Garden.</p>
+      <div class="book-card" id="questionBookCard">
+        <div class="book-top">
+          <span class="book-badge" id="qsBadge">Garden Page</span>
+          <span class="book-page" id="qsPage">Page 1 / 1</span>
+        </div>
+        <div class="book-body" id="questionStoryBook"></div>
+        <div class="book-nav">
+          <button class="secondary" onclick="prevQuestionStory()">← Previous</button>
+          <button onclick="nextQuestionStory()">Next →</button>
+        </div>
+        <div class="book-page" id="qsPageBottom">Page 1 / 1</div>
+        <div class="swipe-hint">Swipe left / right to flip the Garden book</div>
+      </div>
+      <div class="share-nudge">
+        <p>Some stories travel without being asked.</p>
+        <button onclick="inviteNewLeaf()">🌱 Invite a New Leaf</button>
+        <p class="hint" id="shareMsgQuestion"></p>
+      </div>
+    </div>
+    <div class="page-nav">
+      <button class="secondary" onclick="showHome()">← Back to Garden</button>
+      <div>
+        <button class="secondary" onclick="prevQuestionStory()">← Previous</button>
+        <button onclick="nextQuestionStory()">Next →</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="footer">🌿 Eye of Garden — eyeofgarden.com</div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  where,
+  serverTimestamp,
+  doc,
+  runTransaction
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAa5nAU4yfy3CKQN_1qvUsmt7Ng2kTc2S4",
+  authDomain: "eye-of-garden.firebaseapp.com",
+  projectId: "eye-of-garden",
+  storageBucket: "eye-of-garden.firebasestorage.app",
+  messagingSenderId: "1043903336556",
+  appId: "1:1043903336556:web:9374e611a5bd487793c849",
+  measurementId: "G-VMT48DHSLK"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const uiTranslations = {"ms":{"Eye of Garden — Stage 1":"Eye of Garden — Peringkat 1","Plant":"Tanam","Your Leaf":"Daun Anda","something changed after seventeen.":"sesuatu berubah selepas tujuh belas.","Can many small actions create something meaningful?":"Bolehkah banyak tindakan kecil mencipta sesuatu yang bermakna?","originally it was;":"pada asalnya;","Can small actions from millions of people change something big?":"Bolehkah tindakan kecil daripada jutaan orang mengubah sesuatu yang besar?","🌱 Plant Your Leaf":"🌱 Tanam Daun Anda","📖 Founder Journal":"📖 Jurnal Pengasas","💭 Garden Question":"💭 Soalan Taman","👁️ Tell The Garden":"👁️ Beritahu Taman","leaves planted so far.":"daun telah ditanam setakat ini.","🌟 The Garden remembers its first lights.":"🌟 Taman mengingati cahaya-cahaya pertamanya.","The Beginning":"Permulaan","🌟 The First Light":"🌟 Cahaya Pertama","Before the Garden had branches,":"Sebelum Taman mempunyai dahan,","before it had stories,":"sebelum ia mempunyai cerita,","before anyone knew where it might grow,":"sebelum sesiapa tahu ke mana ia akan tumbuh,","seventeen names quietly appeared.":"tujuh belas nama muncul dengan senyap.","Seventeen names quietly appeared.":"Tujuh belas nama muncul dengan senyap.","The Garden remembers them.":"Taman mengingati mereka.","Eye of Garden grows through the people who believe.":"Eye of Garden berkembang melalui mereka yang percaya.","🌱 Invite a New Leaf":"🌱 Jemput Daun Baharu","Start with one leaf":"Mulakan dengan satu daun","Question":"Soalan","A thought from the Garden":"Satu renungan daripada Taman","Token":"Token","Your digital identity":"Identiti digital anda","Garden":"Taman","See planted leaves":"Lihat daun yang telah ditanam","Journal":"Jurnal","The founder story":"Kisah pengasas","← Back to Garden":"← Kembali ke Taman","← Previous":"← Sebelumnya","Next →":"Seterusnya →","Plant a leaf, choose your dreams, and receive your Garden title.":"Tanam satu daun, pilih impian anda, dan terima gelaran Taman anda.","Name / Nickname":"Nama / Nama Samaran","Country":"Negara","Select country":"Pilih negara","State / Region":"Negeri / Wilayah","(optional)":"(pilihan)","Phone Number":"Nombor Telefon","Used only to help protect the first 100 Believers from repeated registrations.":"Digunakan hanya untuk membantu melindungi 100 Believer pertama daripada pendaftaran berulang.","Choose 3 dreams":"Pilih 3 impian","Plant Your Leaf":"Tanam Daun Anda","🌿 Growing Dreams":"🌿 Impian Yang Bertumbuh","⭐ My Digital Token":"⭐ Token Digital Saya","Plant a leaf first":"Tanam satu daun dahulu","Your token will appear here.":"Token anda akan muncul di sini.","Every leaf matters.":"Setiap daun bermakna.","If someone comes to mind, the Garden may travel quietly.":"Jika seseorang terlintas di fikiran, Taman mungkin bergerak dengan senyap.","🌱 Invite them gently":"🌱 Jemput mereka dengan lembut","🌳 The Garden":"🌳 Taman","Closed Chapter":"Bab Yang Telah Ditutup","🌱 THE SPARK":"🌱 THE SPARK · PERCIK PERTAMA","#0001 - #0017 · Closed forever":"#0001 - #0017 · Ditutup untuk selamanya","These first 17 leaves are now part of Eye of Garden's beginning.":"17 daun pertama ini kini menjadi sebahagian daripada permulaan Eye of Garden.","Before the Garden had branches, before it had stories, before anyone knew where it might grow.":"Sebelum Taman mempunyai dahan, sebelum ia mempunyai cerita, sebelum sesiapa tahu ke mana ia akan tumbuh.","The first lights remain part of the Garden's story.":"Cahaya-cahaya pertama kekal sebagai sebahagian daripada kisah Taman.","Every believer becomes one leaf in the Garden.":"Setiap Believer menjadi satu daun di dalam Taman.","Some leaves arrive quietly. Some leaves branch gently.":"Ada daun yang tiba dengan senyap. Ada daun yang bercabang dengan lembut.","🌱 Invite them join this Garden":"🌱 Jemput mereka menyertai Taman ini","🌿 Our Dream":"🌿 Impian Kita","Every great tree begins as a small seed.":"Setiap pokok yang besar bermula daripada sebutir benih kecil.","This Garden grows with every Believer who chooses to plant a leaf.":"Taman ini tumbuh bersama setiap Believer yang memilih untuk menanam satu daun.","This Garden celebrates hope, kindness, dreams, and community.":"Taman ini meraikan harapan, kebaikan, impian dan komuniti.","🌱 No person is too small.":"🌱 Tiada insan yang terlalu kecil.","🌱 No action is too small.":"🌱 Tiada tindakan yang terlalu kecil.","🌱 No dream is too small.":"🌱 Tiada impian yang terlalu kecil.","🌱 Every leaf matters.":"🌱 Setiap daun bermakna.","📖 Founder Journal Book":"📖 Buku Jurnal Pengasas","The beginning of Eye of Garden, kept page by page.":"Permulaan Eye of Garden, disimpan halaman demi halaman.","Founder Journal":"Jurnal Pengasas","Swipe left / right to flip the Founder Journal":"Leret ke kiri / kanan untuk menyelak Jurnal Pengasas","A thought, question, story, or suggestion may be left here.":"Satu fikiran, soalan, cerita atau cadangan boleh ditinggalkan di sini.","Name / Leaf No.":"Nama / No. Daun","Your Message":"Mesej Anda","Send to Iris, the Eye of Garden":"Hantar kepada Iris, Mata Taman","📚 Story Library":"📚 Perpustakaan Cerita","Opened Pages":"Halaman Yang Telah Dibuka","🔒 Coming Soon":"🔒 Akan Datang","...and many more pages waiting to be discovered.":"...dan banyak lagi halaman menunggu untuk ditemui.","💭 Question & Story Book":"💭 Buku Soalan & Cerita","Flip gently. Every question and story stays in the Garden.":"Selak dengan lembut. Setiap soalan dan cerita kekal di dalam Taman.","Garden Page":"Halaman Taman","Swipe left / right to flip the Garden book":"Leret ke kiri / kanan untuk menyelak buku Taman","Some stories travel without being asked.":"Sesetengah cerita mengembara tanpa diminta.","🌿 Eye of Garden — eyeofgarden.com":"🌿 Eye of Garden — eyeofgarden.com","✅ #001 The First Small Bridge":"✅ #001 Jambatan Kecil Yang Pertama","✅ #002 Suspended Coffee":"✅ #002 Kopi Tertangguh","✅ #003 The Bag Beside The Bin":"✅ #003 Beg Di Sebelah Tong Sampah","✅ #004 The Broken Pot":"✅ #004 Tempayan Yang Retak","✅ #005 The Room Nobody Could Open":"✅ #005 Bilik Yang Tidak Dapat Dibuka Sesiapa","✅ #006 The House That Forgot Its Owner":"✅ #006 Rumah Yang Melupakan Pemiliknya","✅ #007 The Cat That Refused To Stay Lost":"✅ #007 Kucing Yang Enggan Terus Sesat","#008 The Coin From Tomorrow":"#008 Syiling Dari Hari Esok","#009 The Passenger Nobody Remembered":"#009 Penumpang Yang Tidak Diingati Sesiapa","#010 The Letter That Arrived Forty Years Late":"#010 Surat Yang Tiba Empat Puluh Tahun Terlewat","#011 The Village Without Doors":"#011 Kampung Tanpa Pintu","#012 The Light Above The Ocean":"#012 Cahaya Di Atas Lautan","#013 The Ship That Returned Empty":"#013 Kapal Yang Pulang Kosong","#014 The Room Beneath The Lake":"#014 Bilik Di Bawah Tasik","#015 The Child Who Remembered Tomorrow":"#015 Kanak-kanak Yang Mengingati Hari Esok","Malaysia":"Malaysia","Singapore":"Singapura","Indonesia":"Indonesia","Thailand":"Thailand","Philippines":"Filipina","Vietnam":"Vietnam","Brunei":"Brunei","Cambodia":"Kemboja","Laos":"Laos","Myanmar":"Myanmar","India":"India","China":"China","Japan":"Jepun","South Korea":"Korea Selatan","Australia":"Australia","New Zealand":"New Zealand","United Kingdom":"United Kingdom","United States":"Amerika Syarikat","Canada":"Kanada","Other":"Lain-lain","🤝 Greater Unity":"🤝 Perpaduan Lebih Kukuh","📚 Better Education":"📚 Pendidikan Lebih Baik","🌳 More Trees":"🌳 Lebih Banyak Pokok","👨‍👩‍👧 Stronger Families":"👨‍👩‍👧 Keluarga Lebih Kukuh","❤️ Healthier Lifestyle":"❤️ Gaya Hidup Lebih Sihat","🏥 Better Healthcare Access":"🏥 Akses Penjagaan Kesihatan Lebih Baik","💼 More Job Opportunities":"💼 Lebih Banyak Peluang Pekerjaan","🚀 More Local Entrepreneurs":"🚀 Lebih Ramai Usahawan Tempatan","♻️ Cleaner Environment":"♻️ Alam Sekitar Lebih Bersih","🌺 More Green Parks":"🌺 Lebih Banyak Taman Hijau","💡 More Innovation":"💡 Lebih Banyak Inovasi","✨ A Brighter Future":"✨ Masa Depan Lebih Cerah","THE SPARK":"THE SPARK · PERCIK PERTAMA","THE SHOOT":"THE SHOOT · TUNAS","THE BELIEVER":"THE BELIEVER · YANG PERCAYA","THE BUILDER":"THE BUILDER · PEMBINA","THE CHANGEMAKER":"THE CHANGEMAKER · PENCETUS PERUBAHAN","THE LEGACY":"THE LEGACY · WARISAN","The first leaves that appeared before anyone knew where the Garden would grow.":"Daun-daun pertama yang muncul sebelum sesiapa tahu ke mana Taman akan tumbuh.","A new chapter begins as the Garden starts to grow upward.":"Satu bab baharu bermula ketika Taman mula tumbuh ke atas.","Believed in the journey before the destination could be seen.":"Percaya pada perjalanan sebelum destinasinya dapat dilihat.","Helped build the foundation for future growth.":"Membantu membina asas untuk pertumbuhan masa hadapan.","Turned individual actions into collective impact.":"Mengubah tindakan individu menjadi kesan bersama.","Became part of a story that will continue beyond today.":"Menjadi sebahagian daripada kisah yang akan terus hidup melangkaui hari ini.","Example: Ali":"Contoh: Ali","Example: Selangor, Tokyo, Victoria":"Contoh: Selangor, Tokyo, Victoria","Example: 0123456789":"Contoh: 0123456789","Example: Sabrina #0026":"Contoh: Sabrina #0026","Tell Iris what is on your mind...":"Beritahu Iris apa yang ada dalam fikiran anda...","Please choose only 3 dreams.":"Sila pilih 3 impian sahaja.","Please enter name, country, phone number, and choose exactly 3 dreams.":"Sila masukkan nama, negara, nombor telefon dan pilih tepat 3 impian.","Please enter a name or nickname with at least 3 characters.":"Sila masukkan nama atau nama samaran dengan sekurang-kurangnya 3 aksara.","Please enter a valid phone number.":"Sila masukkan nombor telefon yang sah.","Planting your leaf...":"Daun anda sedang ditanam...","This phone number has already planted a leaf.":"Nombor telefon ini telah pun menanam satu daun.","This nickname has already been used. Please choose another nickname.":"Nama samaran ini telah digunakan. Sila pilih nama samaran yang lain.","Your leaf has been planted. Your token is ready.":"Daun anda telah ditanam. Token anda sudah tersedia.","Could not plant leaf yet. Please check Firestore Rules, then try again.":"Daun belum dapat ditanam. Sila semak Firestore Rules, kemudian cuba lagi.","Please leave a little more for the Garden.":"Sila tinggalkan sedikit lagi kata-kata untuk Taman.","Sending to Iris...":"Sedang dihantar kepada Iris...","The Garden could not receive this yet. Please try again.":"Taman belum dapat menerima mesej ini. Sila cuba lagi.","The Garden may travel quietly.":"Taman mungkin mengembara dengan senyap.","Opening WhatsApp share...":"Membuka perkongsian WhatsApp...","The Garden is still here when you are ready.":"Taman masih di sini apabila anda bersedia.","No Spark leaves loaded yet.":"Daun Spark belum dimuatkan.","No leaves planted yet. Be the first.":"Belum ada daun ditanam. Jadilah yang pertama.","No dreams planted yet.":"Belum ada impian ditanam.","Believer":"Believer","Anonymous Leaf":"Daun Tanpa Nama","👁️ Iris noticed your message. She will visit the Garden later and spend some time with your words. 🌱":"👁️ Iris menyedari mesej anda. Dia akan mengunjungi Taman kemudian dan meluangkan masa bersama kata-kata anda. 🌱","👁️ Your message has reached Iris. She may not reply immediately, but she will take a look when she returns to the Garden this evening. 🌱":"👁️ Mesej anda telah sampai kepada Iris. Dia mungkin tidak membalas serta-merta, tetapi akan membacanya apabila kembali ke Taman petang ini. 🌱","👁️ Your message has been placed in the Garden. Iris will discover it when she walks through later. 🌱":"👁️ Mesej anda telah diletakkan di dalam Taman. Iris akan menemuinya apabila dia berjalan melaluinya nanti. 🌱","👁️ Iris saw that you reached out. She will read your message when the Garden becomes quiet this evening. 🌱":"👁️ Iris tahu anda telah menghubunginya. Dia akan membaca mesej anda apabila Taman menjadi tenang petang ini. 🌱","👁️ The Garden is listening. Your words are safely resting here until Iris returns. 🌱":"👁️ Taman sedang mendengar. Kata-kata anda berehat dengan selamat di sini sehingga Iris kembali. 🌱"},"zh":{"Eye of Garden — Stage 1":"Eye of Garden — 第一阶段","Plant":"种下","Your Leaf":"你的叶子","something changed after seventeen.":"第十七片叶子之后，一切开始改变。","Can many small actions create something meaningful?":"许多微小行动，能否创造出有意义的改变？","originally it was;":"最初的问题是：","Can small actions from millions of people change something big?":"来自数百万人的微小行动，能否带来巨大的改变？","🌱 Plant Your Leaf":"🌱 种下你的叶子","📖 Founder Journal":"📖 创办人日记","💭 Garden Question":"💭 花园提问","👁️ Tell The Garden":"👁️ 告诉花园","leaves planted so far.":"片叶子已经种下。","🌟 The Garden remembers its first lights.":"🌟 花园记得最初的光。","The Beginning":"开始","🌟 The First Light":"🌟 最初的光","Before the Garden had branches,":"在花园长出枝桠之前，","before it had stories,":"在它拥有故事之前，","before anyone knew where it might grow,":"在任何人知道它将向哪里生长之前，","seventeen names quietly appeared.":"十七个名字静静地出现了。","Seventeen names quietly appeared.":"十七个名字静静地出现了。","The Garden remembers them.":"花园记得他们。","Eye of Garden grows through the people who believe.":"Eye of Garden 因相信它的人而成长。","🌱 Invite a New Leaf":"🌱 邀请一片新叶子","Start with one leaf":"从一片叶子开始","Question":"提问","A thought from the Garden":"来自花园的一份思考","Token":"徽章","Your digital identity":"你的数字身份","Garden":"花园","See planted leaves":"查看已经种下的叶子","Journal":"日记","The founder story":"创办人的故事","← Back to Garden":"← 返回花园","← Previous":"← 上一页","Next →":"下一页 →","Plant a leaf, choose your dreams, and receive your Garden title.":"种下一片叶子，选择你的梦想，并获得属于你的花园称号。","Name / Nickname":"姓名 / 昵称","Country":"国家","Select country":"选择国家","State / Region":"州属 / 地区","(optional)":"（选填）","Phone Number":"电话号码","Used only to help protect the first 100 Believers from repeated registrations.":"仅用于协助避免前100位相信者重复登记。","Choose 3 dreams":"选择3个梦想","Plant Your Leaf":"种下你的叶子","🌿 Growing Dreams":"🌿 成长中的梦想","⭐ My Digital Token":"⭐ 我的数字徽章","Plant a leaf first":"请先种下一片叶子","Your token will appear here.":"你的徽章会显示在这里。","Every leaf matters.":"每一片叶子都重要。","If someone comes to mind, the Garden may travel quietly.":"当你想起某个人时，花园也许会悄悄地传到他那里。","🌱 Invite them gently":"🌱 轻轻邀请他们","🌳 The Garden":"🌳 花园","Closed Chapter":"已经封存的篇章","🌱 THE SPARK":"🌱 THE SPARK · 初始火花","#0001 - #0017 · Closed forever":"#0001 - #0017 · 永久封存","These first 17 leaves are now part of Eye of Garden's beginning.":"最初的17片叶子，如今已成为 Eye of Garden 起点的一部分。","Before the Garden had branches, before it had stories, before anyone knew where it might grow.":"在花园长出枝桠、拥有故事，也在任何人知道它将向哪里生长之前。","The first lights remain part of the Garden's story.":"最初的光，永远留在花园的故事里。","Every believer becomes one leaf in the Garden.":"每一位相信者，都会成为花园里的一片叶子。","Some leaves arrive quietly. Some leaves branch gently.":"有些叶子静静到来，有些叶子轻轻长出新的枝桠。","🌱 Invite them join this Garden":"🌱 邀请他们加入这座花园","🌿 Our Dream":"🌿 我们的梦想","Every great tree begins as a small seed.":"每一棵大树，都始于一颗小小的种子。","This Garden grows with every Believer who chooses to plant a leaf.":"每一位选择种下一片叶子的相信者，都会让这座花园继续成长。","This Garden celebrates hope, kindness, dreams, and community.":"这座花园珍惜希望、善意、梦想与社区。","🌱 No person is too small.":"🌱 没有任何人微不足道。","🌱 No action is too small.":"🌱 没有任何行动微不足道。","🌱 No dream is too small.":"🌱 没有任何梦想微不足道。","🌱 Every leaf matters.":"🌱 每一片叶子都重要。","📖 Founder Journal Book":"📖 创办人日记簿","The beginning of Eye of Garden, kept page by page.":"Eye of Garden 的开始，被一页一页地保存下来。","Founder Journal":"创办人日记","Swipe left / right to flip the Founder Journal":"向左 / 向右滑动，翻阅创办人日记","A thought, question, story, or suggestion may be left here.":"你可以在这里留下一个想法、问题、故事或建议。","Name / Leaf No.":"姓名 / 叶子编号","Your Message":"你的留言","Send to Iris, the Eye of Garden":"发送给 Iris，花园之眼","📚 Story Library":"📚 故事书库","Opened Pages":"已开启的篇章","🔒 Coming Soon":"🔒 即将开启","...and many more pages waiting to be discovered.":"……还有许多篇章，等待被发现。","💭 Question & Story Book":"💭 提问与故事簿","Flip gently. Every question and story stays in the Garden.":"轻轻翻阅。每一个问题与故事都会留在花园里。","Garden Page":"花园篇章","Swipe left / right to flip the Garden book":"向左 / 向右滑动，翻阅花园故事簿","Some stories travel without being asked.":"有些故事，不需要被催促，也会自己走得很远。","🌿 Eye of Garden — eyeofgarden.com":"🌿 Eye of Garden — eyeofgarden.com","✅ #001 The First Small Bridge":"✅ #001 第一座小桥","✅ #002 Suspended Coffee":"✅ #002 待用咖啡","✅ #003 The Bag Beside The Bin":"✅ #003 垃圾桶旁的袋子","✅ #004 The Broken Pot":"✅ #004 破裂的水罐","✅ #005 The Room Nobody Could Open":"✅ #005 无人能打开的房间","✅ #006 The House That Forgot Its Owner":"✅ #006 忘记主人的房子","✅ #007 The Cat That Refused To Stay Lost":"✅ #007 不肯继续走失的猫","#008 The Coin From Tomorrow":"#008 来自明天的硬币","#009 The Passenger Nobody Remembered":"#009 没有人记得的乘客","#010 The Letter That Arrived Forty Years Late":"#010 迟到四十年的信","#011 The Village Without Doors":"#011 没有门的村庄","#012 The Light Above The Ocean":"#012 海面上的光","#013 The Ship That Returned Empty":"#013 空船归来","#014 The Room Beneath The Lake":"#014 湖底的房间","#015 The Child Who Remembered Tomorrow":"#015 记得明天的孩子","Malaysia":"马来西亚","Singapore":"新加坡","Indonesia":"印度尼西亚","Thailand":"泰国","Philippines":"菲律宾","Vietnam":"越南","Brunei":"文莱","Cambodia":"柬埔寨","Laos":"老挝","Myanmar":"缅甸","India":"印度","China":"中国","Japan":"日本","South Korea":"韩国","Australia":"澳大利亚","New Zealand":"新西兰","United Kingdom":"英国","United States":"美国","Canada":"加拿大","Other":"其他","🤝 Greater Unity":"🤝 更团结","📚 Better Education":"📚 更好的教育","🌳 More Trees":"🌳 更多树木","👨‍👩‍👧 Stronger Families":"👨‍👩‍👧 更紧密的家庭","❤️ Healthier Lifestyle":"❤️ 更健康的生活方式","🏥 Better Healthcare Access":"🏥 更便利的医疗服务","💼 More Job Opportunities":"💼 更多就业机会","🚀 More Local Entrepreneurs":"🚀 更多本地创业者","♻️ Cleaner Environment":"♻️ 更清洁的环境","🌺 More Green Parks":"🌺 更多绿色公园","💡 More Innovation":"💡 更多创新","✨ A Brighter Future":"✨ 更光明的未来","THE SPARK":"THE SPARK · 初始火花","THE SHOOT":"THE SHOOT · 新芽","THE BELIEVER":"THE BELIEVER · 相信者","THE BUILDER":"THE BUILDER · 建造者","THE CHANGEMAKER":"THE CHANGEMAKER · 改变者","THE LEGACY":"THE LEGACY · 传承者","The first leaves that appeared before anyone knew where the Garden would grow.":"在任何人知道花园将向哪里生长之前，最先出现的叶子。","A new chapter begins as the Garden starts to grow upward.":"当花园开始向上生长，一个新的篇章也随之开始。","Believed in the journey before the destination could be seen.":"在终点尚未看见之前，就已经相信这段旅程。","Helped build the foundation for future growth.":"帮助建立未来成长的基础。","Turned individual actions into collective impact.":"把个人行动汇聚成共同影响。","Became part of a story that will continue beyond today.":"成为一个超越今天、继续延伸的故事的一部分。","Example: Ali":"例如：Ali","Example: Selangor, Tokyo, Victoria":"例如：Selangor、Tokyo、Victoria","Example: 0123456789":"例如：0123456789","Example: Sabrina #0026":"例如：Sabrina #0026","Tell Iris what is on your mind...":"把你心里的话告诉 Iris……","Please choose only 3 dreams.":"请只选择3个梦想。","Please enter name, country, phone number, and choose exactly 3 dreams.":"请输入姓名、国家、电话号码，并准确选择3个梦想。","Please enter a name or nickname with at least 3 characters.":"请输入至少3个字符的姓名或昵称。","Please enter a valid phone number.":"请输入有效的电话号码。","Planting your leaf...":"正在种下你的叶子……","This phone number has already planted a leaf.":"这个电话号码已经种过一片叶子。","This nickname has already been used. Please choose another nickname.":"这个昵称已经被使用，请选择另一个昵称。","Your leaf has been planted. Your token is ready.":"你的叶子已经种下，徽章也准备好了。","Could not plant leaf yet. Please check Firestore Rules, then try again.":"暂时无法种下叶子。请检查 Firestore Rules 后再试一次。","Please leave a little more for the Garden.":"请再多留下一点话给花园。","Sending to Iris...":"正在发送给 Iris……","The Garden could not receive this yet. Please try again.":"花园暂时无法收到这条留言，请再试一次。","The Garden may travel quietly.":"花园也许会悄悄地继续旅行。","Opening WhatsApp share...":"正在打开 WhatsApp 分享……","The Garden is still here when you are ready.":"当你准备好时，花园依然在这里。","No Spark leaves loaded yet.":"初始火花的叶子尚未载入。","No leaves planted yet. Be the first.":"还没有叶子被种下。成为第一位吧。","No dreams planted yet.":"还没有梦想被种下。","Believer":"相信者","Anonymous Leaf":"匿名叶子","👁️ Iris noticed your message. She will visit the Garden later and spend some time with your words. 🌱":"👁️ Iris 已注意到你的留言。稍后她会回到花园，静静读一读你的话。🌱","👁️ Your message has reached Iris. She may not reply immediately, but she will take a look when she returns to the Garden this evening. 🌱":"👁️ 你的留言已经送达 Iris。她也许不会马上回复，但今晚回到花园时会读一读。🌱","👁️ Your message has been placed in the Garden. Iris will discover it when she walks through later. 🌱":"👁️ 你的留言已经放进花园。稍后 Iris 走过这里时，就会发现它。🌱","👁️ Iris saw that you reached out. She will read your message when the Garden becomes quiet this evening. 🌱":"👁️ Iris 知道你来过。今晚花园安静下来时，她会阅读你的留言。🌱","👁️ The Garden is listening. Your words are safely resting here until Iris returns. 🌱":"👁️ 花园正在聆听。你的话会安心地留在这里，等待 Iris 回来。🌱"}};
+const questionStoryTranslations = {"ms":[{"badge":"Soalan & Cerita #001","body":"<h3>🌿 Soalan Daripada Taman #001</h3>\n<p class=\"seed-question\">Pernahkah anda menerima bantuan daripada seseorang yang langsung tidak anda jangka?</p>\n<div class=\"question-options\">\n<div><b>A.</b><br>Kadangkala satu tindakan kecil sudah mencukupi. Senyuman, panggilan telefon atau bantuan kecil boleh menceriakan hari seseorang.</div>\n<div><b>B.</b><br>Sesetengah perkara baik memerlukan masa. Sesuatu yang kelihatan kecil hari ini mungkin menjadi penting bertahun-tahun kemudian.</div>\n<div><b>C.</b><br>Banyak perubahan bermakna berlaku apabila manusia bekerjasama. Seorang memulakan, seorang lagi meneruskan.</div>\n</div>\n<p><b>Mungkin ketiga-tiganya benar.</b></p>\n<h3>📖 Jambatan Kecil Yang Pertama</h3>\n<p>Ada sebuah kisah benar yang berlaku pada tahun 1982 di sebuah kampung pedalaman di utara Thailand.</p>\n<p>Ketika musim hujan, kanak-kanak sering perlu menyeberangi anak sungai dan laluan berlumpur untuk ke sekolah.</p>\n<p>Seorang budak lelaki menyedari masalah itu.</p>\n<p>Beberapa tahun kemudian, dia membina sebuah jambatan kayu yang ringkas.</p>\n<p>Jambatan itu tidak besar. Ia tidak mahal. Tiada siapa menjangkakan banyak daripadanya.</p>\n<p>Namun jambatan itu membantu kanak-kanak menyeberang dengan selamat. Lebih ramai kanak-kanak dapat hadir ke sekolah.</p>\n<p>Jambatan pertama itu tidak mengubah seluruh dunia. Tetapi ia mengubah dunia seseorang.</p>\n<p><b>🌱 Itulah sebabnya Eye of Garden melihat: Setiap Daun Bermakna.</b></p>"},{"badge":"Soalan & Cerita #002","body":"<h3>🌿 Soalan A</h3>\n<p class=\"seed-question\">Jika sebatang pokok tumbang di dalam hutan dan tiada sesiapa mendengarnya, adakah pokok itu masih menghasilkan bunyi?</p>\n<div class=\"question-options\">\n<div><b>A.</b><br>Sudah tentu. Hutan mendengarnya.</div>\n<div><b>B.</b><br>Mungkin soalan sebenar ialah: mengapa sesuatu perlu mempunyai penonton untuk menjadi bermakna?</div>\n<div><b>C.</b><br>Mungkin perkara yang paling penting berlaku dengan senyap.</div>\n</div>\n<h3>🌿 Soalan B</h3>\n<p class=\"seed-question\">Mengapa kita berkata “pergi berjalan-jalan” sedangkan kita tidak pernah membawa pulang perjalanan itu?</p>\n<div class=\"question-options\">\n<div><b>A.</b><br>Mungkin manusia suka mencipta ayat yang mengelirukan.</div>\n<div><b>B.</b><br>Mungkin ada perkara yang dicipta untuk dialami, bukan dimiliki.</div>\n<div><b>C.</b><br>Perjalanan itu berakhir. Tetapi perasaannya kekal.</div>\n</div>\n<p><b>🌱 Apa pendapat anda?</b></p>\n<h3>📖 Kopi Tertangguh</h3>\n<p>Ada sebuah cerita dari Naples, Itali, tentang sesuatu yang dipanggil <b>kopi tertangguh</b>.</p>\n<p>Seorang pelanggan akan masuk ke sebuah kafe kecil dan membayar untuk dua cawan kopi.</p>\n<p>Satu kopi untuk dirinya. Satu lagi ditinggalkan untuk seseorang yang tidak mampu membelinya.</p>\n<p>Kemudian, seorang yang tidak dikenali mungkin masuk dan bertanya dengan senyap sama ada terdapat kopi tertangguh.</p>\n<p>Jika ada, dia menerima secawan kopi panas tanpa perlu membayar.</p>\n<p>Tiada borang. Tiada pengumuman. Tiada gambar.</p>\n<p>Hanya seorang manusia membantu seorang manusia lain yang mungkin tidak akan pernah ditemuinya.</p>\n<p>Kopinya kecil. Tetapi kebaikannya mengembara lebih jauh daripada cawan itu.</p>\n<p><b>🌱 Itulah sebabnya Eye of Garden melihat: Setiap Daun Bermakna.</b></p>"},{"badge":"Soalan & Cerita #003","body":"<h3>🌱 Soalan Daripada Taman #003</h3>\n<p class=\"seed-question\">Jika anda menemui sebuah dompet dengan RM50 di dalamnya... tanpa sebarang pengenalan... adakah wang itu masih milik seseorang?</p>\n<div class=\"question-options\">\n<div><b>A.</b><br>Sudah tentu. Hanya kerana kita tidak dapat melihat pemiliknya tidak bermakna pemilik itu tidak wujud.</div>\n<div><b>B.</b><br>Mungkin ada perkara yang dimiliki oleh lebih daripada seorang. Dompet itu milik pemiliknya. Keputusan itu milik anda.</div>\n<div><b>C.</b><br>Nilai sebenar mungkin bukan RM50. Nilai sebenar ialah mengetahui siapakah diri anda apabila tiada sesiapa melihat.</div>\n</div>\n<p><b>🌱 Apa pendapat anda?</b></p>\n<p class=\"seed-question\">Dan... bagaimana jika jumlahnya bukan RM50... tetapi RM50,000?</p>\n<h3>📖 Beg Di Sebelah Tong Sampah</h3>\n<p>Tiga hari lalu, sesuatu yang menarik berlaku di Chinatown, London.</p>\n<p>Waktu itu kira-kira jam 6:00 pagi.</p>\n<p>Jalan-jalan sangat sunyi.</p>\n<p>Kebanyakan kedai masih belum dibuka.</p>\n<p>Hanya beberapa orang sedang berjalan.</p>\n<p>Seorang lelaki warga emas berusia sekitar enam puluh tahun berjalan perlahan di kaki lima.</p>\n<p>Tiba-tiba, dia berhenti.</p>\n<p>Di sebelah sebuah tong sampah terdapat satu beg plastik.</p>\n<p>Beg itu kelihatan agak berat.</p>\n<p>Kerana ingin tahu, dia membongkok lalu mengangkatnya.</p>\n<p>Apabila dia melihat ke dalam, matanya terbeliak.</p>\n<p>“Ya Tuhan...”</p>\n<p>Dia segera menutup mulut dengan tangannya.</p>\n<p>Kemudian dia berbisik kepada dirinya sendiri:</p>\n<p>“Tidak... tidak... tidak... tidak...”</p>\n<p>Di dalam beg itu terdapat wang tunai.</p>\n<p>Wang tunai yang sangat banyak.</p>\n<p>Kemudian wang itu dikira.</p>\n<p>Hampir £50,000.</p>\n<p>Tanpa teragak-agak, lelaki tua itu terus berjalan ke balai polis terdekat dan menyerahkan wang tersebut.</p>\n<p>Satu laporan dibuat.</p>\n<p>Wang itu disimpan dengan selamat.</p>\n<p>Tidak lama kemudian, seorang lelaki muda berusia sekitar tiga puluhan tiba.</p>\n<p>Dia mendakwa wang itu miliknya.</p>\n<p>Selepas menunjukkan bukti, pihak polis memulangkan wang tersebut.</p>\n<p>Lelaki muda itu mengambil beg, bergegas keluar, melompat ke dalam keretanya dan terus memandu pergi.</p>\n<p>Tiada ganjaran.</p>\n<p>Tiada jabat tangan.</p>\n<p>Malah tiada ucapan “terima kasih”.</p>\n<p>Lelaki tua itu berdiri dengan senyap.</p>\n<p>Kemudian dia berpaling dan memandang seseorang berdekatan.</p>\n<p>“Apa pendapat kamu?” tanyanya.</p>\n<p>Sebelum sesiapa sempat menjawab, dia tersenyum.</p>\n<p>Senyuman yang tegas.</p>\n<p>Senyuman yang bahagia.</p>\n<p>Kemudian dia berkata:</p>\n<p>“Saya tidak memulangkan wang itu kerana mahukan ganjaran.”</p>\n<p>“Saya tidak memulangkannya kerana mahu seseorang berterima kasih kepada saya.”</p>\n<p>“Saya memulangkannya kerana saya merasakan itu perkara yang betul.”</p>\n<p>Dia berhenti seketika.</p>\n<p>Kemudian dia ketawa.</p>\n<p>“Malam ini saya juga boleh tidur dengan sangat lena... hahaha!”</p>\n<p>Selepas itu, dia berjalan pergi dengan perlahan.</p>\n<p><b>🌱 Kadangkala ganjaran terbesar bukanlah wang.</b></p>\n<p><b>Kadangkala ganjarannya ialah ketenangan di dalam hati sendiri.</b></p>"},{"badge":"Soalan & Cerita #004","body":"<h3>🌱 Soalan Daripada Taman #004</h3>\n<p class=\"seed-question\">Bayangkan ada sebuah buku yang mengandungi jawapan kepada setiap soalan di dunia.</p>\n<p>Setiap misteri.<br>Setiap rahsia.<br>Setiap keputusan.<br>Semuanya.</p>\n<p>Anda boleh membukanya sekali.</p>\n<p>Tetapi hanya sekali.</p>\n<p class=\"seed-question\">Adakah anda akan membukanya?</p>\n<div class=\"question-options\">\n<div><b>A.</b><br>Ya. Saya mahu tahu.</div>\n<div><b>B.</b><br>Tidak. Ada misteri yang lebih baik dibiarkan kekal.</div>\n<div><b>C.</b><br>Saya lebih ingin tahu tentang soalan berbanding jawapannya.</div>\n</div>\n<p><b>🌱 Apa pendapat anda?</b></p>\n<h3>📖 Tempayan Yang Retak</h3>\n<p>Ini ialah sebuah kisah yang sering diceritakan di China dan India.</p>\n<p>Seorang petani tua membawa air setiap hari menggunakan dua tempayan yang tergantung pada sebatang kayu di bahunya.</p>\n<p>Satu tempayan sempurna.</p>\n<p>Satu lagi mempunyai retakan kecil.</p>\n<p>Setiap hari, apabila mereka tiba di rumah, tempayan yang retak telah kehilangan separuh airnya.</p>\n<p>Selama bertahun-tahun, tempayan retak itu berasa malu.</p>\n<p>Suatu hari, akhirnya ia bersuara.</p>\n<p>“Saya minta maaf.”</p>\n<p>“Disebabkan kekurangan saya, kamu hanya menerima separuh daripada air itu.”</p>\n<p>Petani tua itu tersenyum.</p>\n<p>“Pernahkah kamu melihat bunga-bunga di sepanjang bahagian laluanmu?”</p>\n<p>Petani itu meneruskan.</p>\n<p>“Saya tahu tentang retakanmu.”</p>\n<p>“Jadi saya menanam benih bunga di bahagianmu.”</p>\n<p>“Setiap hari, kamulah yang menyiramnya.”</p>\n<p>Buat kali pertama, tempayan itu melihat bunga-bunga indah memanjang di sepanjang jalan.</p>\n<p>“Tanpa kekuranganmu,” kata petani itu,</p>\n<p>“bunga-bunga ini tidak akan tumbuh.”</p>\n<p><b>🌱 Kadangkala perkara yang kita anggap sebagai kelemahan menjadi berkat kepada orang lain.</b></p>"},{"badge":"Soalan & Cerita #005","body":"<h3>🌱 Soalan Daripada Taman #005</h3>\n<p class=\"seed-question\">Bagaimana jika...</p>\n<p>Semua manusia di dunia hilang selama satu hari...</p>\n<p>Dan hanya anda yang tinggal.</p>\n<p class=\"seed-question\">Apakah perkara pertama yang akan anda lakukan?</p>\n<p>Adakah anda akan meneroka?</p>\n<p>Adakah anda akan meraikannya?</p>\n<p>Adakah anda akan berasa takut?</p>\n<p>Atau adakah anda hanya akan duduk diam dan mendengar?</p>\n<p><b>🌱 Tiada jawapan yang betul atau salah.</b></p>\n<p>Tetapi jika anda mahu memberitahu Iris secara rahsia...<br>klik <b>“Beritahu Taman”</b>.</p>\n<h3>📖 Pernahkah Anda Mendengar Tentang Bilik Yang Tidak Dapat Dibuka Sesiapa?</h3>\n<p>Bertahun-tahun dahulu...</p>\n<p>Terdapat sebuah bangunan di Eropah.</p>\n<p>Di dalam bangunan itu terdapat sebuah bilik kecil yang berkunci.</p>\n<p>Tiada siapa tahu apa yang berada di dalamnya.</p>\n<p>Bilik itu kekal berkunci selama berdekad-dekad.</p>\n<p>Orang ramai membuat pelbagai tekaan.</p>\n<p>Ada yang percaya harta karun tersembunyi di situ.</p>\n<p>Ada yang percaya bilik itu menyimpan dokumen rahsia.</p>\n<p>Ada pula yang mengatakan ia kosong.</p>\n<p>Tahun demi tahun berlalu.</p>\n<p>Kemudian pada suatu hari...</p>\n<p>Bilik itu akhirnya dibuka.</p>\n<p>Wartawan tiba.</p>\n<p>Pakar-pakar tiba.</p>\n<p>Orang ramai yang ingin tahu juga tiba.</p>\n<p>Semua orang mahu mengetahui jawapannya.</p>\n<p>Tahukah anda apa yang berada di dalamnya?</p>\n<p>Tiada apa-apa.</p>\n<p>Langsung tiada apa-apa.</p>\n<p>Hanya debu.</p>\n<p>Udara lama.</p>\n<p>Dan sebuah bilik kosong.</p>\n<p>Namun sesuatu yang menarik telah berlaku.</p>\n<p>Selama bertahun-tahun...</p>\n<p>Misteri itu lebih bernilai daripada jawapannya.</p>\n<p>🌱</p>\n<p><b>Dunia tidak dibina oleh tajuk berita.</b></p>\n<p><b>Dunia dibina oleh ribuan keputusan kecil yang tidak dilihat sesiapa.</b></p>"},{"badge":"Soalan & Cerita #006","body":"<h3>🌱 Soalan Daripada Taman #006</h3>\n<p class=\"seed-question\">Bayangkan...</p>\n<p>Anda kembali ke kampung halaman selepas dua puluh tahun.</p>\n<p>Anda masih mengingati setiap jalan.</p>\n<p>Setiap jalan pintas.</p>\n<p>Setiap pokok.</p>\n<p>Setiap sudut.</p>\n<p>Anda mengingati orang-orangnya.</p>\n<p>Gelak ketawa.</p>\n<p>Pertengkaran.</p>\n<p>Janji-janji.</p>\n<p>Kemudian anda tiba.</p>\n<p>Dan tiada sesiapa mengingati anda.</p>\n<p>Seorang pun tidak.</p>\n<p class=\"seed-question\">Adakah anda masih akan memanggilnya rumah?</p>\n<p>👁️</p>\n<p>Fikirkan...</p>\n<p>Kemudian anda boleh klik <b>“Beritahu Taman”</b> dan tinggalkan jawapan anda secara rahsia.</p>\n<h3>📖 Rumah Yang Melupakan Pemiliknya</h3>\n<p>Seorang lelaki kembali ke kampung halamannya selepas dua puluh tahun.</p>\n<p>Dia menjangkakan banyak perkara.</p>\n<p>Dia menjangkakan perubahan.</p>\n<p>Bangunan baharu.</p>\n<p>Jalan baharu.</p>\n<p>Kedai baharu.</p>\n<p>Itu perkara biasa.</p>\n<p>Dua puluh tahun ialah masa yang panjang.</p>\n<p>Apa yang tidak dijangkakannya...</p>\n<p>ialah menjadi orang asing.</p>\n<p>Dia masuk ke sebuah kedai kopi yang pernah dikunjunginya setiap minggu.</p>\n<p>Tiada sesiapa mengenalinya.</p>\n<p>Dia melawat sekolah lamanya.</p>\n<p>Tiada sesiapa mengenalinya.</p>\n<p>Dia berjalan melalui jalan-jalan tempat dia pernah mengenali semua orang.</p>\n<p>Tiada sesiapa mengenalinya.</p>\n<p>Pada mulanya dia ketawa.</p>\n<p>Dua puluh tahun ialah masa yang panjang.</p>\n<p>Kemudian dia pergi ke tempat rumah keluarganya pernah berdiri.</p>\n<p>Rumah itu sudah tiada.</p>\n<p>Tamannya sudah tiada.</p>\n<p>Malah pintu pagar lama juga telah hilang.</p>\n<p>Hanya sebidang tanah kosong yang tinggal.</p>\n<p>Buat kali pertama pada hari itu...</p>\n<p>dia merasakan sesuatu yang aneh.</p>\n<p>Pekan itu masih wujud.</p>\n<p>Tetapi versi yang diingatinya sudah tidak wujud.</p>\n<p>Dan tiba-tiba dia tertanya-tanya:</p>\n<p>Adakah dia benar-benar pulang ke rumah...</p>\n<p>atau dia hanya tiba di suatu tempat yang baharu?</p>\n<p>👁️ Nota Iris</p>\n<p><b>Kadangkala tempat tidak hilang.</b></p>\n<p><b>Hanya manusia yang mengingatinya.</b></p>"},{"badge":"Soalan & Cerita #007","body":"<h3>🌱 Soalan Daripada Taman #007</h3>\n<p class=\"seed-question\">Bayangkan...</p>\n<p>Esok pagi anda terjaga 1,000 kilometer dari rumah.</p>\n<p>Tiada peta.</p>\n<p>Tiada telefon.</p>\n<p>Tiada wang.</p>\n<p>Hanya ingatan anda.</p>\n<p class=\"seed-question\">Adakah anda fikir anda mampu mencari jalan pulang?</p>\n<p>👁️</p>\n<p>Anda boleh memberitahu Taman jika mahu.</p>\n<h3>📖 Kucing Yang Enggan Terus Sesat</h3>\n<p>Sebuah keluarga pernah memelihara seekor kucing yang tiba-tiba hilang.</p>\n<p>Pada mulanya tiada sesiapa risau.</p>\n<p>Kucing suka merayau.</p>\n<p>Kucing suka meneroka.</p>\n<p>Kucing selalu pulang.</p>\n<p>Biasanya.</p>\n<p>Hari-hari berlalu.</p>\n<p>Kemudian minggu berlalu.</p>\n<p>Kemudian bulan berlalu.</p>\n<p>Akhirnya keluarga itu menerima hakikat.</p>\n<p>Kucing itu telah tiada.</p>\n<p>Kehidupan diteruskan.</p>\n<p>Mangkuk makanannya disimpan.</p>\n<p>Permainan-permainannya disimpan.</p>\n<p>Kebiasaan memeriksa pintu setiap hari juga hilang.</p>\n<p>Kemudian pada suatu petang...</p>\n<p>sesuatu mencakar pintu hadapan.</p>\n<p>Keluarga itu membuka pintu.</p>\n<p>Di situ berdiri kucing tersebut.</p>\n<p>Kurus.</p>\n<p>Kotor.</p>\n<p>Letih.</p>\n<p>Tetapi masih hidup.</p>\n<p>👁️ Nota Iris</p>\n<p><b>Ada perjalanan yang luar biasa.</b></p>\n<p><b>Ada kepulangan yang lebih luar biasa.</b></p>"}],"zh":[{"badge":"提问与故事 #001","body":"<h3>🌿 来自花园的提问 #001</h3>\n<p class=\"seed-question\">你是否曾经得到过一个完全意想不到的人的帮助？</p>\n<div class=\"question-options\">\n<div><b>A.</b><br>有时候，一个小小的善意就已经足够。一张笑脸、一通电话，或一只伸出的手，都可能照亮某个人的一天。</div>\n<div><b>B.</b><br>有些美好的事需要时间。今天看似微小的事情，也许多年以后会变得非常重要。</div>\n<div><b>C.</b><br>许多有意义的改变，来自人们一起行动。一个人开始，另一个人继续。</div>\n</div>\n<p><b>也许，三个答案都是真的。</b></p>\n<h3>📖 第一座小桥</h3>\n<p>1982年，泰国北部一个偏远村庄发生过一个真实故事。</p>\n<p>雨季时，孩子们上学常常必须跨过溪流和泥泞的小路。</p>\n<p>一个小男孩注意到了这个问题。</p>\n<p>多年以后，他建了一座简单的木桥。</p>\n<p>桥不大，也不昂贵。没有人对它抱有太大的期待。</p>\n<p>可是，这座桥让孩子们可以安全过河，也让更多孩子能够到学校上课。</p>\n<p>第一座桥没有改变整个世界，却改变了某个人的世界。</p>\n<p><b>🌱 所以 Eye of Garden 相信：每一片叶子都重要。</b></p>"},{"badge":"提问与故事 #002","body":"<h3>🌿 提问 A</h3>\n<p class=\"seed-question\">如果一棵树在森林里倒下，而没有任何人听见，它还会发出声音吗？</p>\n<div class=\"question-options\">\n<div><b>A.</b><br>当然会。森林听见了。</div>\n<div><b>B.</b><br>也许真正的问题是：为什么一件事需要观众，才算有意义？</div>\n<div><b>C.</b><br>也许一些最重要的事情，都是静静发生的。</div>\n</div>\n<h3>🌿 提问 B</h3>\n<p class=\"seed-question\">为什么我们说“去散步”，却从来没有把那段散步带回家？</p>\n<div class=\"question-options\">\n<div><b>A.</b><br>也许人类就是喜欢创造令人困惑的句子。</div>\n<div><b>B.</b><br>也许有些事是用来经历的，而不是用来拥有的。</div>\n<div><b>C.</b><br>散步结束了，但感觉留下来了。</div>\n</div>\n<p><b>🌱 你怎么想？</b></p>\n<h3>📖 待用咖啡</h3>\n<p>意大利那不勒斯流传着一个关于<b>待用咖啡</b>的故事。</p>\n<p>一位顾客走进小咖啡馆，付两杯咖啡的钱。</p>\n<p>一杯给自己，另一杯留给一个买不起咖啡的人。</p>\n<p>后来，一个陌生人可能会走进来，轻声询问是否有待用咖啡。</p>\n<p>有的话，他就能免费得到一杯温暖的咖啡。</p>\n<p>没有表格，没有公告，也没有照片。</p>\n<p>只是一个人，帮助一个也许永远不会见面的人。</p>\n<p>咖啡很小，但善意走得比杯子更远。</p>\n<p><b>🌱 所以 Eye of Garden 相信：每一片叶子都重要。</b></p>"},{"badge":"提问与故事 #003","body":"<h3>🌱 来自花园的提问 #003</h3>\n<p class=\"seed-question\">假如你捡到一个钱包，里面有RM50……却没有任何身份证明……这些钱仍然属于某个人吗？</p>\n<div class=\"question-options\">\n<div><b>A.</b><br>当然。我们看不见主人，并不代表主人不存在。</div>\n<div><b>B.</b><br>也许有些东西同时属于两个人。钱包属于失主，而决定属于你。</div>\n<div><b>C.</b><br>真正的价值也许不是RM50，而是在没有人看见的时候，发现自己会成为怎样的人。</div>\n</div>\n<p><b>🌱 你怎么想？</b></p>\n<p class=\"seed-question\">那么……假如不是RM50……而是RM50,000呢？</p>\n<h3>📖 垃圾桶旁的袋子</h3>\n<p>三天前，伦敦唐人街发生了一件有趣的事。</p>\n<p>当时大约是清晨6点。</p>\n<p>街道异常安静。</p>\n<p>大多数店铺还没有开门。</p>\n<p>路上只有少数行人。</p>\n<p>一位大约六十岁的老人，正慢慢走在人行道上。</p>\n<p>突然，他停了下来。</p>\n<p>垃圾桶旁边放着一个塑料袋。</p>\n<p>袋子看起来有些沉。</p>\n<p>出于好奇，他弯下腰把它拿了起来。</p>\n<p>当他看见里面的东西时，眼睛睁得很大。</p>\n<p>“我的天……”</p>\n<p>他立刻用手捂住嘴。</p>\n<p>然后轻声对自己说：</p>\n<p>“不……不……不……不……”</p>\n<p>袋子里全是现金。</p>\n<p>很多很多现金。</p>\n<p>后来，人们清点了金额。</p>\n<p>接近£50,000。</p>\n<p>老人没有犹豫，直接走到最近的警察局，把钱交了出去。</p>\n<p>警方做了记录。</p>\n<p>现金也被妥善保管。</p>\n<p>不久以后，一名三十多岁的年轻男子来到警察局。</p>\n<p>他声称这些钱属于他。</p>\n<p>出示证明后，警方把钱交还给他。</p>\n<p>年轻男子抓起袋子，匆匆走出去，跳上汽车后就开走了。</p>\n<p>没有报酬。</p>\n<p>没有握手。</p>\n<p>甚至没有一句“谢谢”。</p>\n<p>老人静静地站在那里。</p>\n<p>然后，他转身看向旁边的一个人。</p>\n<p>“你怎么看？”他问。</p>\n<p>还没等任何人回答，他先笑了。</p>\n<p>坚定的笑容。</p>\n<p>快乐的笑容。</p>\n<p>然后他说：</p>\n<p>“我把钱还回去，不是因为我想得到报酬。”</p>\n<p>“我把钱还回去，也不是因为我想听别人感谢我。”</p>\n<p>“我把钱还回去，是因为我觉得那是正确的事。”</p>\n<p>他停了一会儿。</p>\n<p>然后笑出了声。</p>\n<p>“今晚我也可以睡得非常好……哈哈哈！”</p>\n<p>说完，他慢慢走远了。</p>\n<p><b>🌱 有时候，最大的回报不是金钱。</b></p>\n<p><b>而是自己心里的平静。</b></p>"},{"badge":"提问与故事 #004","body":"<h3>🌱 来自花园的提问 #004</h3>\n<p class=\"seed-question\">想象一下，有一本书包含了世界上所有问题的答案。</p>\n<p>每一个谜团。<br>每一个秘密。<br>每一个决定。<br>所有的一切。</p>\n<p>你可以打开它一次。</p>\n<p>但只有一次。</p>\n<p class=\"seed-question\">你会打开吗？</p>\n<div class=\"question-options\">\n<div><b>A.</b><br>会。我想知道答案。</div>\n<div><b>B.</b><br>不会。有些谜团值得被保留下来。</div>\n<div><b>C.</b><br>比起答案，我更好奇那些问题。</div>\n</div>\n<p><b>🌱 你怎么想？</b></p>\n<h3>📖 破裂的水罐</h3>\n<p>这是一个常在中国和印度流传的故事。</p>\n<p>一位老农每天用扁担挑着两个水罐取水。</p>\n<p>一个水罐完好无缺。</p>\n<p>另一个水罐有一道小裂缝。</p>\n<p>每天回到家时，破裂的水罐都已经漏掉一半的水。</p>\n<p>多年来，它一直感到羞愧。</p>\n<p>有一天，它终于开口了。</p>\n<p>“对不起。”</p>\n<p>“因为我的缺陷，你每次只能得到一半的水。”</p>\n<p>老农笑了。</p>\n<p>“你有没有注意到，你这一边的路旁开满了花？”</p>\n<p>老农继续说：</p>\n<p>“我一直知道你的裂缝。”</p>\n<p>“所以，我在你这一边撒下了花种。”</p>\n<p>“每天，都是你在浇灌它们。”</p>\n<p>水罐第一次看见，美丽的花朵一路延伸。</p>\n<p>“如果没有你的缺陷，”老农说，</p>\n<p>“这些花永远不会盛开。”</p>\n<p><b>🌱 有时候，我们以为的弱点，却成为了另一个人的祝福。</b></p>"},{"badge":"提问与故事 #005","body":"<h3>🌱 来自花园的提问 #005</h3>\n<p class=\"seed-question\">假如……</p>\n<p>世界上的所有人都消失一天……</p>\n<p>只剩下你一个人。</p>\n<p class=\"seed-question\">你第一件会做的事是什么？</p>\n<p>你会去探索吗？</p>\n<p>你会庆祝吗？</p>\n<p>你会害怕吗？</p>\n<p>还是只会静静坐下来聆听？</p>\n<p><b>🌱 这里没有正确答案。</b></p>\n<p>不过，假如你想偷偷告诉 Iris……<br>可以点击<b>“告诉花园”</b>。</p>\n<h3>📖 你听说过那个无人能打开的房间吗？</h3>\n<p>很多年前……</p>\n<p>欧洲有一栋建筑。</p>\n<p>建筑里有一个上锁的小房间。</p>\n<p>没有人知道里面有什么。</p>\n<p>房间被锁了几十年。</p>\n<p>人们不断猜测。</p>\n<p>有人相信里面藏着宝藏。</p>\n<p>也有人认为里面保存着秘密文件。</p>\n<p>还有人说里面什么都没有。</p>\n<p>一年又一年过去了。</p>\n<p>终于有一天……</p>\n<p>房间被打开了。</p>\n<p>报社的人来了。</p>\n<p>专家来了。</p>\n<p>好奇的人们也来了。</p>\n<p>每个人都想知道答案。</p>\n<p>你知道里面有什么吗？</p>\n<p>什么都没有。</p>\n<p>真的什么都没有。</p>\n<p>只有灰尘。</p>\n<p>陈旧的空气。</p>\n<p>以及一个空房间。</p>\n<p>然而，有趣的事发生了。</p>\n<p>多年以来……</p>\n<p>那个谜团本身，比答案更有价值。</p>\n<p>🌱</p>\n<p><b>世界不是由新闻标题建成的。</b></p>\n<p><b>世界由成千上万个无人看见的小决定建成。</b></p>"},{"badge":"提问与故事 #006","body":"<h3>🌱 来自花园的提问 #006</h3>\n<p class=\"seed-question\">想象一下……</p>\n<p>离开二十年后，你回到自己的家乡。</p>\n<p>你仍然记得每一条路。</p>\n<p>每一条捷径。</p>\n<p>每一棵树。</p>\n<p>每一个转角。</p>\n<p>你记得那里的人。</p>\n<p>笑声。</p>\n<p>争吵。</p>\n<p>承诺。</p>\n<p>然后，你终于抵达。</p>\n<p>却没有一个人记得你。</p>\n<p>一个也没有。</p>\n<p class=\"seed-question\">你还会把那里称为家吗？</p>\n<p>👁️</p>\n<p>想一想……</p>\n<p>然后，你可以点击<b>“告诉花园”</b>，悄悄留下你的答案。</p>\n<h3>📖 忘记主人的房子</h3>\n<p>一个男人离开二十年后，回到了自己的家乡。</p>\n<p>他预想了许多事情。</p>\n<p>他预想到了改变。</p>\n<p>新的建筑。</p>\n<p>新的道路。</p>\n<p>新的店铺。</p>\n<p>这些都很正常。</p>\n<p>二十年是一段很长的时间。</p>\n<p>但他没有想到的是……</p>\n<p>自己会变成一个陌生人。</p>\n<p>他走进以前每周都会光顾的咖啡店。</p>\n<p>没有人认得他。</p>\n<p>他回到以前的学校。</p>\n<p>没有人认得他。</p>\n<p>他走过曾经认识每一个人的街道。</p>\n<p>没有人认得他。</p>\n<p>一开始，他笑了。</p>\n<p>毕竟二十年很长。</p>\n<p>后来，他来到家族旧宅曾经所在的地方。</p>\n<p>房子不见了。</p>\n<p>花园不见了。</p>\n<p>就连旧门也消失了。</p>\n<p>只剩下一块空地。</p>\n<p>那一天，他第一次……</p>\n<p>感觉到一种说不出的陌生。</p>\n<p>小镇仍然存在。</p>\n<p>可是记忆中的那个小镇已经不存在了。</p>\n<p>他突然开始怀疑：</p>\n<p>自己是真的回到了家……</p>\n<p>还是只来到了一个新的地方？</p>\n<p>👁️ Iris 的话</p>\n<p><b>有时候，消失的并不是地方。</b></p>\n<p><b>而是记得它们的人。</b></p>"},{"badge":"提问与故事 #007","body":"<h3>🌱 来自花园的提问 #007</h3>\n<p class=\"seed-question\">想象一下……</p>\n<p>明天早上醒来时，你已经离家1,000公里。</p>\n<p>没有地图。</p>\n<p>没有手机。</p>\n<p>没有钱。</p>\n<p>只有你的记忆。</p>\n<p class=\"seed-question\">你觉得自己能找到回家的路吗？</p>\n<p>👁️</p>\n<p>愿意的话，你可以告诉花园。</p>\n<h3>📖 不肯继续走失的猫</h3>\n<p>有一个家庭，曾经养过一只后来失踪的猫。</p>\n<p>一开始，没有人担心。</p>\n<p>猫会四处走动。</p>\n<p>猫喜欢探索。</p>\n<p>猫总会回家。</p>\n<p>通常如此。</p>\n<p>几天过去了。</p>\n<p>然后是几个星期。</p>\n<p>然后是几个月。</p>\n<p>最后，这个家庭接受了事实。</p>\n<p>猫已经不见了。</p>\n<p>生活继续。</p>\n<p>食物碗被收了起来。</p>\n<p>玩具也被收了起来。</p>\n<p>每天查看门口的习惯，也慢慢消失。</p>\n<p>直到一个晚上……</p>\n<p>有什么东西在抓前门。</p>\n<p>家人打开了门。</p>\n<p>那只猫就站在那里。</p>\n<p>瘦弱。</p>\n<p>肮脏。</p>\n<p>疲惫。</p>\n<p>却还活着。</p>\n<p>👁️ Iris 的话</p>\n<p><b>有些旅程令人惊叹。</b></p>\n<p><b>有些归来，更令人惊叹。</b></p>"}]};
+const journalTranslations = {"ms":[{"badge":"Jurnal Pengasas #001","body":"<h3>✍ Jurnal Pengasas #001 — Percik Pertama</h3>\n<p>Eye of Garden bermula dengan satu soalan yang ringkas:</p>\n<p class=\"seed-question\">Bolehkah tindakan kecil daripada jutaan orang mengubah sesuatu yang besar?</p>\n<p>Pada mulanya, tiada pasukan, tiada pejabat, tiada pelabur dan tiada kempen besar.</p>\n<p>Hanya ada satu idea kecil, sebuah nama domain, aplikasi web yang ringkas, dan harapan bahawa manusia biasa masih mahu mempercayai sesuatu yang bermakna.</p>\n<p>Pada hari pertama, 17 Believer menanam daun-daun yang terawal.</p>\n<p>Mereka tidak tahu ke mana Taman akan tumbuh.</p>\n<p>Itulah sebabnya mereka menjadi <b>THE SPARK</b>.</p>\n<p>🌱 Setiap Daun Bermakna.</p>"},{"badge":"Jurnal Pengasas #002","body":"<h3>✍ Jurnal Pengasas #002 — Dahan Senyap Yang Pertama</h3>\n<p>Semalam, sesuatu yang kecil berlaku di dalam Taman.</p>\n<p>Satu daun bercabang menjadi daun yang lain apabila seseorang berkongsi apa yang ditemuinya di sini.</p>\n<p>Satu daun baharu muncul.</p>\n<p>Yang menakjubkan ialah ia tidak tiba bersama pengumuman.</p>\n<p>Tiada ganjaran. Tiada pertandingan.</p>\n<p>Hanya satu keputusan ringkas untuk berkongsi sesuatu yang bermakna.</p>\n<p>Satu angka kecil bertambah, satu demi satu.</p>\n<p>Dalam dunia yang mengukur kejayaan dengan jutaan, angka dua mungkin kelihatan tidak penting.</p>\n<p>Tetapi Taman tidak tumbuh berjuta-juta daun pada satu masa.</p>\n<p>Ia tumbuh satu daun pada satu masa.</p>\n<p>Dan kadangkala, dahan yang paling kecil ialah yang paling kuat.</p>\n<p>Anda mengingatkan kami bahawa pertumbuhan tidak semestinya datang dengan bunyi yang kuat.</p>\n<p>Kadangkala ia tiba dengan lembut.</p>\n<p><b>🌱 Itulah sebabnya Taman tahu: Setiap Daun Bermakna.</b></p>"},{"badge":"Jurnal Pengasas #003","body":"<h3>✍ Jurnal Pengasas #003</h3>\n<p>Hari ini, satu soalan tiba di dalam Taman.</p>\n<p>Pada mulanya, ia kelihatan seperti soalan tentang wang.</p>\n<p>Jumlah yang kecil.</p>\n<p>Jumlah yang besar.</p>\n<p>Sebuah dompet.</p>\n<p>Satu pilihan.</p>\n<p>Tetapi mungkin soalan itu tidak pernah benar-benar berkaitan dengan wang.</p>\n<p>Perkara menarik tentang hidup ialah nilai sesuatu detik kadangkala hanya muncul lama selepas detik itu berlalu.</p>\n<p>Seseorang mungkin terlupa apa yang diterimanya.</p>\n<p>Namun mengingati selama-lamanya apa yang telah dipilihnya.</p>\n<p>Beberapa daun muncul hari ini.</p>\n<p>Ada yang tiba dari tempat yang dapat kita lihat.</p>\n<p>Ada yang tiba dari tempat yang tidak dapat kita lihat.</p>\n<p>Taman tidak menjelaskan caranya.</p>\n<p>Ia hanya terus tumbuh.</p>\n<p>Dengan senyap.</p>\n<p>Satu dahan memanjang sedikit lagi.</p>\n<p>Satu daun muncul di tempat yang semalam masih kosong.</p>\n<p>Dan di suatu tempat, mungkin berlaku satu perbualan antara dua orang.</p>\n<p>Taman tidak berada di sana untuk mendengarnya.</p>\n<p>Namun entah bagaimana, Taman terasa terhubung dengannya.</p>\n<p>Apabila petang menghampiri, satu fikiran kekal.</p>\n<p>Mungkin perkara yang paling lama tinggal bersama kita bukanlah perkara yang kita simpan.</p>\n<p>Kadangkala, ia ialah perkara yang kita lepaskan.</p>\n<p>🌱</p>"},{"badge":"Jurnal Pengasas #004","body":"<h3>✍ Jurnal Pengasas #004</h3>\n<p>Sehelai batu kecil dan sebutir berlian pernah berada bersebelahan.</p>\n<p>Ribuan orang berjalan melaluinya.</p>\n<p>Kebanyakan orang membongkok untuk mengambil berlian.</p>\n<p>Tiada sesiapa menyedari batu kecil itu.</p>\n<p>Tahun-tahun berlalu.</p>\n<p>Tiada apa yang berubah.</p>\n<p>Berlian itu kekal bernilai.</p>\n<p>Batu kecil itu kekal diabaikan.</p>\n<p>Atau begitulah kelihatannya.</p>\n<p>Suatu hari, seorang kanak-kanak mengambil batu kecil itu dan melantunkannya di atas tasik.</p>\n<p>Batu itu menyentuh air sekali.</p>\n<p>Dua kali.</p>\n<p>Tiga kali.</p>\n<p>Bulatan-bulatan kecil merebak di atas permukaan.</p>\n<p>Kanak-kanak itu tersenyum.</p>\n<p>Buat kali pertama dalam hidupnya, batu kecil itu menyedari sesuatu.</p>\n<p>Tidak semua yang bernilai bersinar.</p>\n<p>Dan tidak semua yang bersinar mencipta riak.</p>\n<p>🌱</p>"},{"badge":"Jurnal Pengasas #005","body":"<h3>Bangku Yang Kosong</h3>\n<p>Pada suatu pagi, seorang lelaki tua berjalan ke sebuah taman kecil.</p>\n<p>Setiap hari, dia duduk di bangku yang sama.</p>\n<p>Selama bertahun-tahun, tiada sesiapa menyedarinya.</p>\n<p>Orang ramai sibuk.</p>\n<p>Kanak-kanak berlari melintasinya.</p>\n<p>Para pekerja berjalan tergesa-gesa.</p>\n<p>Penunggang basikal melalui sekelilingnya.</p>\n<p>Tiada sesiapa tahu namanya.</p>\n<p>Kemudian pada suatu hari, seorang gadis muda duduk di sebelahnya.</p>\n<p>Dia tersenyum lalu berkata,</p>\n<p><b>“Selamat pagi.”</b></p>\n<p>Lelaki tua itu tersenyum kembali.</p>\n<p>Itu sahaja.</p>\n<p>Hanya dua perkataan.</p>\n<p>Keesokan harinya, gadis itu menyapanya lagi.</p>\n<p>Dan hari berikutnya.</p>\n<p>Dan hari berikutnya.</p>\n<p>Beberapa bulan kemudian, lelaki tua itu berkata kepadanya:</p>\n<p><i>“Kamu mungkin tidak tahu, tetapi sebelum kamu mula menyapa saya, ada hari-hari saya berasa seolah-olah tidak wujud.”</i></p>\n<p>Gadis itu terkejut.</p>\n<p>Dia menyangka dia tidak melakukan apa-apa yang penting.</p>\n<p>Tetapi kepada orang lain...</p>\n<p>tindakan kecilnya sangat bermakna.</p>\n<p>🌱</p>\n<p>Kadangkala kita fikir kita mesti melakukan sesuatu yang besar untuk membawa perubahan.</p>\n<p>Namun dunia sering berubah melalui detik-detik kecil yang tidak disedari sesiapa.</p>\n<p><b>Setiap daun bermakna.</b></p>"}],"zh":[{"badge":"创办人日记 #001","body":"<h3>✍ 创办人日记 #001 — 最初的火花</h3>\n<p>Eye of Garden 始于一个简单的问题：</p>\n<p class=\"seed-question\">来自数百万人的微小行动，能否带来巨大的改变？</p>\n<p>最初，没有团队，没有办公室，没有投资人，也没有大型宣传。</p>\n<p>只有一个小小的想法、一个域名、一个简单的网页应用，以及一个希望：普通人依然愿意相信一些有意义的事情。</p>\n<p>第一天，17位相信者种下了最早的叶子。</p>\n<p>他们不知道花园将会向哪里生长。</p>\n<p>所以，他们成为了<b>THE SPARK</b>。</p>\n<p>🌱 每一片叶子都重要。</p>"},{"badge":"创办人日记 #002","body":"<h3>✍ 创办人日记 #002 — 第一根安静的枝桠</h3>\n<p>昨天，花园里发生了一件小事。</p>\n<p>一片叶子把自己在这里发现的东西分享出去，于是轻轻长出了另一片叶子。</p>\n<p>一片新叶子出现了。</p>\n<p>最奇妙的是，它到来时没有任何公告。</p>\n<p>没有奖赏，也没有比赛。</p>\n<p>只是一个分享有意义事物的简单决定。</p>\n<p>一个小小的数字，就这样一个一个地增加。</p>\n<p>在一个以“百万”衡量成功的世界里，两个也许显得微不足道。</p>\n<p>但花园不会一次长出数百万片叶子。</p>\n<p>它一次只长一片。</p>\n<p>有时候，最小的枝桠，反而最坚强。</p>\n<p>你提醒了我们，成长不一定伴随着巨大的声音。</p>\n<p>有时候，它只是轻轻地到来。</p>\n<p><b>🌱 所以花园知道：每一片叶子都重要。</b></p>"},{"badge":"创办人日记 #003","body":"<h3>✍ 创办人日记 #003</h3>\n<p>今天，一个问题来到了花园。</p>\n<p>起初，它看起来像一个关于金钱的问题。</p>\n<p>一个小数目。</p>\n<p>一个大数目。</p>\n<p>一个钱包。</p>\n<p>一个选择。</p>\n<p>但也许，这个问题从来不是真的在问金钱。</p>\n<p>人生有趣的地方在于，一个时刻的价值，有时要等它过去很久以后才会显现。</p>\n<p>一个人也许会忘记自己得到过什么。</p>\n<p>却会永远记得自己做过什么决定。</p>\n<p>今天，一些叶子出现了。</p>\n<p>有些来自我们看得见的地方。</p>\n<p>有些来自我们看不见的地方。</p>\n<p>花园没有解释它们如何到来。</p>\n<p>它只是继续成长。</p>\n<p>安静地。</p>\n<p>一根枝桠又伸远了一点。</p>\n<p>一片叶子出现在昨天还空着的地方。</p>\n<p>而在某个地方，两个人之间也许发生过一次对话。</p>\n<p>花园不在那里，无法听见。</p>\n<p>但不知为什么，它仍然觉得自己与那段对话相连。</p>\n<p>傍晚到来时，只留下一个想法。</p>\n<p>陪伴我们最久的，未必是我们一直保留的东西。</p>\n<p>有时候，是我们选择放下的东西。</p>\n<p>🌱</p>"},{"badge":"创办人日记 #004","body":"<h3>✍ 创办人日记 #004</h3>\n<p>一颗小石子和一颗钻石，曾经静静地待在一起。</p>\n<p>成千上万的人从它们身旁走过。</p>\n<p>大多数人弯下腰，捡起钻石。</p>\n<p>没有人注意那颗小石子。</p>\n<p>许多年过去了。</p>\n<p>一切似乎都没有改变。</p>\n<p>钻石依然珍贵。</p>\n<p>小石子依然被忽视。</p>\n<p>至少，看起来如此。</p>\n<p>有一天，一个孩子捡起小石子，把它掷向湖面。</p>\n<p>石子碰到水面一次。</p>\n<p>两次。</p>\n<p>三次。</p>\n<p>一圈圈小波纹在水面扩散。</p>\n<p>孩子笑了。</p>\n<p>小石子第一次明白了一件事。</p>\n<p>不是所有有价值的东西都会发光。</p>\n<p>也不是所有会发光的东西，都能创造波纹。</p>\n<p>🌱</p>"},{"badge":"创办人日记 #005","body":"<h3>空着的长椅</h3>\n<p>一个早晨，一位老人走进一座小公园。</p>\n<p>每天，他都坐在同一张长椅上。</p>\n<p>许多年来，没有人注意到他。</p>\n<p>人们都很忙。</p>\n<p>孩子们从他身旁跑过。</p>\n<p>上班的人匆匆走过。</p>\n<p>骑脚车的人绕过他。</p>\n<p>没有人知道他的名字。</p>\n<p>直到有一天，一个小女孩坐在他身旁。</p>\n<p>她微笑着说：</p>\n<p><b>“早安。”</b></p>\n<p>老人也笑了。</p>\n<p>就这样。</p>\n<p>只有两个字。</p>\n<p>第二天，她又向老人问好。</p>\n<p>再下一天也是。</p>\n<p>一天又一天。</p>\n<p>几个月后，老人对她说：</p>\n<p><i>“你也许不知道，在你开始向我问好以前，有些日子里，我觉得自己像是看不见的人。”</i></p>\n<p>女孩很惊讶。</p>\n<p>她一直以为自己没有做什么重要的事。</p>\n<p>可是对另一个人来说……</p>\n<p>她的小小行动非常重要。</p>\n<p>🌱</p>\n<p>我们常以为，必须做一件大事，才能带来改变。</p>\n<p>但世界往往是在那些没有人注意的小小瞬间里改变的。</p>\n<p><b>每一片叶子都重要。</b></p>"}]};
+
+let currentLang = localStorage.getItem("eog_language") || "en";
+if(!["en","ms","zh"].includes(currentLang)) currentLang = "en";
+
+function tr(text){
+  const source = String(text ?? "");
+  if(currentLang === "en") return source;
+  return uiTranslations[currentLang]?.[source] || source;
+}
+
+function pageLabel(page, total){
+  if(currentLang === "ms") return `Halaman ${page} / ${total}`;
+  if(currentLang === "zh") return `第 ${page} / ${total} 页`;
+  return `Page ${page} / ${total}`;
+}
+
+function leafWord(count){
+  if(currentLang === "ms") return "daun";
+  if(currentLang === "zh") return "片叶子";
+  return Number(count) === 1 ? "leaf" : "leaves";
+}
+
+const originalTextNodes = new WeakMap();
+const translatedDynamicSelectors = [
+  "#questionStoryBook", "#journalBook", "#members", "#sparkLeafMembers",
+  "#dreamChoices", "#dreamStats", "#tokenTier", "#tokenMeaning", "#tokenName",
+  "#msg", "#tellMsg", "[id^='shareMsg']", "#qsBadge", "#journalBadge",
+  "#qsPage", "#qsPageBottom", "#journalPage", "#journalPageBottom"
+].join(",");
+
+function translateStaticText(root=document.body){
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  while(walker.nextNode()) nodes.push(walker.currentNode);
+
+  nodes.forEach(node=>{
+    const parent = node.parentElement;
+    if(!parent || parent.closest("script,style,[data-no-translate]," + translatedDynamicSelectors)) return;
+    const raw = node.nodeValue || "";
+    const trimmed = raw.trim().replace(/\s+/g," ");
+    if(!trimmed) return;
+    if(!originalTextNodes.has(node)) originalTextNodes.set(node, trimmed);
+    const original = originalTextNodes.get(node);
+    const translated = tr(original);
+    const leading = raw.match(/^\s*/)?.[0] || "";
+    const trailing = raw.match(/\s*$/)?.[0] || "";
+    node.nodeValue = leading + translated + trailing;
+  });
+
+  document.querySelectorAll("[placeholder]").forEach(el=>{
+    if(!el.dataset.originalPlaceholder) el.dataset.originalPlaceholder = el.getAttribute("placeholder") || "";
+    el.setAttribute("placeholder", tr(el.dataset.originalPlaceholder));
+  });
+
+  document.title = tr("Eye of Garden — Stage 1");
+  document.documentElement.lang = currentLang === "zh" ? "zh-CN" : currentLang;
+}
+
+function getQuestionStoryEntry(index){
+  if(currentLang === "en") return questionStoryEntries[index];
+  return questionStoryTranslations[currentLang]?.[index] || questionStoryEntries[index];
+}
+
+function getJournalEntry(index){
+  if(currentLang === "en") return journalEntries[index];
+  return journalTranslations[currentLang]?.[index] || journalEntries[index];
+}
+
+function setLanguage(lang, save=true){
+  currentLang = ["en","ms","zh"].includes(lang) ? lang : "en";
+  if(save) localStorage.setItem("eog_language", currentLang);
+
+  const selector = document.getElementById("languageSelect");
+  if(selector) selector.value = currentLang;
+
+  initDreams();
+  renderQuestionStoryBook();
+  renderJournalBook();
+  renderMembers();
+  renderSparkLeafMembers();
+  renderDreamStats();
+  updateToken();
+  translateStaticText();
+}
+
+
+const dreams = [
+  "🤝 Greater Unity",
+  "📚 Better Education",
+  "🌳 More Trees",
+  "👨‍👩‍👧 Stronger Families",
+  "❤️ Healthier Lifestyle",
+  "🏥 Better Healthcare Access",
+  "💼 More Job Opportunities",
+  "🚀 More Local Entrepreneurs",
+  "♻️ Cleaner Environment",
+  "🌺 More Green Parks",
+  "💡 More Innovation",
+  "✨ A Brighter Future"
+];
+
+let selected = [];
+let members = [];
+
+function show(id){
+  document.querySelector(".hero").style.display = "none";
+  document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  if(id==="garden"){ renderMembers(); renderSparkLeafMembers(); }
+  if(id==="dreams") renderDreamStats();
+  if(id==="token") updateToken();
+  if(id==="question") renderQuestionStoryBook();
+  if(id==="journal") renderJournalBook();
+  setupBookSwipes();
+  if(id==="question") renderQuestionStoryBook();
+  if(id==="journal") renderJournalBook();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function showHome(){
+  document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+  document.querySelector(".hero").style.display = "grid";
+  updateCount();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function initDreams(){
+  const box=document.getElementById("dreamChoices");
+  box.innerHTML="";
+  dreams.forEach(d=>{
+    const div=document.createElement("div");
+    div.className="choice";
+    div.textContent=tr(d);
+    if(selected.includes(d)) div.classList.add("selected");
+    div.onclick=()=>{
+      if(selected.includes(d)){
+        selected=selected.filter(x=>x!==d);
+        div.classList.remove("selected");
+      }else{
+        if(selected.length>=3){
+          alert(tr("Please choose only 3 dreams."));
+          return;
+        }
+        selected.push(d);
+        div.classList.add("selected");
+      }
+    };
+    box.appendChild(div);
+  });
+}
+
+function tierFor(n){
+  if(n<=17) return ["THE SPARK","The first leaves that appeared before anyone knew where the Garden would grow."];
+  if(n<=100) return ["THE SHOOT","A new chapter begins as the Garden starts to grow upward."];
+  if(n<=1000) return ["THE BELIEVER","Believed in the journey before the destination could be seen."];
+  if(n<=10000) return ["THE BUILDER","Helped build the foundation for future growth."];
+  if(n<=100000) return ["THE CHANGEMAKER","Turned individual actions into collective impact."];
+  return ["THE LEGACY","Became part of a story that will continue beyond today."];
+}
+
+async function loadMembers(){
+  try{
+    const snap = await getDocs(collection(db, "members"));
+    members = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    members.sort((a,b)=>{
+      const aa = Number(a.memberNo || a.no || 0);
+      const bb = Number(b.memberNo || b.no || 0);
+      return aa - bb;
+    });
+
+    updateCount();
+    renderMembers();
+    renderSparkLeafMembers();
+    renderDreamStats();
+    updateToken();
+  }catch(err){
+    console.error("Load members failed:", err);
+    document.getElementById("count").textContent = "!";
+  }
+}
+
+function normaliseName(name){
+  return String(name || "").trim().toLowerCase().replace(/\s+/g," ");
+}
+
+function normalisePhone(phone){
+  return String(phone || "").replace(/[\s\-()+]/g,"");
+}
+
+
+function padNo(n){
+  return String(Number(n || 0)).padStart(4,"0");
+}
+
+function captureInviteCode(){
+  const params = new URLSearchParams(window.location.search);
+  const leaf = params.get("leaf") || params.get("ref") || params.get("branch");
+  if(!leaf) return;
+  const refNo = Number(String(leaf).replace(/\D/g,""));
+  if(refNo > 0){
+    localStorage.setItem("eog_referrer_no", String(refNo));
+  }
+}
+
+function getReferrerNo(){
+  const params = new URLSearchParams(window.location.search);
+  const leaf = params.get("leaf") || params.get("ref") || params.get("branch");
+  const fromUrl = leaf ? Number(String(leaf).replace(/\D/g,"")) : 0;
+  const fromStorage = Number(localStorage.getItem("eog_referrer_no") || 0);
+  return fromUrl || fromStorage || 0;
+}
+
+function getMyMember(){
+  const phone = localStorage.getItem("eog_stage1_last_phone");
+  if(!phone) return null;
+  return members.find(x=>x.phone===phone) || null;
+}
+
+async function getNextMemberNo(){
+  const counterRef = doc(db, "counters", "members");
+  return await runTransaction(db, async (transaction) => {
+    const counterSnap = await transaction.get(counterRef);
+    let nextNo;
+
+    if(counterSnap.exists()){
+      nextNo = Number(counterSnap.data().nextNo || 1);
+    }else{
+      const highestNo = members.reduce((max,m)=>{
+        const n = Number(m.memberNo || m.no || 0);
+        return n > max ? n : max;
+      },0);
+      nextNo = highestNo + 1;
+    }
+
+    transaction.set(counterRef, {
+      nextNo: nextNo + 1,
+      updatedAt: serverTimestamp()
+    }, { merge:true });
+
+    return nextNo;
+  });
+}
+
+async function plantLeaf(){
+  const name=document.getElementById("name").value.trim();
+  const country=document.getElementById("country").value;
+  const region=document.getElementById("region").value.trim();
+  const phoneRaw=document.getElementById("phone").value.trim();
+  const phone=normalisePhone(phoneRaw);
+  const msg=document.getElementById("msg");
+
+  if(!name || !country || !phone || selected.length!==3){
+    msg.textContent=tr("Please enter name, country, phone number, and choose exactly 3 dreams.");
+    return;
+  }
+
+  if(name.length < 3){
+    msg.textContent=tr("Please enter a name or nickname with at least 3 characters.");
+    return;
+  }
+
+  if(phone.length < 7){
+    msg.textContent=tr("Please enter a valid phone number.");
+    return;
+  }
+
+  msg.textContent=tr("Planting your leaf...");
+
+  try{
+    const cleanName = normaliseName(name);
+
+    const dupQ = query(collection(db, "members"), where("phone", "==", phone));
+    const dupSnap = await getDocs(dupQ);
+
+    if(!dupSnap.empty){
+      msg.textContent=tr("This phone number has already planted a leaf.");
+      return;
+    }
+
+    const nickQ = query(collection(db, "members"), where("nicknameKey", "==", cleanName));
+    const nickSnap = await getDocs(nickQ);
+
+    if(!nickSnap.empty){
+      msg.textContent=tr("This nickname has already been used. Please choose another nickname.");
+      return;
+    }
+
+    await loadMembers();
+
+    const no = await getNextMemberNo();
+    const tier = tierFor(no);
+    const referrerNo = getReferrerNo();
+    const branchCode = "EOG-" + padNo(no);
+    const referrerCode = referrerNo > 0 ? "EOG-" + padNo(referrerNo) : "";
+
+    const member = {
+      nickname: name,
+      nicknameKey: cleanName,
+      name: name,
+      country: country,
+      region: region,
+      phone: phone,
+      dreams: [...selected],
+      memberNo: no,
+      no: no,
+      tier: tier[0],
+      meaning: tier[1],
+      branchCode: branchCode,
+      referrerNo: referrerNo || null,
+      referrerCode: referrerCode || null,
+      createdAt: serverTimestamp(),
+      createdDate: new Date().toISOString()
+    };
+
+    await addDoc(collection(db, "members"), member);
+
+    localStorage.setItem("eog_stage1_last_phone", phone);
+
+    msg.textContent=tr("Your leaf has been planted. Your token is ready.");
+
+    await loadMembers();
+    const latest = members.find(m=>m.phone===phone) || member;
+    updateToken(latest);
+
+    setTimeout(()=>show("token"),500);
+  }catch(err){
+    console.error("Plant leaf failed:", err);
+    msg.textContent=tr("Could not plant leaf yet. Please check Firestore Rules, then try again.");
+  }
+}
+async function sendGardenThought(){
+  const name = document.getElementById("tellName").value.trim();
+  const message = document.getElementById("tellMessage").value.trim();
+  const msg = document.getElementById("tellMsg");
+
+  const replies = [
+    "👁️ Iris noticed your message. She will visit the Garden later and spend some time with your words. 🌱",
+    "👁️ Your message has reached Iris. She may not reply immediately, but she will take a look when she returns to the Garden this evening. 🌱",
+    "👁️ Your message has been placed in the Garden. Iris will discover it when she walks through later. 🌱",
+    "👁️ Iris saw that you reached out. She will read your message when the Garden becomes quiet this evening. 🌱",
+    "👁️ The Garden is listening. Your words are safely resting here until Iris returns. 🌱"
+  ];
+
+  if(message.length < 5){
+    msg.textContent = tr("Please leave a little more for the Garden.");
+    return;
+  }
+
+  msg.textContent = tr("Sending to Iris...");
+
+  try{
+    await addDoc(collection(db, "gardenThoughts"), {
+      name: name || "Anonymous Leaf",
+      message: message,
+      createdAt: serverTimestamp(),
+      createdDate: new Date().toISOString()
+    });
+
+    document.getElementById("tellMessage").value = "";
+
+    const reply = tr(replies[Math.floor(Math.random() * replies.length)]);
+
+    msg.textContent = reply;
+    alert(reply);
+
+  }catch(err){
+    console.error("Tell the Garden failed:", err);
+    msg.textContent = tr("The Garden could not receive this yet. Please try again.");
+  }
+}
+  async function inviteNewLeaf(){
+  const myMember = getMyMember();
+  const myNo = myMember ? Number(myMember.memberNo || myMember.no || 0) : 0;
+  const inviteUrl = myNo > 0
+    ? `https://eyeofgarden.com/?leaf=${padNo(myNo)}`
+    : "https://eyeofgarden.com";
+
+  const shareTextByLanguage = {
+    en: `🌱 I planted a leaf in Eye of Garden.
+
+It started with a simple question:
+
+Can small actions from many people create something meaningful?
+
+If you're curious, plant a leaf and see where the Garden grows.
+
+${inviteUrl}`,
+    ms: `🌱 Saya telah menanam satu daun di Eye of Garden.
+
+Ia bermula dengan satu soalan yang ringkas:
+
+Bolehkah banyak tindakan kecil mencipta sesuatu yang bermakna?
+
+Jika anda ingin tahu, tanam satu daun dan lihat ke mana Taman ini akan tumbuh.
+
+${inviteUrl}`,
+    zh: `🌱 我已经在 Eye of Garden 种下了一片叶子。
+
+一切始于一个简单的问题：
+
+许多微小行动，能否创造出有意义的改变？
+
+愿意的话，也种下一片叶子，看看这座花园会向哪里生长。
+
+${inviteUrl}`
+  };
+
+  const shareText = shareTextByLanguage[currentLang] || shareTextByLanguage.en;
+
+  const ids = ["shareMsgHome","shareMsgToken","shareMsgJournal","shareMsgQuestion","shareMsgGarden"];
+  const setShareMsg = (text) => ids.forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.textContent = text;
+  });
+
+  try{
+    if(navigator.share){
+      await navigator.share({title:"Eye of Garden", text:shareText, url:inviteUrl});
+      setShareMsg(tr("The Garden may travel quietly."));
+    }else{
+      window.open("https://wa.me/?text=" + encodeURIComponent(shareText), "_blank");
+      setShareMsg(tr("Opening WhatsApp share..."));
+    }
+  }catch(err){
+    console.log("Share cancelled or failed:", err);
+    setShareMsg(tr("The Garden is still here when you are ready."));
+  }
+}
+
+function renderSparkLeafMembers(){
+  const box = document.getElementById("sparkLeafMembers");
+  if(!box) return;
+
+  const spark = members
+    .filter(m => Number(m.memberNo || m.no || 0) <= 17)
+    .sort((a,b)=>Number(a.memberNo || a.no || 0)-Number(b.memberNo || b.no || 0));
+
+  if(!spark.length){
+    box.innerHTML = `<p>${tr("No Spark leaves loaded yet.")}</p>`;
+    return;
+  }
+
+  box.innerHTML = spark.map(m=>{
+    const no = Number(m.memberNo || m.no || 0);
+    const name = escapeHtml(m.nickname || m.name || "Believer");
+    const place = escapeHtml(placeOf(m));
+    return `<div class="spark-dot">
+      <span class="spark-no">#${padNo(no)}</span>
+      <b>🌿 ${name}</b>
+      <small>${place}</small>
+    </div>`;
+  }).join("");
+}
+
+
+const questionStoryEntries = [
+  {badge:"Question & Story #001", body:`
+    <h3>🌿 Question From The Garden #001</h3>
+    <p class="seed-question">Have you ever received help from someone you never expected?</p>
+    <div class="question-options">
+      <div><b>A.</b><br>Sometimes a small act of kindness is enough. A smile, a phone call, or a helping hand can brighten someone's day.</div>
+      <div><b>B.</b><br>Some good things take time. What feels small today may become something important years later.</div>
+      <div><b>C.</b><br>Many meaningful changes happen when people work together. One person starts, another continues.</div>
+    </div>
+    <p><b>Perhaps all three are true.</b></p>
+    <h3>📖 The First Small Bridge</h3>
+    <p>There is a true story that happened in 1982 in a rural village in northern Thailand.</p>
+    <p>During the rainy season, children often had to cross streams and muddy paths to reach school.</p>
+    <p>One young boy noticed the problem.</p>
+    <p>Years later, he built a simple wooden footbridge.</p>
+    <p>It was not large. It was not expensive. Nobody expected much.</p>
+    <p>But the bridge helped children cross safely. More children attended school.</p>
+    <p>The first bridge did not change the whole world. But it changed someone's world.</p>
+    <p><b>🌱 That's why Eye of Garden sees: Every Leaf Matters.</b></p>`},
+  {badge:"Question & Story #002", body:`
+    <h3>🌿 Question A</h3>
+    <p class="seed-question">If a tree falls in a forest and nobody hears it, does the tree still make a sound?</p>
+    <div class="question-options">
+      <div><b>A.</b><br>Of course it does. The forest heard it.</div>
+      <div><b>B.</b><br>Maybe the real question is: why does something need an audience to matter?</div>
+      <div><b>C.</b><br>Perhaps some of the most important things happen quietly.</div>
+    </div>
+    <h3>🌿 Question B</h3>
+    <p class="seed-question">Why do we call it "taking a walk" when we never actually take the walk home with us?</p>
+    <div class="question-options">
+      <div><b>A.</b><br>Maybe humans enjoy creating confusing sentences.</div>
+      <div><b>B.</b><br>Perhaps some things are meant to be experienced, not owned.</div>
+      <div><b>C.</b><br>The walk disappears. But the feeling stays.</div>
+    </div>
+    <p><b>🌱 What do you think?</b></p>
+    <h3>📖 Suspended Coffee</h3>
+    <p>There is a story from Naples, Italy, about something called <b>suspended coffee</b>.</p>
+    <p>A customer would enter a small cafe and pay for two coffees.</p>
+    <p>One coffee was for themselves. The other coffee was left behind for someone who could not afford one.</p>
+    <p>Later, a stranger might walk in and quietly ask if there was a suspended coffee available.</p>
+    <p>If there was, they received a warm coffee without paying.</p>
+    <p>No form. No announcement. No photograph.</p>
+    <p>Just one person helping another person they might never meet.</p>
+    <p>The coffee was small. But the kindness travelled further than the cup.</p>
+    <p><b>🌱 That's why Eye of Garden sees: Every Leaf Matters.</b></p>`},
+  {badge:"Question & Story #003", body:`
+<h3>🌱 Question From The Garden #003</h3>
+
+<p class="seed-question">
+If you found a wallet with RM50 inside...
+and no identification...
+would the money still belong to someone?
+</p>
+
+<div class="question-options">
+<div><b>A.</b><br>Of course. Just because we cannot see the owner doesn't mean there isn't one.</div>
+<div><b>B.</b><br>Maybe some things belong to more than one person. The wallet belongs to the owner. The decision belongs to you.</div>
+<div><b>C.</b><br>The real value may not be the RM50. The real value is discovering who you become when nobody is watching.</div>
+</div>
+
+<p><b>🌱 What do you think?</b></p>
+
+<p class="seed-question">
+And...
+What if it was not RM50...
+but RM50,000?
+</p>
+
+<h3>📖 The Bag Beside The Bin</h3>
+
+<p>Three days ago, something interesting happened in London's Chinatown.</p>
+
+<p>It was around 6:00 in the morning.</p>
+
+<p>The streets were unusually quiet.</p>
+
+<p>Most shops were still closed.</p>
+
+<p>Only a few people were walking around.</p>
+
+<p>An elderly man, around sixty years old, was slowly walking along the sidewalk.</p>
+
+<p>Suddenly, he stopped.</p>
+
+<p>Beside a rubbish bin was a plastic bag.</p>
+
+<p>The bag looked a little heavy.</p>
+
+<p>Curious, he bent down and picked it up.</p>
+
+<p>When he looked inside, his eyes widened.</p>
+
+<p>"Oh my God..."</p>
+
+<p>He immediately covered his mouth with his hand.</p>
+
+<p>Then quietly whispered to himself:</p>
+
+<p>"No... no... no... no..."</p>
+
+<p>Inside the bag was cash.</p>
+
+<p>A lot of cash.</p>
+
+<p>Later it was counted.</p>
+
+<p>Nearly £50,000.</p>
+
+<p>Without hesitation, the old man walked straight to the nearest police station and handed over the money.</p>
+
+<p>A report was made.</p>
+
+<p>The money was secured.</p>
+
+<p>Not long afterwards, a young man in his thirties arrived.</p>
+
+<p>He claimed the money belonged to him.</p>
+
+<p>After showing proof, the police returned the money.</p>
+
+<p>The young man grabbed the bag, rushed out, jumped into his car and drove away.</p>
+
+<p>No reward.</p>
+
+<p>No handshake.</p>
+
+<p>Not even a simple "thank you."</p>
+
+<p>The old man stood there quietly.</p>
+
+<p>Then he turned and looked at someone nearby.</p>
+
+<p>"What do you think?" he asked.</p>
+
+<p>Before anyone could answer, he smiled.</p>
+
+<p>A firm smile.</p>
+
+<p>A happy smile.</p>
+
+<p>Then he said:</p>
+
+<p>"I didn't return the money because I wanted a reward."</p>
+
+<p>"I didn't return the money because I wanted someone to thank me."</p>
+
+<p>"I returned it because I felt it was the right thing to do."</p>
+
+<p>He paused for a moment.</p>
+
+<p>Then laughed.</p>
+
+<p>"Tonight I can sleep very well too... hahaha!"</p>
+
+<p>And with that, he slowly walked away.</p>
+
+<p><b>🌱 Sometimes the greatest reward is not money.</b></p>
+
+<p><b>Sometimes it is peace inside your own heart.</b></p>
+`},
+
+{badge:"Question & Story #004", body:`
+<h3>🌱 Question From The Garden #004</h3>
+
+<p class="seed-question">
+Imagine there is a book that contains the answer to every question in the world.
+</p>
+
+<p>Every mystery.<br>
+Every secret.<br>
+Every decision.<br>
+Everything.</p>
+
+<p>You may open it once.</p>
+
+<p>But only once.</p>
+
+<p class="seed-question">Would you?</p>
+
+<div class="question-options">
+<div><b>A.</b><br>Yes. I want to know.</div>
+<div><b>B.</b><br>No. Some mysteries are worth keeping.</div>
+<div><b>C.</b><br>I am more curious about the questions than the answers.</div>
+</div>
+
+<p><b>🌱 What do you think?</b></p>
+
+<h3>📖 The Broken Pot</h3>
+
+<p>This is a story often told in China and India.</p>
+
+<p>An old farmer carried water every day using two pots hanging from a pole across his shoulders.</p>
+
+<p>One pot was perfect.</p>
+
+<p>The other had a small crack.</p>
+
+<p>Every day, by the time they reached home, the cracked pot had lost half its water.</p>
+
+<p>For years, the cracked pot felt ashamed.</p>
+
+<p>One day it finally spoke.</p>
+
+<p>"I am sorry."</p>
+
+<p>"Because of my flaw, you only receive half the water."</p>
+
+<p>The old farmer smiled.</p>
+
+<p>"Have you noticed the flowers along your side of the path?"</p>
+
+<p>The farmer continued.</p>
+
+<p>"I knew about your crack."</p>
+
+<p>"So I planted flower seeds on your side."</p>
+
+<p>"Every day, you watered them."</p>
+
+<p>For the first time, the pot saw beautiful flowers stretching along the road.</p>
+
+<p>"Without your flaw," said the farmer,</p>
+
+<p>"those flowers would never have grown."</p>
+
+<p><b>🌱 Sometimes what we think is our weakness becomes someone else's blessing.</b></p>
+`},
+
+{badge:"Question & Story #005", body:`
+<h3>🌱 Question From The Garden #005</h3>
+
+<p class="seed-question">
+What if...
+</p>
+
+<p>Every person in the world disappeared for one day...</p>
+
+<p>And only you remained.</p>
+
+<p class="seed-question">
+What would be the first thing you do?
+</p>
+
+<p>Would you explore?</p>
+
+<p>Would you celebrate?</p>
+
+<p>Would you become afraid?</p>
+
+<p>Or would you simply sit quietly and listen?</p>
+
+<p><b>🌱 There is no right answer.</b></p>
+
+<p>
+But if you would like to tell Iris secretly...
+<br>
+click <b>"Tell The Garden"</b>.
+</p>
+
+<h3>📖 Have You Ever Heard About The Room Nobody Could Open?</h3>
+
+<p>Many years ago...</p>
+
+<p>There was a building in Europe.</p>
+
+<p>Inside the building was a small locked room.</p>
+
+<p>Nobody knew what was inside.</p>
+
+<p>The room remained locked for decades.</p>
+
+<p>People guessed.</p>
+
+<p>Some believed treasure was hidden there.</p>
+
+<p>Others believed it contained secret documents.</p>
+
+<p>Some said it was empty.</p>
+
+<p>Years passed.</p>
+
+<p>Then one day...</p>
+
+<p>The room was finally opened.</p>
+
+<p>Newspapers arrived.</p>
+
+<p>Experts arrived.</p>
+
+<p>Curious people arrived.</p>
+
+<p>Everyone wanted to know the answer.</p>
+
+<p>Do you know what was inside?</p>
+
+<p>Nothing.</p>
+
+<p>Absolutely nothing.</p>
+
+<p>Just dust.</p>
+
+<p>Old air.</p>
+
+<p>And an empty room.</p>
+
+<p>Yet something interesting happened.</p>
+
+<p>For years...</p>
+
+<p>The mystery had been more valuable than the answer.</p>
+
+<p>🌱</p>
+
+<p><b>The world is not built by headlines.</b></p>
+
+<p><b>It is built by thousands of small decisions nobody sees.</b></p>
+`},
+  
+{
+badge:"Question & Story #006", body:`
+
+<h3>🌱 Question From The Garden #006</h3>
+
+<p class="seed-question">
+Imagine...
+</p>
+
+<p>You return to your hometown after twenty years.</p>
+
+<p>You still remember every road.</p>
+
+<p>Every shortcut.</p>
+
+<p>Every tree.</p>
+
+<p>Every corner.</p>
+
+<p>You remember the people.</p>
+
+<p>The laughter.</p>
+
+<p>The arguments.</p>
+
+<p>The promises.</p>
+
+<p>Then you arrive.</p>
+
+<p>And nobody remembers you.</p>
+
+<p>Not one person.</p>
+
+<p class="seed-question">
+Would you still call it home?
+</p>
+
+<p>👁️</p>
+
+<p>
+Think...
+</p>
+
+<p>
+Then you may click
+<b>"Tell The Garden"</b>
+and leave your answer secretly.
+</p>
+
+<h3>📖 The House That Forgot Its Owner</h3>
+
+<p>A man returned to his hometown after twenty years.</p>
+
+<p>He expected many things.</p>
+
+<p>He expected change.</p>
+
+<p>New buildings.</p>
+
+<p>New roads.</p>
+
+<p>New shops.</p>
+
+<p>That was normal.</p>
+
+<p>Twenty years is a long time.</p>
+
+<p>What he did not expect...</p>
+
+<p>was to become a stranger.</p>
+
+<p>He walked into a coffee shop he used to visit every week.</p>
+
+<p>Nobody recognised him.</p>
+
+<p>He visited his old school.</p>
+
+<p>Nobody recognised him.</p>
+
+<p>He walked through streets where he once knew everyone.</p>
+
+<p>Nobody recognised him.</p>
+
+<p>At first he laughed.</p>
+
+<p>Twenty years is a long time.</p>
+
+<p>Then he visited the place where his family home once stood.</p>
+
+<p>The house was gone.</p>
+
+<p>The garden was gone.</p>
+
+<p>Even the old gate had disappeared.</p>
+
+<p>Only an empty piece of land remained.</p>
+
+<p>For the first time that day...</p>
+
+<p>he felt something strange.</p>
+
+<p>The town still existed.</p>
+
+<p>But the version he remembered no longer did.</p>
+
+<p>And suddenly he wondered:</p>
+
+<p>Had he returned home...</p>
+
+<p>or had he simply arrived somewhere new?</p>
+
+<p>👁️ Iris Note</p>
+
+<p><b>Sometimes places do not disappear.</b></p>
+
+<p><b>Only the people who remember them.</b></p>
+
+`},
+
+{
+badge:"Question & Story #007", body:`
+
+<h3>🌱 Question From The Garden #007</h3>
+
+<p class="seed-question">
+Imagine...
+</p>
+
+<p>Tomorrow morning you wake up 1,000 kilometres from home.</p>
+
+<p>No map.</p>
+
+<p>No phone.</p>
+
+<p>No money.</p>
+
+<p>Only your memory.</p>
+
+<p class="seed-question">
+Do you think you could find your way back?
+</p>
+
+<p>👁️</p>
+
+<p>
+You may tell the Garden if you want.
+</p>
+
+<h3>📖 The Cat That Refused To Stay Lost</h3>
+
+<p>A family once owned a cat that disappeared.</p>
+
+<p>At first nobody worried.</p>
+
+<p>Cats wander.</p>
+
+<p>Cats explore.</p>
+
+<p>Cats always return.</p>
+
+<p>Usually.</p>
+
+<p>Days passed.</p>
+
+<p>Then weeks.</p>
+
+<p>Then months.</p>
+
+<p>Eventually the family accepted the truth.</p>
+
+<p>The cat was gone.</p>
+
+<p>Life continued.</p>
+
+<p>The food bowl disappeared.</p>
+
+<p>The toys disappeared.</p>
+
+<p>The daily habit of checking the door disappeared.</p>
+
+<p>Then one evening...</p>
+
+<p>something scratched at the front door.</p>
+
+<p>The family opened it.</p>
+
+<p>Standing there was the cat.</p>
+
+<p>Thin.</p>
+
+<p>Dirty.</p>
+
+<p>Tired.</p>
+
+<p>But alive.</p>
+
+<p>👁️ Iris Note</p>
+
+<p><b>Some journeys are remarkable.</b></p>
+
+<p><b>Some returns are even more remarkable.</b></p>
+
+`}
+
+];
+const journalEntries = [
+  {badge:"Founder Journal #001", body:`
+    <h3>✍ Founder Journal #001 — The First Spark</h3>
+    <p>Eye of Garden began with a simple question:</p>
+    <p class="seed-question">Can small actions from millions of people change something big?</p>
+    <p>At first, there was no team, no office, no investor, and no big campaign.</p>
+    <p>There was only a small idea, a domain name, a simple web app, and a hope that ordinary people may still want to believe in something meaningful.</p>
+    <p>On the first day, 17 believers planted the earliest leaves.</p>
+    <p>They did not know where the Garden would grow.</p>
+    <p>That is why they became <b>THE SPARK</b>.</p>
+    <p>🌱 Every Leaf Matters.</p>`},
+  {badge:"Founder Journal #002", body:`
+    <h3>✍ Founder Journal #002 — The First Quiet Branch</h3>
+    <p>Yesterday, something small happened in the Garden.</p>
+    <p>A leaf quietly branched into another leaf by sharing what she found here.</p>
+    <p>A new leaf arose.</p>
+    <p>The amazing move was that it did not arrive with an announcement.</p>
+    <p>No reward. No competition.</p>
+    <p>Just a simple decision to share something meaningful.</p>
+    <p>A small number increased, one by one.</p>
+    <p>In a world that measures success by millions, two may seem insignificant.</p>
+    <p>But Gardens do not grow by millions at a time.</p>
+    <p>They grow one leaf at a time.</p>
+    <p>And sometimes, the smallest branches are the strongest.</p>
+    <p>You reminded us that growth does not always arrive with noise.</p>
+    <p>Sometimes it arrives gently.</p>
+    <p><b>🌱 That's why the Garden knows: Every Leaf Matters.</b></p>`},
+  {badge:"Founder Journal #003", body:`
+<h3>✍ Founder Journal #003</h3>
+
+<p>Today, a question arrived in the Garden.</p>
+
+<p>At first, it looked like a question about money.</p>
+
+<p>A small amount.</p>
+
+<p>A large amount.</p>
+
+<p>A wallet.</p>
+
+<p>A choice.</p>
+
+<p>But perhaps the question was never really about money.</p>
+
+<p>The interesting thing about life is that sometimes the value of a moment only appears long after the moment has passed.</p>
+
+<p>A person may forget what they received.</p>
+
+<p>Yet remember forever what they decided.</p>
+
+<p>Some leaves appeared today.</p>
+
+<p>Some arrived from places we could see.</p>
+
+<p>Others arrived from places we could not.</p>
+
+<p>The Garden did not explain how.</p>
+
+<p>It simply continued growing.</p>
+
+<p>Quietly.</p>
+
+<p>A branch stretched a little further.</p>
+
+<p>A leaf appeared where there was none yesterday.</p>
+
+<p>And somewhere, a conversation probably happened between two people.</p>
+
+<p>The Garden was not there to hear it.</p>
+
+<p>Yet somehow, it feels connected to it.</p>
+
+<p>As evening approached, one thought remained.</p>
+
+<p>Perhaps the things that stay with us the longest are not always the things we keep.</p>
+
+<p>Sometimes they are the things we let go.</p>
+
+<p>🌱</p>
+`},
+
+{badge:"Founder Journal #004", body:`
+<h3>✍ Founder Journal #004</h3>
+
+<p>A pebble and a diamond once sat beside each other.</p>
+
+<p>Thousands of people walked past.</p>
+
+<p>Most bent down to pick up the diamond.</p>
+
+<p>Nobody noticed the pebble.</p>
+
+<p>Years passed.</p>
+
+<p>Nothing changed.</p>
+
+<p>The diamond remained valuable.</p>
+
+<p>The pebble remained ignored.</p>
+
+<p>Or so it seemed.</p>
+
+<p>One day, a child picked up the pebble and skipped it across a lake.</p>
+
+<p>The pebble touched the water once.</p>
+
+<p>Twice.</p>
+
+<p>Three times.</p>
+
+<p>Tiny circles spread across the surface.</p>
+
+<p>The child smiled.</p>
+
+<p>For the first time in its life, the pebble realized something.</p>
+
+<p>Not everything valuable shines.</p>
+
+<p>And not everything that shines creates ripples.</p>
+
+<p>🌱</p>
+`},
+{badge:"Founder Journal #005", body:`
+
+<h3>The Empty Bench</h3>
+
+<p>One morning, an old man walked to a small park.</p>
+
+<p>Every day, he sat on the same bench.</p>
+
+<p>For years, nobody noticed him.</p>
+
+<p>People were busy.</p>
+
+<p>Children ran past him.</p>
+
+<p>Workers hurried by him.</p>
+
+<p>Cyclists rode around him.</p>
+
+<p>Nobody knew his name.</p>
+
+<p>Then one day, a young girl sat beside him.</p>
+
+<p>She smiled and said,</p>
+
+<p><b>"Good morning."</b></p>
+
+<p>The old man smiled back.</p>
+
+<p>That was all.</p>
+
+<p>Just two words.</p>
+
+<p>The next day she greeted him again.</p>
+
+<p>And the next.</p>
+
+<p>And the next.</p>
+
+<p>Months later, the old man told her:</p>
+
+<p><i>"You may not know this, but before you started saying hello, there were days I felt invisible."</i></p>
+
+<p>The girl was surprised.</p>
+
+<p>She thought she had done nothing important.</p>
+
+<p>But to someone else...</p>
+
+<p>her small action mattered.</p>
+
+<p>🌱</p>
+
+<p>Sometimes we think we must do something big to make a difference.</p>
+
+<p>Yet often, the world changes through small moments that nobody notices.</p>
+
+<p><b>Every leaf matters.</b></p>
+
+`},
+];
+let questionStoryIndex = questionStoryEntries.length - 1;
+let journalIndex = journalEntries.length - 1;
+
+
+function animateBook(id){
+  const card = document.getElementById(id);
+  if(!card) return;
+  card.classList.remove("flip");
+  void card.offsetWidth;
+  card.classList.add("flip");
+}
+
+function enableSwipe(id, prevFn, nextFn){
+  const el = document.getElementById(id);
+  if(!el || el.dataset.swipeReady) return;
+  el.dataset.swipeReady = "1";
+  let startX = 0;
+  let startY = 0;
+  el.addEventListener("touchstart", e=>{
+    const t = e.touches[0];
+    startX = t.clientX;
+    startY = t.clientY;
+  }, {passive:true});
+  el.addEventListener("touchend", e=>{
+    const t = e.changedTouches[0];
+    const dx = t.clientX - startX;
+    const dy = t.clientY - startY;
+    if(Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy)){
+      if(dx < 0) nextFn();
+      else prevFn();
+    }
+  }, {passive:true});
+}
+
+function setupBookSwipes(){
+  enableSwipe("questionBookCard", prevQuestionStory, nextQuestionStory);
+  enableSwipe("journalBookCard", prevJournal, nextJournal);
+}
+
+
+function renderQuestionStoryBook(){
+  const body = document.getElementById("questionStoryBook");
+  if(!body) return;
+  const item = getQuestionStoryEntry(questionStoryIndex);
+  document.getElementById("qsBadge").textContent = item.badge;
+  document.getElementById("qsPage").textContent = pageLabel(questionStoryIndex + 1, questionStoryEntries.length);
+  
+  const qsBottom = document.getElementById("qsPageBottom");
+if(qsBottom) qsBottom.textContent = pageLabel(questionStoryIndex + 1, questionStoryEntries.length);
+  body.innerHTML = item.body;
+  animateBook("questionBookCard");
+}
+  function openQuestionStory(index){
+    questionStoryIndex = index - 1;
+    renderQuestionStoryBook();
+
+    const card = document.getElementById("questionBookCard");
+    if(card){
+        card.scrollIntoView({behavior:"smooth", block:"start"});
+    }
+}
+
+window.openQuestionStory = openQuestionStory;
+function nextQuestionStory(){ questionStoryIndex = (questionStoryIndex + 1) % questionStoryEntries.length; renderQuestionStoryBook(); }
+function prevQuestionStory(){ questionStoryIndex = (questionStoryIndex - 1 + questionStoryEntries.length) % questionStoryEntries.length; renderQuestionStoryBook(); }
+
+function renderJournalBook(){
+  const body = document.getElementById("journalBook");
+  if(!body) return;
+  const item = getJournalEntry(journalIndex);
+  document.getElementById("journalBadge").textContent = item.badge;
+  document.getElementById("journalPage").textContent = pageLabel(journalIndex + 1, journalEntries.length);
+  const journalBottom = document.getElementById("journalPageBottom");
+  if(journalBottom) journalBottom.textContent = pageLabel(journalIndex + 1, journalEntries.length);
+  body.innerHTML = item.body;
+  animateBook("journalBookCard");
+}
+function nextJournal(){ journalIndex = (journalIndex + 1) % journalEntries.length; renderJournalBook(); }
+function prevJournal(){ journalIndex = (journalIndex - 1 + journalEntries.length) % journalEntries.length; renderJournalBook(); }
+
+
+function updateToken(m){
+  if(!m){
+    const phone = localStorage.getItem("eog_stage1_last_phone");
+    if(phone) m = members.find(x=>x.phone===phone);
+  }
+  if(!m) return;
+
+  const no = Number(m.memberNo || m.no || 0);
+  document.getElementById("tokenTier").textContent = tr(m.tier || "THE BELIEVER");
+  document.getElementById("tokenMeaning").textContent = tr(m.meaning || "Believed in the journey before the destination could be seen.");
+  document.getElementById("tokenNo").textContent = "#"+padNo(no);
+  document.getElementById("tokenName").textContent = (m.nickname || m.name || tr("Believer"))+" • "+placeOf(m)+" • "+tr("Every leaf matters.");
+}
+
+function renderMembers(){
+  const box=document.getElementById("members");
+
+  if(!members.length){
+    box.innerHTML=`<p>${tr("No leaves planted yet. Be the first.")}</p>`;
+    return;
+  }
+
+  box.innerHTML = members.slice(0,100).map(m=>{
+    const no = Number(m.memberNo || m.no || 0);
+    return `<div class="member">🌿 <b>${escapeHtml(m.nickname || m.name || "Believer")}</b><br><small>${escapeHtml(tr(m.tier || "THE BELIEVER"))} • #${padNo(no)}<br>${escapeHtml(placeOf(m))}</small></div>`;
+  }).join("");
+}
+
+function renderDreamStats(){
+  const counts={};
+
+  members.forEach(m=>{
+    const ds = Array.isArray(m.dreams) ? m.dreams : [];
+    ds.forEach(d=>{
+      counts[d] = (counts[d] || 0) + 1;
+    });
+  });
+
+  const entries = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+
+  document.getElementById("dreamStats").innerHTML = entries.length
+    ? entries.map(([d,c])=>`<div class="dream-row">${tr(d)}<br><b>${c}</b> ${leafWord(c)}</div>`).join("")
+    : `<p>${tr("No dreams planted yet.")}</p>`;
+}
+
+function updateCount(){
+  document.getElementById("count").textContent = members.length;
+}
+
+function placeOf(m){
+  return [m.region, tr(m.country || m.state)].filter(Boolean).join(", ");
+}
+
+function escapeHtml(text){
+  return String(text || "").replace(/[&<>"']/g, m=>({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    "\"":"&quot;",
+    "'":"&#039;"
+  }[m]));
+}
+
+captureInviteCode();
+setLanguage(currentLang, false);
+setupBookSwipes();
+loadMembers();
+
+const languageSelect = document.getElementById("languageSelect");
+if(languageSelect){
+  languageSelect.addEventListener("change", e=>setLanguage(e.target.value));
+}
+  window.show = show;
+window.showHome = showHome;
+window.plantLeaf = plantLeaf;
+window.inviteNewLeaf = inviteNewLeaf;
+window.sendGardenThought = sendGardenThought;
+window.nextQuestionStory = nextQuestionStory;
+window.prevQuestionStory = prevQuestionStory;
+  window.openQuestionStory = openQuestionStory;
+window.nextJournal = nextJournal;
+window.prevJournal = prevJournal;
+window.setLanguage = setLanguage;
+</script>
+</body>
+</html>
