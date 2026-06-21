@@ -193,6 +193,9 @@ label{font-weight:bold}
   padding:20px;
   margin:18px 0;
   text-align:left;
+    max-height:520px;
+overflow-y:auto;
+-webkit-overflow-scrolling:touch;
 }
 
 .story-library h3{
@@ -541,6 +544,7 @@ small.kicker,.mini-title,.book-badge{
           <button class="secondary" onclick="prevJournal()">← Previous</button>
           <button onclick="nextJournal()">Next →</button>
         </div>
+    -
         <div class="swipe-hint">Swipe left / right to flip the Founder Journal</div>
       </div>
       <div class="share-nudge">
@@ -1786,6 +1790,8 @@ function renderQuestionStoryBook(){
   const item = questionStoryEntries[questionStoryIndex];
   document.getElementById("qsBadge").textContent = item.badge;
   document.getElementById("qsPage").textContent = `Page ${questionStoryIndex + 1} / ${questionStoryEntries.length}`;
+  const qsBottom = document.getElementById("qsPageBottom");
+if(qsBottom) qsBottom.textContent = `Page ${questionStoryIndex + 1} / ${questionStoryEntries.length}`;
   body.innerHTML = item.body;
   animateBook("questionBookCard");
 }
