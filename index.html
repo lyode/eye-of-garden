@@ -1782,7 +1782,7 @@ function renderQuestionStoryBook(){
   const item = questionStoryEntries[questionStoryIndex];
   document.getElementById("qsBadge").textContent = item.badge;
   document.getElementById("qsPage").textContent = `Page ${questionStoryIndex + 1} / ${questionStoryEntries.length}`;
-}
+  
   const qsBottom = document.getElementById("qsPageBottom");
 if(qsBottom) qsBottom.textContent = `Page ${questionStoryIndex + 1} / ${questionStoryEntries.length}`;
   body.innerHTML = item.body;
