@@ -734,6 +734,8 @@ body.iris-popup-open{overflow:hidden}
 <button class="story-link" onclick="openQuestionStory(7)">✅ #007 The Cat That Refused To Stay Lost</button>
 <button class="story-link" id="storyLink008" onclick="openQuestionStory(8)" hidden></button>
 <button class="story-link" id="storyLink009" onclick="openQuestionStory(9)" hidden></button>
+<button class="story-link" id="storyLink010" onclick="openQuestionStory(10)" hidden></button>
+<button class="story-link" id="storyLink011" onclick="openQuestionStory(11)" hidden></button>
 
 <hr>
 
@@ -741,8 +743,8 @@ body.iris-popup-open{overflow:hidden}
 
 <p id="comingSoon008">#008 The Coin From Tomorrow</p>
 <p id="comingSoon009">#009 The Passenger Nobody Remembered</p>
-<p>#010 The Letter That Arrived Forty Years Late</p>
-<p>#011 The Village Without Doors</p>
+<p id="comingSoon010">#010 The Letter That Arrived Forty Years Late</p>
+<p id="comingSoon011">#011 The Village Without Doors</p>
 <p>#012 The Light Above The Ocean</p>
 <p>#013 The Ship That Returned Empty</p>
 <p>#014 The Room Beneath The Lake</p>
@@ -2302,7 +2304,7 @@ const journalEntries = [
 `},
 ];
 
-// Firestore-managed Question & Story pages begin with #008.
+// Firestore-managed Question & Story pages begin with #008 and continue here.
 const firestoreStoryRecords = new Map();
 
 async function readPublishedFirestoreStory(number){
@@ -2328,7 +2330,7 @@ async function readPublishedFirestoreStory(number){
 }
 
 function refreshFirestoreStoryLinks(){
-  for(const number of [8,9]){
+  for(const number of [8,9,10,11]){
     const record = firestoreStoryRecords.get(number);
     const link = document.getElementById(`storyLink${String(number).padStart(3,"0")}`);
     const comingSoon = document.getElementById(`comingSoon${String(number).padStart(3,"0")}`);
@@ -2343,7 +2345,7 @@ function refreshFirestoreStoryLinks(){
 
 async function loadFirestoreStories(){
   try{
-    const records = await Promise.all([8,9].map(readPublishedFirestoreStory));
+    const records = await Promise.all([8,9,10,11].map(readPublishedFirestoreStory));
     for(const record of records.filter(Boolean).sort((a,b)=>a.number-b.number)){
       firestoreStoryRecords.set(record.number, record);
       const index = record.number - 1;
