@@ -86,13 +86,12 @@ button{
   box-shadow:0 9px 22px rgba(40,80,50,.15);
 }
 button.secondary{
-background:#fff;
-color:#285438;
-font-weight:650;
-border:1.5px solid rgba(63,116,78,.42);
-box-shadow:0 9px 22px rgba(40,80,50,.18);
+  background:#fff;
+  color:#285438;
+  font-weight:650;
+  border:1.5px solid rgba(63,116,78,.42);
+  box-shadow:0 9px 22px rgba(40,80,50,.18);
 }
-
 button:active{transform:translateY(1px)}
 .counter{
   margin-top:22px;
@@ -134,13 +133,13 @@ button:active{transform:translateY(1px)}
   font-weight:700;
   text-shadow:0 1px 2px rgba(20,55,30,.28);
 }
-
 .leaf span{
   font-size:13px;
   font-weight:600;
   opacity:1;
   text-shadow:0 1px 2px rgba(20,55,30,.25);
-}.l1{left:42px;top:76px;--r:-14deg}
+}
+.l1{left:42px;top:76px;--r:-14deg}
 .l2{right:20px;top:132px;--r:14deg;border-radius:24% 72% 24% 72%}
 .l3{left:0;top:252px;--r:10deg}
 .l4{right:46px;top:314px;--r:-18deg;border-radius:24% 72% 24% 72%}
@@ -357,6 +356,62 @@ small.kicker,.mini-title,.book-badge{
   .language-control select{min-width:105px;font-size:13px;padding:7px 26px 7px 9px}
 }
 
+
+/* Iris collective-message system */
+.iris-message-list{display:grid;gap:14px;margin-top:18px}
+.iris-message-card{
+  background:#fffdf8;
+  border:1px solid rgba(63,116,78,.20);
+  border-radius:22px;
+  padding:18px;
+  box-shadow:0 9px 22px rgba(40,80,50,.08);
+}
+.iris-message-type{font-size:13px;font-weight:700;color:#6d7d68;margin-bottom:7px}
+.iris-message-card h3{margin:4px 0 10px;color:#294f38}
+.iris-message-body{white-space:pre-line;line-height:1.65;font-size:17px}
+.iris-message-date{margin-top:12px;font-size:12px;color:#7b866f}
+.iris-empty{padding:22px;text-align:center;background:#fffdf8;border:1px dashed #b7aa90;border-radius:22px}
+
+.iris-popup-backdrop{
+  position:fixed;
+  inset:0;
+  z-index:12000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:22px;
+  background:rgba(28,52,36,.42);
+  backdrop-filter:blur(7px);
+}
+.iris-popup-backdrop.open{display:flex}
+.iris-popup-card{
+  width:min(540px,100%);
+  max-height:min(78vh,720px);
+  overflow:auto;
+  background:linear-gradient(180deg,#fffdf8,#fff7e8);
+  border:1px solid rgba(63,116,78,.24);
+  border-radius:30px;
+  padding:24px;
+  box-shadow:0 28px 80px rgba(25,55,35,.28);
+  animation:irisMessageArrive .42s ease both;
+}
+@keyframes irisMessageArrive{
+  from{opacity:0;transform:translateY(18px) scale(.97)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+.iris-popup-type{font-size:14px;font-weight:700;color:#627460;margin-bottom:10px}
+.iris-popup-card h2{margin:0 0 14px;color:#264d35;font-size:28px}
+.iris-popup-body{white-space:pre-line;line-height:1.72;font-size:18px}
+.iris-popup-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+body.iris-popup-open{overflow:hidden}
+@media(max-width:780px){
+  .iris-popup-backdrop{padding:14px;align-items:flex-end}
+  .iris-popup-card{border-radius:27px 27px 18px 18px;padding:21px;max-height:82vh}
+  .iris-popup-card h2{font-size:24px}
+  .iris-popup-body{font-size:17px}
+  .iris-popup-actions button{width:100%}
+}
+
 </style>
 </head>
 <body>
@@ -397,6 +452,7 @@ small.kicker,.mini-title,.book-badge{
         <button class="secondary" onclick="show('journal')">📖 Founder Journal</button>
         <button class="secondary" onclick="show('question')">💭 Garden Question</button>
   <button class="secondary" onclick="show('tell')">👁️ Tell The Garden</button>
+        <button class="secondary" id="irisMessagesHomeButton" data-no-translate onclick="show('irisMessages')">💌 Iris Messages</button>
       </div>
       <div class="counter">
         <b id="count">0</b> leaves planted so far.<br>
@@ -644,6 +700,17 @@ small.kicker,.mini-title,.book-badge{
     <button class="secondary" onclick="showHome()">← Back to Garden</button>
   </div>
 </section>
+
+  <section id="irisMessages" class="section" data-no-translate>
+    <button class="secondary" id="irisMessagesBackTop" onclick="showHome()">← Back to Garden</button>
+    <div class="panel">
+      <h2 id="irisMessagesHeading">💌 Iris Messages</h2>
+      <p class="hint" id="irisMessagesIntro">Messages inspired by what the Garden has been hearing.</p>
+      <div class="iris-message-list" id="irisMessagesList"></div>
+    </div>
+    <button class="secondary" id="irisMessagesBackBottom" onclick="showHome()">← Back to Garden</button>
+  </section>
+
   <section id="question" class="section">
     <div class="page-nav">
       <button class="secondary" onclick="showHome()">← Back to Garden</button>
@@ -716,6 +783,19 @@ small.kicker,.mini-title,.book-badge{
   </section>
 
   <div class="footer">🌿 Eye of Garden — eyeofgarden.com</div>
+</div>
+
+
+<div class="iris-popup-backdrop" id="irisPopupBackdrop" data-no-translate aria-hidden="true">
+  <div class="iris-popup-card" role="dialog" aria-modal="true" aria-labelledby="irisPopupTitle">
+    <div class="iris-popup-type" id="irisPopupType">👁️ Iris Said...</div>
+    <h2 id="irisPopupTitle"></h2>
+    <div class="iris-popup-body" id="irisPopupBody"></div>
+    <div class="iris-popup-actions">
+      <button id="irisPopupReadButton" onclick="openIrisMessagesFromPopup()">Read in Iris Messages</button>
+      <button class="secondary" id="irisPopupCloseButton" onclick="closeIrisPopup()">Close gently</button>
+    </div>
+  </div>
 </div>
 
 <script type="module">
@@ -885,7 +965,8 @@ const translatedDynamicSelectors = [
   "#questionStoryBook", "#journalBook", "#members", "#sparkLeafMembers",
   "#dreamChoices", "#dreamStats", "#tokenTier", "#tokenMeaning", "#tokenName",
   "#msg", "#tellMsg", "[id^='shareMsg']", "#qsBadge", "#journalBadge",
-  "#qsPage", "#qsPageBottom", "#journalPage", "#journalPageBottom"
+  "#qsPage", "#qsPageBottom", "#journalPage", "#journalPageBottom",
+  "#irisMessagesList", "#irisPopupTitle", "#irisPopupBody", "#irisPopupType"
 ].join(",");
 
 function translateStaticText(root=document.body){
@@ -942,6 +1023,209 @@ function setLanguage(lang, save=true){
   updateToken();
   translateStaticText();
   refreshFirestoreStoryLinks();
+  renderBroadcastInterface();
+  renderBroadcastMessages();
+  renderOpenIrisPopup();
+}
+
+
+const broadcastUiText = {
+  en:{
+    home:"💌 Iris Messages",
+    heading:"💌 Iris Messages",
+    intro:"Messages inspired by what the Garden has been hearing.",
+    back:"← Back to Garden",
+    read:"Read in Iris Messages",
+    close:"Close gently",
+    empty:"No Iris messages have been shared yet.",
+    types:{
+      iris:"👁️ Iris Said...",
+      founderNote:"🌱 A Little Note From the Founder",
+      founderClue:"🔍 A Clue From the Founder",
+      gardenHeard:"💭 The Garden Heard You"
+    }
+  },
+  ms:{
+    home:"💌 Mesej Iris",
+    heading:"💌 Mesej Iris",
+    intro:"Mesej yang terinspirasi daripada apa yang didengari oleh Taman.",
+    back:"← Kembali ke Taman",
+    read:"Baca dalam Mesej Iris",
+    close:"Tutup dengan lembut",
+    empty:"Belum ada mesej daripada Iris.",
+    types:{
+      iris:"👁️ Iris Berkata...",
+      founderNote:"🌱 Sedikit Pesanan Daripada Pengasas",
+      founderClue:"🔍 Petunjuk Daripada Pengasas",
+      gardenHeard:"💭 Taman Mendengar Anda"
+    }
+  },
+  zh:{
+    home:"💌 Iris 的留言",
+    heading:"💌 Iris 的留言",
+    intro:"这些留言，来自花园最近听见的心声。",
+    back:"← 返回花园",
+    read:"在 Iris 留言中阅读",
+    close:"轻轻关闭",
+    empty:"Iris 还没有分享任何留言。",
+    types:{
+      iris:"👁️ Iris 说……",
+      founderNote:"🌱 创办人的一点话",
+      founderClue:"🔍 来自创办人的提示",
+      gardenHeard:"💭 花园听见了你"
+    }
+  }
+};
+
+let broadcastMessages = [];
+let openBroadcastId = null;
+let broadcastPopupTimer = null;
+
+function broadcastUi(){
+  return broadcastUiText[currentLang] || broadcastUiText.en;
+}
+
+function broadcastTypeLabel(type){
+  const labels = broadcastUi().types;
+  return labels[type] || labels.iris;
+}
+
+function broadcastTranslation(message){
+  return message?.translations?.[currentLang] || message?.translations?.en || {title:"",body:""};
+}
+
+function broadcastTime(message){
+  if(message?.publishedAt?.toMillis) return message.publishedAt.toMillis();
+  return Date.parse(message?.publishedDate || message?.createdDate || 0) || 0;
+}
+
+function formatBroadcastDate(message){
+  const value = broadcastTime(message);
+  if(!value) return "";
+  const locale = currentLang === "zh" ? "zh-CN" : currentLang === "ms" ? "ms-MY" : "en-GB";
+  return new Intl.DateTimeFormat(locale,{day:"numeric",month:"short",year:"numeric"}).format(new Date(value));
+}
+
+function renderBroadcastInterface(){
+  const ui = broadcastUi();
+  const homeButton = document.getElementById("irisMessagesHomeButton");
+  const heading = document.getElementById("irisMessagesHeading");
+  const intro = document.getElementById("irisMessagesIntro");
+  const backTop = document.getElementById("irisMessagesBackTop");
+  const backBottom = document.getElementById("irisMessagesBackBottom");
+  const readButton = document.getElementById("irisPopupReadButton");
+  const closeButton = document.getElementById("irisPopupCloseButton");
+  if(homeButton) homeButton.textContent = ui.home;
+  if(heading) heading.textContent = ui.heading;
+  if(intro) intro.textContent = ui.intro;
+  if(backTop) backTop.textContent = ui.back;
+  if(backBottom) backBottom.textContent = ui.back;
+  if(readButton) readButton.textContent = ui.read;
+  if(closeButton) closeButton.textContent = ui.close;
+}
+
+function renderBroadcastMessages(){
+  const box = document.getElementById("irisMessagesList");
+  if(!box) return;
+  box.innerHTML = "";
+  if(!broadcastMessages.length){
+    const empty = document.createElement("div");
+    empty.className = "iris-empty";
+    empty.textContent = broadcastUi().empty;
+    box.appendChild(empty);
+    return;
+  }
+  for(const message of broadcastMessages){
+    const translated = broadcastTranslation(message);
+    const card = document.createElement("article");
+    card.className = "iris-message-card";
+    const type = document.createElement("div");
+    type.className = "iris-message-type";
+    type.textContent = broadcastTypeLabel(message.type);
+    const title = document.createElement("h3");
+    title.textContent = translated.title || broadcastTypeLabel(message.type);
+    const body = document.createElement("div");
+    body.className = "iris-message-body";
+    body.textContent = translated.body || "";
+    card.append(type,title,body);
+    const dateText = formatBroadcastDate(message);
+    if(dateText){
+      const date = document.createElement("div");
+      date.className = "iris-message-date";
+      date.textContent = dateText;
+      card.appendChild(date);
+    }
+    box.appendChild(card);
+  }
+}
+
+function renderOpenIrisPopup(){
+  if(!openBroadcastId) return;
+  const message = broadcastMessages.find(item=>item.id===openBroadcastId);
+  if(!message) return;
+  const translated = broadcastTranslation(message);
+  document.getElementById("irisPopupType").textContent = broadcastTypeLabel(message.type);
+  document.getElementById("irisPopupTitle").textContent = translated.title || broadcastTypeLabel(message.type);
+  document.getElementById("irisPopupBody").textContent = translated.body || "";
+}
+
+function showIrisPopup(message){
+  if(!message) return;
+  openBroadcastId = message.id;
+  renderBroadcastInterface();
+  renderOpenIrisPopup();
+  const backdrop = document.getElementById("irisPopupBackdrop");
+  if(!backdrop) return;
+  backdrop.classList.add("open");
+  backdrop.setAttribute("aria-hidden","false");
+  document.body.classList.add("iris-popup-open");
+}
+
+function markBroadcastSeen(messageId){
+  if(!messageId) return;
+  localStorage.setItem(`eog_broadcast_seen_${messageId}`,"1");
+}
+
+function closeIrisPopup(){
+  if(openBroadcastId) markBroadcastSeen(openBroadcastId);
+  const backdrop = document.getElementById("irisPopupBackdrop");
+  if(backdrop){
+    backdrop.classList.remove("open");
+    backdrop.setAttribute("aria-hidden","true");
+  }
+  document.body.classList.remove("iris-popup-open");
+  openBroadcastId = null;
+}
+
+function openIrisMessagesFromPopup(){
+  closeIrisPopup();
+  show("irisMessages");
+}
+
+function scheduleLatestBroadcastPopup(){
+  if(broadcastPopupTimer) clearTimeout(broadcastPopupTimer);
+  const latestActive = broadcastMessages.find(message=>message.active !== false);
+  if(!latestActive || localStorage.getItem(`eog_broadcast_seen_${latestActive.id}`)) return;
+  broadcastPopupTimer = setTimeout(()=>showIrisPopup(latestActive),2600);
+}
+
+async function loadBroadcastMessages(){
+  try{
+    const snapshot = await getDocs(query(
+      collection(db,"broadcastMessages"),
+      where("status","==","published")
+    ));
+    broadcastMessages = snapshot.docs
+      .map(item=>({id:item.id,...item.data()}))
+      .sort((a,b)=>broadcastTime(b)-broadcastTime(a));
+    renderBroadcastInterface();
+    renderBroadcastMessages();
+    scheduleLatestBroadcastPopup();
+  }catch(error){
+    console.warn("Iris messages could not be loaded.",error);
+    renderBroadcastInterface();
+    renderBroadcastMessages();
+  }
 }
 
 
@@ -972,6 +1256,7 @@ function show(id){
   if(id==="token") updateToken();
   if(id==="question") renderQuestionStoryBook();
   if(id==="journal") renderJournalBook();
+  if(id==="irisMessages") renderBroadcastMessages();
   setupBookSwipes();
   if(id==="question") renderQuestionStoryBook();
   if(id==="journal") renderJournalBook();
@@ -2237,6 +2522,7 @@ setLanguage(currentLang, false);
 setupBookSwipes();
 loadMembers();
 loadFirestoreStories();
+loadBroadcastMessages();
 
 const languageSelect = document.getElementById("languageSelect");
 if(languageSelect){
@@ -2253,6 +2539,8 @@ window.prevQuestionStory = prevQuestionStory;
 window.nextJournal = nextJournal;
 window.prevJournal = prevJournal;
 window.setLanguage = setLanguage;
+window.closeIrisPopup = closeIrisPopup;
+window.openIrisMessagesFromPopup = openIrisMessagesFromPopup;
 </script>
 </body>
 </html>
