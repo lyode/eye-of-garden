@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Eye of Garden — Iris Control</title>
+<title>Eye of Garden — Garden Control Room</title>
 <style>
 :root{
   --paper:#f7f1e5;--paper2:#fffaf0;--ink:#274433;--muted:#657765;
-  --leaf:#6f9b72;--leaf2:#3f744e;--gold:#c6a45b;--danger:#9a4d46;
+  --leaf:#6f9b72;--leaf2:#3f744e;--gold:#c6a45b;--danger:#9a4d46;--line:#d8ccb8;
 }
 *{box-sizing:border-box}
 body{
@@ -17,21 +17,23 @@ body{
     radial-gradient(circle at 90% 18%,rgba(198,164,91,.18),transparent 24%),
     linear-gradient(180deg,#fff9ed,var(--paper));
 }
-.wrap{max-width:1120px;margin:auto;padding:22px}
+.wrap{max-width:1220px;margin:auto;padding:22px}
 .hero,.panel{
-  background:rgba(255,250,240,.92);border:1px solid rgba(63,116,78,.15);
+  background:rgba(255,250,240,.94);border:1px solid rgba(63,116,78,.15);
   border-radius:28px;padding:24px;box-shadow:0 14px 36px rgba(40,80,50,.10);margin:16px 0;
 }
 h1{margin:0 0 6px;font-size:clamp(31px,5vw,49px)}
-h2{margin:0 0 12px}.hint{color:var(--muted);line-height:1.55}.hidden{display:none!important}
+h2{margin:0 0 12px}h3{margin-top:8px}.hint{color:var(--muted);line-height:1.55}.hidden{display:none!important}
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
 .grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.grid4{display:grid;grid-template-columns:110px repeat(3,minmax(0,1fr)) 90px;gap:10px;align-items:end}
 label{display:block;font-weight:700;margin:4px 0 7px}
 input,select,textarea{
   width:100%;padding:12px 13px;border:1px solid #c9c0ad;border-radius:15px;
   background:#fffdf7;color:var(--ink);font:inherit;
 }
-textarea{min-height:190px;resize:vertical;line-height:1.55}
+textarea{min-height:150px;resize:vertical;line-height:1.55}
+.story-area{min-height:250px}
 button{
   border:0;border-radius:999px;padding:12px 18px;cursor:pointer;font:inherit;font-weight:700;
   color:#fff;background:var(--leaf2);box-shadow:0 9px 22px rgba(40,80,50,.16);
@@ -40,7 +42,7 @@ button.secondary{background:#fff;color:#285438;border:1.5px solid rgba(63,116,78
 button.soft{background:#dfead8;color:#315d3d}.danger{background:var(--danger)}
 button:disabled{opacity:.45;cursor:not-allowed}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
 .status{padding:13px 15px;border-radius:16px;background:#edf5e8;margin-top:14px;white-space:pre-line}
-.status.error{background:#f8e8e4;color:#773b36}.tabs{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}
+.status.error{background:#f8e8e4;color:#773b36}.tabs{display:flex;gap:9px;flex-wrap:wrap;margin:18px 0}
 .tab.active{background:var(--leaf2);color:#fff}.tab:not(.active){background:#fff;color:#285438;border:1px solid #b9c9b7}
 .card-list{display:grid;gap:12px;margin-top:16px}.item-card{
   background:#fffdf8;border:1px solid rgba(63,116,78,.19);border-radius:20px;padding:16px;
@@ -49,12 +51,17 @@ button:disabled{opacity:.45;cursor:not-allowed}.actions{display:flex;gap:10px;fl
 .item-message{white-space:pre-line;line-height:1.55}.item-card h3{margin:3px 0 9px}.badge{
   display:inline-block;border-radius:999px;background:#dfead8;color:#315d3d;padding:5px 9px;font-size:12px;font-weight:700;
 }
-.language-card{background:#fff;border:1px solid #d8ccb8;border-radius:20px;padding:14px}
+.badge.draft{background:#f4e7bf;color:#6c5624}.badge.archived{background:#eee;color:#666}
+.language-card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:14px}
 .preview-backdrop{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(28,52,36,.44);backdrop-filter:blur(7px);z-index:9999}
-.preview-backdrop.open{display:flex}.preview-card{width:min(560px,100%);max-height:84vh;overflow:auto;background:linear-gradient(180deg,#fffdf8,#fff7e8);border-radius:28px;padding:23px;box-shadow:0 28px 80px rgba(25,55,35,.30)}
-.preview-card h2{font-size:27px}.preview-body{white-space:pre-line;line-height:1.7;font-size:18px}.preview-type{font-weight:700;color:#657765;margin-bottom:9px}
+.preview-backdrop.open{display:flex}.preview-card{width:min(690px,100%);max-height:88vh;overflow:auto;background:linear-gradient(180deg,#fffdf8,#fff7e8);border-radius:28px;padding:23px;box-shadow:0 28px 80px rgba(25,55,35,.30)}
+.preview-card h2{font-size:27px}.preview-body{line-height:1.7;font-size:18px}.preview-body p{margin:0 0 16px}.preview-type{font-weight:700;color:#657765;margin-bottom:9px}
 .topline{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
-@media(max-width:820px){.grid,.grid3{grid-template-columns:1fr}.wrap{padding:13px}.hero,.panel{padding:18px;border-radius:23px}.actions button{width:100%}}
+.story-row{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start}.story-row input[type=checkbox]{width:20px;height:20px;margin-top:8px}
+.coming-row{background:#fffdf8;border:1px solid rgba(63,116,78,.19);border-radius:18px;padding:13px;margin:10px 0}
+.mini{font-size:12px;color:var(--muted)}.divider{height:1px;background:rgba(63,116,78,.18);margin:20px 0}
+.code-hint{background:#f4efe4;border-radius:14px;padding:10px 12px;font-size:12px;color:#6a7567;margin:10px 0}
+@media(max-width:900px){.grid,.grid3,.grid4{grid-template-columns:1fr}.wrap{padding:13px}.hero,.panel{padding:18px;border-radius:23px}.actions button{width:100%}.story-row{grid-template-columns:auto 1fr}.story-row .actions{grid-column:1/-1}}
 </style>
 </head>
 <body>
@@ -62,8 +69,8 @@ button:disabled{opacity:.45;cursor:not-allowed}.actions{display:flex;gap:10px;fl
   <header class="hero">
     <div class="topline">
       <div>
-        <h1>👁️ Iris Control Room</h1>
-        <div class="hint">Read what the Garden has been hearing, then send one thoughtful message to many leaves.</div>
+        <h1>👁️ Garden Control Room</h1>
+        <div class="hint">Listen to the Garden, publish Iris messages, and manage every Question & Story from one permanent place.</div>
       </div>
       <a href="index.html" style="color:#315d3d;font-weight:700">← Return to Garden</a>
     </div>
@@ -81,14 +88,18 @@ button:disabled{opacity:.45;cursor:not-allowed}.actions{display:flex;gap:10px;fl
 
   <main id="adminApp" class="hidden">
     <div class="panel topline">
-      <div><b id="adminIdentity"></b><div class="hint">Only authenticated Garden administrators can read or publish here.</div></div>
+      <div><b id="adminIdentity"></b><div class="hint">Only authenticated Garden administrators can read, edit or publish here.</div></div>
       <button class="secondary" id="signOutButton">Sign out</button>
     </div>
 
     <nav class="tabs">
       <button class="tab active" data-tab="inbox">📥 Garden Inbox</button>
-      <button class="tab" data-tab="broadcast">📣 Send an Iris Message</button>
-      <button class="tab" data-tab="manage">📚 Manage Messages</button>
+      <button class="tab" data-tab="broadcast">📣 Iris Message</button>
+      <button class="tab" data-tab="manage">💌 Manage Messages</button>
+      <button class="tab" data-tab="story">📝 Story Studio</button>
+      <button class="tab" data-tab="stories">📚 Manage Stories</button>
+      <button class="tab" data-tab="coming">🔒 Coming Soon</button>
+      <button class="tab" data-tab="backup">💾 Backup</button>
     </nav>
 
     <section id="tab-inbox" class="panel tab-panel">
@@ -118,9 +129,48 @@ button:disabled{opacity:.45;cursor:not-allowed}.actions{display:flex;gap:10px;fl
     </section>
 
     <section id="tab-manage" class="panel tab-panel hidden">
-      <div class="topline"><div><h2>📚 Manage Iris Messages</h2><div class="hint">Only one message is active as the opening pop-up. All published messages remain available in Iris Messages.</div></div><button class="secondary" id="refreshMessagesButton">Refresh</button></div>
+      <div class="topline"><div><h2>💌 Manage Iris Messages</h2><div class="hint">Only one message is active as the opening pop-up. All published messages remain available in Iris Messages.</div></div><button class="secondary" id="refreshMessagesButton">Refresh</button></div>
       <div class="status" id="manageStatus">Loading messages…</div>
       <div class="card-list" id="messageList"></div>
+    </section>
+
+    <section id="tab-story" class="panel tab-panel hidden">
+      <div class="topline"><div><h2>📝 Question & Story Studio</h2><div class="hint">Write, translate, preview, save and publish without creating another temporary publisher file.</div></div><button class="secondary" id="newStoryButton">New story</button></div>
+      <input type="hidden" id="storyId">
+      <input type="hidden" id="storySourceVersion" value="0">
+      <div class="grid" style="margin-top:16px">
+        <div><label for="storyNumber">Story number</label><input id="storyNumber" type="number" min="1" step="1" placeholder="Example: 12"></div>
+        <div><label>Current status</label><div class="status" id="storyEditorStatus">New draft</div></div>
+      </div>
+      <div class="code-hint">Use one thought or paragraph per line. Wrap a whole line in <b>**double asterisks**</b> to make it bold. The Studio creates all HTML automatically.</div>
+      <div class="grid3" id="storyLanguageCards" style="margin-top:16px"></div>
+      <div class="actions">
+        <button class="secondary" id="previewStoryButton">Preview</button>
+        <button class="soft" id="saveStoryButton">Save safely</button>
+        <button id="publishStoryButton">Publish Story</button>
+      </div>
+      <div class="status" id="storyComposeStatus">Ready for a new story.</div>
+    </section>
+
+    <section id="tab-stories" class="panel tab-panel hidden">
+      <div class="topline"><div><h2>📚 Manage Question & Stories</h2><div class="hint">Edit existing Firestore pages, unpublish temporarily, or publish several completed drafts together.</div></div><button class="secondary" id="refreshStoriesButton">Refresh</button></div>
+      <div class="actions"><button id="publishSelectedStoriesButton">Publish selected drafts</button></div>
+      <div class="status" id="storiesStatus">Loading stories…</div>
+      <div class="card-list" id="storyList"></div>
+    </section>
+
+    <section id="tab-coming" class="panel tab-panel hidden">
+      <div class="topline"><div><h2>🔒 Coming Soon Manager</h2><div class="hint">These titles appear under Coming Soon. A published story automatically disappears from this list on the live Garden.</div></div><button class="secondary" id="addComingSoonButton">Add title</button></div>
+      <div id="comingSoonRows"></div>
+      <div class="actions"><button id="saveComingSoonButton">Save Coming Soon List</button></div>
+      <div class="status" id="comingSoonStatus">Loading the current list…</div>
+    </section>
+
+    <section id="tab-backup" class="panel tab-panel hidden">
+      <h2>💾 Garden Content Backup</h2>
+      <p class="hint">Download one JSON file containing all Firestore Question & Stories, translations, Coming Soon titles and Iris Messages. Private believer inbox messages are deliberately excluded.</p>
+      <div class="actions"><button id="downloadBackupButton">Download Content Backup</button></div>
+      <div class="status" id="backupStatus">No backup has been created in this session.</div>
     </section>
   </main>
 </div>
@@ -133,6 +183,14 @@ button:disabled{opacity:.45;cursor:not-allowed}.actions{display:flex;gap:10px;fl
   </div>
 </div>
 
+<div class="preview-backdrop" id="storyPreviewBackdrop">
+  <div class="preview-card">
+    <div class="topline"><div class="preview-type" id="storyPreviewType"></div><select id="storyPreviewLanguage" style="width:auto"><option value="en">English</option><option value="ms">Bahasa Melayu</option><option value="zh">简体中文</option></select></div>
+    <div class="preview-body" id="storyPreviewBody"></div>
+    <div class="actions"><button class="secondary" id="closeStoryPreviewButton">Close preview</button></div>
+  </div>
+</div>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
@@ -141,7 +199,11 @@ import { getFirestore, collection, doc, getDoc, getDocs, setDoc, updateDoc, writ
 const firebaseConfig={apiKey:"AIzaSyAa5nAU4yfy3CKQN_1qvUsmt7Ng2kTc2S4",authDomain:"eye-of-garden.firebaseapp.com",projectId:"eye-of-garden",storageBucket:"eye-of-garden.firebasestorage.app",messagingSenderId:"1043903336556",appId:"1:1043903336556:web:9374e611a5bd487793c849",measurementId:"G-VMT48DHSLK"};
 const app=initializeApp(firebaseConfig);const auth=getAuth(app);const db=getFirestore(app);
 let currentAdmin=null,currentMessageStatus="draft",currentMessageActive=false,inboxMessages=[],broadcastMessages=[];
+let storyRecords=[],currentStoryStatus="draft",comingSoonItems=[];
 const $=id=>document.getElementById(id);
+const languages=["en","ms","zh"];
+const langSuffix={en:"En",ms:"Ms",zh:"Zh"};
+const languageNames={en:"English",ms:"Bahasa Melayu",zh:"简体中文"};
 const typeTitles={
  iris:{en:"Iris Said...",ms:"Iris Berkata...",zh:"Iris 说……"},
  founderNote:{en:"A Little Note From the Founder",ms:"Sedikit Pesanan Daripada Pengasas",zh:"创办人的一点话"},
@@ -149,42 +211,101 @@ const typeTitles={
  gardenHeard:{en:"The Garden Heard You",ms:"Taman Mendengar Anda",zh:"花园听见了你"}
 };
 const typeLabels={iris:"👁️ Iris Said...",founderNote:"🌱 A Little Note From the Founder",founderClue:"🔍 A Clue From the Founder",gardenHeard:"💭 The Garden Heard You"};
-function timeValue(item){if(item?.createdAt?.toMillis)return item.createdAt.toMillis();if(item?.publishedAt?.toMillis)return item.publishedAt.toMillis();return Date.parse(item?.createdDate||item?.publishedDate||0)||0}
-function dateText(item){const value=item?.publishedAt?.toMillis?.()||item?.createdAt?.toMillis?.()||Date.parse(item?.publishedDate||item?.createdDate||0);return value?new Intl.DateTimeFormat("en-GB",{dateStyle:"medium",timeStyle:"short"}).format(new Date(value)):""}
-function setStatus(id,text,error=false){const el=$(id);el.textContent=text;el.classList.toggle("error",error)}
-function switchTab(name){document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.tab===name));document.querySelectorAll(".tab-panel").forEach(p=>p.classList.add("hidden"));$("tab-"+name).classList.remove("hidden");if(name==="inbox")loadInbox();if(name==="manage")loadMessages()}
-document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>switchTab(b.dataset.tab)));
+const storyLabels={
+ en:{badge:"Question & Story",question:"🌱 Question From The Garden",iris:"👁️ Iris Note"},
+ ms:{badge:"Soalan & Cerita",question:"🌱 Soalan Daripada Taman",iris:"👁️ Catatan Iris"},
+ zh:{badge:"提问与故事",question:"🌱 来自花园的提问",iris:"👁️ Iris 小语"}
+};
+const defaultComingSoon=[
+ {number:12,translations:{en:{title:"The Light Above The Ocean"},ms:{title:"Cahaya Di Atas Lautan"},zh:{title:"海面上的光"}}},
+ {number:13,translations:{en:{title:"The Ship That Returned Empty"},ms:{title:"Kapal Yang Pulang Kosong"},zh:{title:"空船归来"}}},
+ {number:14,translations:{en:{title:"The Room Beneath The Lake"},ms:{title:"Bilik Di Bawah Tasik"},zh:{title:"湖底的房间"}}},
+ {number:15,translations:{en:{title:"The Child Who Remembered Tomorrow"},ms:{title:"Kanak-kanak Yang Mengingati Hari Esok"},zh:{title:"记得明天的孩子"}}}
+];
 
-async function confirmAdmin(user){const snap=await getDoc(doc(db,"admins",user.uid));if(!snap.exists()||snap.data().active===false)throw new Error("This account is not an active Garden administrator.");currentAdmin=user;$("loginPanel").classList.add("hidden");$("adminApp").classList.remove("hidden");$("adminIdentity").textContent=`Administrator confirmed: ${user.email}`;await Promise.all([loadInbox(),loadMessages()])}
+function setStatus(id,text,isError=false){const el=$(id);el.textContent=text;el.classList.toggle("error",isError)}
+function timeValue(item){return item.updatedAt?.toMillis?.()||item.createdAt?.toMillis?.()||Date.parse(item.updatedDate||item.createdDate||0)||0}
+function dateText(item){const value=item.publishedAt?.toDate?.()||item.updatedAt?.toDate?.()||item.createdAt?.toDate?.()||new Date(item.publishedDate||item.updatedDate||item.createdDate||Date.now());return value.toLocaleString("en-MY",{dateStyle:"medium",timeStyle:"short"})}
+function switchTab(name){document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.tab===name));document.querySelectorAll(".tab-panel").forEach(p=>p.classList.toggle("hidden",p.id!==`tab-${name}`));if(name==="stories")loadStories();if(name==="coming")loadComingSoon()}
+document.querySelectorAll(".tab").forEach(button=>button.addEventListener("click",()=>switchTab(button.dataset.tab)));
+
+async function confirmAdmin(user){const admin=await getDoc(doc(db,"admins",user.uid));if(!admin.exists()||admin.data().active===false)throw new Error("This account is not an active Garden administrator.");currentAdmin=user;$("loginPanel").classList.add("hidden");$("adminApp").classList.remove("hidden");$("adminIdentity").textContent=`Administrator confirmed: ${user.email}`;await Promise.all([loadInbox(),loadMessages(),loadStories(),loadComingSoon()])}
 $("signInButton").addEventListener("click",async()=>{setStatus("loginStatus","Signing in…");try{const credential=await signInWithEmailAndPassword(auth,$("adminEmail").value.trim(),$("adminPassword").value);await confirmAdmin(credential.user);setStatus("loginStatus","Administrator confirmed.")}catch(error){setStatus("loginStatus",error.message,true)}});
 $("signOutButton").addEventListener("click",()=>signOut(auth));
 onAuthStateChanged(auth,async user=>{if(!user){currentAdmin=null;$("adminApp").classList.add("hidden");$("loginPanel").classList.remove("hidden");return}try{await confirmAdmin(user)}catch(error){setStatus("loginStatus",error.message,true);await signOut(auth)}});
 
+// Garden Inbox
 async function loadInbox(){if(!currentAdmin)return;setStatus("inboxStatus","Loading Garden messages…");try{const snap=await getDocs(collection(db,"gardenThoughts"));inboxMessages=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>timeValue(b)-timeValue(a));renderInbox();const unread=inboxMessages.filter(x=>!x.read).length;setStatus("inboxStatus",`${inboxMessages.length} messages · ${unread} not yet marked as noticed.`)}catch(error){setStatus("inboxStatus",error.message,true)}}
 function renderInbox(){const box=$("inboxList");box.innerHTML="";if(!inboxMessages.length){box.innerHTML='<div class="item-card">The Garden Inbox is quiet.</div>';return}for(const item of inboxMessages){const card=document.createElement("article");card.className="item-card"+(item.read?"":" unread");const meta=document.createElement("div");meta.className="item-meta";meta.textContent=`${item.name||"Anonymous Leaf"} · ${dateText(item)}`;const message=document.createElement("div");message.className="item-message";message.textContent=item.message||"";const actions=document.createElement("div");actions.className="actions";const noticed=document.createElement("button");noticed.className="secondary";noticed.textContent=item.read?"Mark as new":"Mark as noticed";noticed.onclick=()=>toggleThoughtRead(item);actions.appendChild(noticed);card.append(meta,message,actions);box.appendChild(card)}}
 async function toggleThoughtRead(item){try{await updateDoc(doc(db,"gardenThoughts",item.id),{read:!item.read,readAt:serverTimestamp()});await loadInbox()}catch(error){setStatus("inboxStatus",error.message,true)}}
 $("refreshInboxButton").addEventListener("click",loadInbox);
 
+// Iris Messages
 function fillDefaultTitles(){const titles=typeTitles[$("messageType").value];if(!$("titleEn").value.trim())$("titleEn").value=titles.en;if(!$("titleMs").value.trim())$("titleMs").value=titles.ms;if(!$("titleZh").value.trim())$("titleZh").value=titles.zh}
 $("messageType").addEventListener("change",fillDefaultTitles);
 function resetEditor(){$("messageId").value="";currentMessageStatus="draft";currentMessageActive=false;$("messageType").value="iris";["titleEn","bodyEn","titleMs","bodyMs","titleZh","bodyZh"].forEach(id=>$(id).value="");fillDefaultTitles();$("editorStatus").textContent="New draft";setStatus("composeStatus","Ready for a new message.")}
 $("newMessageButton").addEventListener("click",resetEditor);
-function formData(){return{type:$("messageType").value,translations:{en:{title:$("titleEn").value.trim(),body:$("bodyEn").value.trim()},ms:{title:$("titleMs").value.trim(),body:$("bodyMs").value.trim()},zh:{title:$("titleZh").value.trim(),body:$("bodyZh").value.trim()}}}}
-function validateAllLanguages(){const data=formData();for(const lang of ["en","ms","zh"]){if(!data.translations[lang].title||!data.translations[lang].body)throw new Error("Complete the title and message in English, Bahasa Melayu and Simplified Chinese before publishing.")}return data}
+function messageFormData(){return{type:$("messageType").value,translations:{en:{title:$("titleEn").value.trim(),body:$("bodyEn").value.trim()},ms:{title:$("titleMs").value.trim(),body:$("bodyMs").value.trim()},zh:{title:$("titleZh").value.trim(),body:$("bodyZh").value.trim()}}}}
+function validateMessageLanguages(){const data=messageFormData();for(const lang of languages){if(!data.translations[lang].title||!data.translations[lang].body)throw new Error("Complete the title and message in English, Bahasa Melayu and Simplified Chinese before publishing.")}return data}
 async function ensureMessageDoc(data,status=currentMessageStatus,active=currentMessageActive){let id=$("messageId").value;if(!id){id=doc(collection(db,"broadcastMessages")).id;$("messageId").value=id;await setDoc(doc(db,"broadcastMessages",id),{...data,status,active,createdAt:serverTimestamp(),createdDate:new Date().toISOString(),createdBy:currentAdmin.email,updatedAt:serverTimestamp(),updatedDate:new Date().toISOString()})}else{await setDoc(doc(db,"broadcastMessages",id),{...data,status,active,updatedAt:serverTimestamp(),updatedDate:new Date().toISOString(),updatedBy:currentAdmin.email},{merge:true})}return id}
-$("saveDraftButton").addEventListener("click",async()=>{try{setStatus("composeStatus","Saving…");const data=formData();if(!data.translations.en.title||!data.translations.en.body)throw new Error("Please complete at least the English title and message before saving.");const id=await ensureMessageDoc(data,currentMessageStatus,currentMessageActive);setStatus("composeStatus",`Saved safely as ${currentMessageStatus}. Message ID: ${id}`);await loadMessages()}catch(error){setStatus("composeStatus",error.message,true)}});
-async function publishCurrent(){try{setStatus("composeStatus","Publishing to the Garden…");const data=validateAllLanguages();const existingId=$("messageId").value;const isNew=!existingId;const id=existingId||doc(collection(db,"broadcastMessages")).id;const all=await getDocs(collection(db,"broadcastMessages"));const batch=writeBatch(db);for(const existing of all.docs){if(existing.id!==id&&existing.data().status==="published"&&existing.data().active===true)batch.update(existing.ref,{active:false,updatedAt:serverTimestamp(),updatedDate:new Date().toISOString()})}const nowIso=new Date().toISOString();const payload={...data,status:"published",active:true,updatedAt:serverTimestamp(),updatedDate:nowIso,publishedAt:serverTimestamp(),publishedDate:nowIso,publishedBy:currentAdmin.email};if(isNew){payload.createdAt=serverTimestamp();payload.createdDate=nowIso;payload.createdBy=currentAdmin.email}batch.set(doc(db,"broadcastMessages",id),payload,{merge:true});await batch.commit();$("messageId").value=id;currentMessageStatus="published";currentMessageActive=true;$("editorStatus").textContent="Published · active opening message";setStatus("composeStatus","Published successfully. Believers will see it once on their device, and it remains in Iris Messages.");await loadMessages()}catch(error){setStatus("composeStatus",error.message,true)}}
+$("saveDraftButton").addEventListener("click",async()=>{try{setStatus("composeStatus","Saving…");const data=messageFormData();if(!data.translations.en.title||!data.translations.en.body)throw new Error("Please complete at least the English title and message before saving.");const id=await ensureMessageDoc(data,currentMessageStatus,currentMessageActive);setStatus("composeStatus",`Saved safely as ${currentMessageStatus}. Message ID: ${id}`);await loadMessages()}catch(error){setStatus("composeStatus",error.message,true)}});
+async function publishCurrent(){try{setStatus("composeStatus","Publishing to the Garden…");const data=validateMessageLanguages();const existingId=$("messageId").value;const isNew=!existingId;const id=existingId||doc(collection(db,"broadcastMessages")).id;const all=await getDocs(collection(db,"broadcastMessages"));const batch=writeBatch(db);for(const existing of all.docs){if(existing.id!==id&&existing.data().status==="published"&&existing.data().active===true)batch.update(existing.ref,{active:false,updatedAt:serverTimestamp(),updatedDate:new Date().toISOString()})}const nowIso=new Date().toISOString();const payload={...data,status:"published",active:true,updatedAt:serverTimestamp(),updatedDate:nowIso,publishedAt:serverTimestamp(),publishedDate:nowIso,publishedBy:currentAdmin.email};if(isNew){payload.createdAt=serverTimestamp();payload.createdDate=nowIso;payload.createdBy=currentAdmin.email}batch.set(doc(db,"broadcastMessages",id),payload,{merge:true});await batch.commit();$("messageId").value=id;currentMessageStatus="published";currentMessageActive=true;$("editorStatus").textContent="Published · active opening message";setStatus("composeStatus","Published successfully. Believers will see it once on their device, and it remains in Iris Messages.");await loadMessages()}catch(error){setStatus("composeStatus",error.message,true)}}
 $("publishButton").addEventListener("click",publishCurrent);
-
 async function loadMessages(){if(!currentAdmin)return;setStatus("manageStatus","Loading Iris messages…");try{const snap=await getDocs(collection(db,"broadcastMessages"));broadcastMessages=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.publishedAt?.toMillis?.()||timeValue(b))-(a.publishedAt?.toMillis?.()||timeValue(a)));renderMessages();setStatus("manageStatus",`${broadcastMessages.length} messages stored. ${broadcastMessages.filter(x=>x.active&&x.status==="published").length} active pop-up.`)}catch(error){setStatus("manageStatus",error.message,true)}}
 function renderMessages(){const box=$("messageList");box.innerHTML="";if(!broadcastMessages.length){box.innerHTML='<div class="item-card">No Iris messages yet.</div>';return}for(const item of broadcastMessages){const card=document.createElement("article");card.className="item-card";const badge=document.createElement("span");badge.className="badge";badge.textContent=`${item.status||"draft"}${item.active?" · active":""}`;const title=document.createElement("h3");title.textContent=item.translations?.en?.title||typeLabels[item.type]||"Untitled message";const body=document.createElement("div");body.className="item-message";body.textContent=(item.translations?.en?.body||"").slice(0,320)+(item.translations?.en?.body?.length>320?"…":"");const meta=document.createElement("div");meta.className="item-meta";meta.textContent=`${typeLabels[item.type]||item.type} · ${dateText(item)}`;const actions=document.createElement("div");actions.className="actions";const edit=document.createElement("button");edit.className="secondary";edit.textContent="Edit";edit.onclick=()=>editMessage(item);const active=document.createElement("button");active.textContent=item.active?"Stop opening pop-up":item.status==="published"?"Make active":"Publish";active.onclick=()=>item.active?stopPopup(item):makeActive(item);actions.append(edit,active);card.append(badge,title,meta,body,actions);box.appendChild(card)}}
-function editMessage(item){$("messageId").value=item.id;currentMessageStatus=item.status||"draft";currentMessageActive=!!item.active;$("messageType").value=item.type||"iris";for(const [lang,suffix] of [["en","En"],["ms","Ms"],["zh","Zh"]]){$("title"+suffix).value=item.translations?.[lang]?.title||"";$("body"+suffix).value=item.translations?.[lang]?.body||""}$("editorStatus").textContent=`${currentMessageStatus}${currentMessageActive?" · active opening message":""}`;setStatus("composeStatus",`Editing ${item.id}.`);switchTab("broadcast");window.scrollTo({top:0,behavior:"smooth"})}
+function editMessage(item){$("messageId").value=item.id;currentMessageStatus=item.status||"draft";currentMessageActive=!!item.active;$("messageType").value=item.type||"iris";for(const lang of languages){const suffix=langSuffix[lang];$("title"+suffix).value=item.translations?.[lang]?.title||"";$("body"+suffix).value=item.translations?.[lang]?.body||""}$("editorStatus").textContent=`${currentMessageStatus}${currentMessageActive?" · active opening message":""}`;setStatus("composeStatus",`Editing ${item.id}.`);switchTab("broadcast");window.scrollTo({top:0,behavior:"smooth"})}
 async function makeActive(item){editMessage(item);await publishCurrent();switchTab("manage")}
 async function stopPopup(item){try{await updateDoc(doc(db,"broadcastMessages",item.id),{active:false,updatedAt:serverTimestamp(),updatedDate:new Date().toISOString()});await loadMessages()}catch(error){setStatus("manageStatus",error.message,true)}}
 $("refreshMessagesButton").addEventListener("click",loadMessages);
+function renderMessagePreview(){const data=messageFormData(),lang=$("previewLanguage").value,t=data.translations[lang];$("previewType").textContent=typeLabels[data.type];$("previewTitle").textContent=t.title||"Untitled";$("previewBody").textContent=t.body||"No message entered yet."}
+$("previewButton").addEventListener("click",()=>{$("previewLanguage").value="en";renderMessagePreview();$("previewBackdrop").classList.add("open")});$("previewLanguage").addEventListener("change",renderMessagePreview);$("closePreviewButton").addEventListener("click",()=>$("previewBackdrop").classList.remove("open"));$("previewBackdrop").addEventListener("click",e=>{if(e.target===$("previewBackdrop"))$("previewBackdrop").classList.remove("open")});
 
-function renderPreview(){const data=formData(),lang=$("previewLanguage").value,t=data.translations[lang];$("previewType").textContent=typeLabels[data.type];$("previewTitle").textContent=t.title||"Untitled";$("previewBody").textContent=t.body||"No message entered yet."}
-$("previewButton").addEventListener("click",()=>{$("previewLanguage").value="en";renderPreview();$("previewBackdrop").classList.add("open")});$("previewLanguage").addEventListener("change",renderPreview);$("closePreviewButton").addEventListener("click",()=>$("previewBackdrop").classList.remove("open"));$("previewBackdrop").addEventListener("click",e=>{if(e.target===$("previewBackdrop"))$("previewBackdrop").classList.remove("open")});
+// Story Studio helpers
+function storyField(lang,key){return $(key+langSuffix[lang])}
+function storyLanguageCard(lang){const names={en:{title:"Title",opening:"Opening prompt",question:"Question reflection",closing:"Closing question",story:"Story body",note:"Iris Note"},ms:{title:"Tajuk",opening:"Pembukaan",question:"Renungan soalan",closing:"Soalan penutup",story:"Isi cerita",note:"Catatan Iris"},zh:{title:"标题",opening:"开场提示",question:"问题思考",closing:"结尾提问",story:"故事正文",note:"Iris 小语"}}[lang];const suffix=langSuffix[lang];return `<div class="language-card"><h3>${languageNames[lang]}</h3><label for="storyTitle${suffix}">${names.title}</label><input id="storyTitle${suffix}"><label for="storyOpening${suffix}">${names.opening}</label><textarea id="storyOpening${suffix}" style="min-height:90px"></textarea><label for="storyQuestion${suffix}">${names.question}</label><textarea id="storyQuestion${suffix}"></textarea><label for="storyClosing${suffix}">${names.closing}</label><textarea id="storyClosing${suffix}" style="min-height:90px"></textarea><label for="storyBody${suffix}">${names.story}</label><textarea class="story-area" id="storyBody${suffix}"></textarea><label for="storyNote${suffix}">${names.note}</label><textarea id="storyNote${suffix}"></textarea></div>`}
+$("storyLanguageCards").innerHTML=languages.map(storyLanguageCard).join("");
+function escapeHtml(value){return String(value??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
+function lineHtml(line,extraClass=""){const raw=line.trim();if(!raw)return"";const bold=raw.startsWith("**")&&raw.endsWith("**")&&raw.length>4;const text=escapeHtml(bold?raw.slice(2,-2):raw);return `<p${extraClass?` class="${extraClass}"`:""}>${bold?`<b>${text}</b>`:text}</p>`}
+function paragraphsHtml(text){return String(text||"").split(/\r?\n/).map(x=>x.trim()).filter(Boolean).map(x=>lineHtml(x)).join("\n\n")}
+function completeStoryTranslation(data){return !!(data.title&&data.opening&&data.question&&data.closing&&data.story&&data.note)}
+function storyEditorData(){const number=Number($("storyNumber").value);const translations={};for(const lang of languages){translations[lang]={title:storyField(lang,"storyTitle").value.trim(),opening:storyField(lang,"storyOpening").value.trim(),question:storyField(lang,"storyQuestion").value.trim(),closing:storyField(lang,"storyClosing").value.trim(),story:storyField(lang,"storyBody").value.trim(),note:storyField(lang,"storyNote").value.trim()}}return{number,translations}}
+function buildStoryTranslation(lang,number,editor,sourceVersion){const label=storyLabels[lang];const n=String(number).padStart(3,"0");const questionHtml=`<h3>${label.question} #${n}</h3>\n\n${lineHtml(editor.opening,"seed-question")}\n\n${paragraphsHtml(editor.question)}\n\n${lineHtml(editor.closing,"seed-question")}`.trim();const storyHtml=`<h3>📖 ${escapeHtml(editor.title)}</h3>\n\n${paragraphsHtml(editor.story)}`.trim();const irisNoteHtml=`<p>${label.iris}</p>\n\n${paragraphsHtml(editor.note)}`.trim();return{language:lang,badge:`${label.badge} #${n}`,title:editor.title,questionHtml,storyHtml,irisNoteHtml,fullBodyHtml:[questionHtml,storyHtml,irisNoteHtml].filter(Boolean).join("\n\n"),sourceVersion,editor}}
+function resetStoryEditor(){const suggested=Math.max(1,...storyRecords.map(x=>Number(x.number)||0))+1;$("storyId").value="";$("storySourceVersion").value="0";$("storyNumber").value=suggested;currentStoryStatus="draft";for(const lang of languages){for(const key of ["storyTitle","storyOpening","storyQuestion","storyClosing","storyBody","storyNote"])storyField(lang,key).value=""}$("storyEditorStatus").textContent="New draft";setStatus("storyComposeStatus",`Ready for Question & Story #${String(suggested).padStart(3,"0")}.`)}
+$("newStoryButton").addEventListener("click",resetStoryEditor);
+function validateStoryBase(data){if(!Number.isInteger(data.number)||data.number<1)throw new Error("Enter a valid story number.");if(!completeStoryTranslation(data.translations.en))throw new Error("Complete every English Story Studio field before saving.")}
+function validateAllStoryLanguages(data){validateStoryBase(data);for(const lang of languages){if(!completeStoryTranslation(data.translations[lang]))throw new Error(`Complete every ${languageNames[lang]} field before publishing.`)}}
+async function saveStory(statusWanted){try{setStatus("storyComposeStatus",statusWanted==="published"?"Publishing story…":"Saving story…");const data=storyEditorData();if(statusWanted==="published"){validateAllStoryLanguages(data);ensureNoStoryGap([data.number])}else validateStoryBase(data);const id=`story-${String(data.number).padStart(4,"0")}`;const existing=await getDoc(doc(db,"content",id));const existingData=existing.exists()?existing.data():null;if(existingData&&$("storyId").value!==id&&$("storyId").value)throw new Error("The story number does not match the story being edited.");if(existingData&&!$("storyId").value&&existingData.status)throw new Error(`Story #${String(data.number).padStart(3,"0")} already exists. Open it from Manage Stories instead.`);const currentVersion=Number($("storySourceVersion").value||existingData?.sourceVersion||0);const sourceVersion=currentVersion+1;const currentPublished=currentStoryStatus==="published";const finalStatus=statusWanted==="published"?"published":currentPublished?"published":"draft";if(finalStatus==="published")validateAllStoryLanguages(data);const availableLanguages=languages.filter(lang=>completeStoryTranslation(data.translations[lang]));const nowIso=new Date().toISOString();const batch=writeBatch(db);const parentPayload={number:data.number,type:"story",status:finalStatus,sourceLanguage:"en",sourceVersion,availableLanguages,title:data.translations.en.title,updatedAt:serverTimestamp(),updatedDate:nowIso,updatedBy:currentAdmin.email};if(!existingData){parentPayload.createdAt=serverTimestamp();parentPayload.createdDate=nowIso;parentPayload.createdBy=currentAdmin.email}if(finalStatus==="published"){parentPayload.publishedAt=serverTimestamp();parentPayload.publishedDate=nowIso;parentPayload.publishedBy=currentAdmin.email}batch.set(doc(db,"content",id),parentPayload,{merge:true});for(const lang of languages){const translation=buildStoryTranslation(lang,data.number,data.translations[lang],sourceVersion);translation.updatedAt=serverTimestamp();translation.updatedDate=nowIso;translation.updatedBy=currentAdmin.email;batch.set(doc(db,"content",id,"translations",lang),translation,{merge:true})}await batch.commit();$("storyId").value=id;$("storySourceVersion").value=String(sourceVersion);currentStoryStatus=finalStatus;$("storyEditorStatus").textContent=finalStatus==="published"?"Published":"Draft";setStatus("storyComposeStatus",finalStatus==="published"?`Published successfully. Story #${String(data.number).padStart(3,"0")} is now available to the live Garden automatically.`:`Saved safely as a draft. Story ID: ${id}`);await loadStories()}catch(error){setStatus("storyComposeStatus",error.message,true)}}
+$("saveStoryButton").addEventListener("click",()=>saveStory("draft"));$("publishStoryButton").addEventListener("click",()=>saveStory("published"));
+function renderStoryPreview(){try{const data=storyEditorData();if(!Number.isInteger(data.number)||data.number<1)throw new Error("Enter a story number first.");const lang=$("storyPreviewLanguage").value;const translation=buildStoryTranslation(lang,data.number,data.translations[lang],Number($("storySourceVersion").value||1));$("storyPreviewType").textContent=`${translation.badge} · ${languageNames[lang]}`;$("storyPreviewBody").innerHTML=translation.fullBodyHtml||"<p>No content entered yet.</p>"}catch(error){$("storyPreviewBody").textContent=error.message}}
+$("previewStoryButton").addEventListener("click",()=>{$("storyPreviewLanguage").value="en";renderStoryPreview();$("storyPreviewBackdrop").classList.add("open")});$("storyPreviewLanguage").addEventListener("change",renderStoryPreview);$("closeStoryPreviewButton").addEventListener("click",()=>$("storyPreviewBackdrop").classList.remove("open"));$("storyPreviewBackdrop").addEventListener("click",e=>{if(e.target===$("storyPreviewBackdrop"))$("storyPreviewBackdrop").classList.remove("open")});
+
+// Story parsing for existing Firestore pages
+function nodeLine(p){const text=(p.textContent||"").trim();if(!text)return"";const children=[...p.children];const onlyBold=children.length===1&&children[0].tagName==="B"&&children[0].textContent.trim()===text;return onlyBold?`**${text}**`:text}
+function paragraphsToText(html,skipFirstIris=false){if(!html)return"";const parsed=new DOMParser().parseFromString(html,"text/html");let ps=[...parsed.body.querySelectorAll("p")];if(skipFirstIris&&ps.length&&/Iris|Catatan|小语/.test(ps[0].textContent))ps=ps.slice(1);return ps.map(nodeLine).filter(Boolean).join("\n")}
+function parseQuestionEditor(html){if(!html)return{opening:"",question:"",closing:""};const parsed=new DOMParser().parseFromString(html,"text/html");const ps=[...parsed.body.querySelectorAll("p")];const seeds=ps.filter(p=>p.classList.contains("seed-question"));let opening="",closing="";if(seeds.length>=2){opening=nodeLine(seeds[0]);closing=nodeLine(seeds[seeds.length-1])}else if(seeds.length===1){closing=nodeLine(seeds[0])}const excluded=new Set(seeds.length>=2?[seeds[0],seeds[seeds.length-1]]:seeds);const question=ps.filter(p=>!excluded.has(p)).map(nodeLine).filter(Boolean).join("\n");return{opening,question,closing}}
+async function loadStoryForEdit(item){try{setStatus("storyComposeStatus",`Loading ${item.id}…`);const translations={};for(const lang of languages){const snap=await getDoc(doc(db,"content",item.id,"translations",lang));translations[lang]=snap.exists()?snap.data():{}}$("storyId").value=item.id;$("storySourceVersion").value=String(item.sourceVersion||0);$("storyNumber").value=item.number;currentStoryStatus=item.status||"draft";for(const lang of languages){const t=translations[lang]||{};const editor=t.editor||{};const q=Object.keys(editor).length?editor:parseQuestionEditor(t.questionHtml);storyField(lang,"storyTitle").value=t.title||editor.title||"";storyField(lang,"storyOpening").value=editor.opening??q.opening??"";storyField(lang,"storyQuestion").value=editor.question??q.question??"";storyField(lang,"storyClosing").value=editor.closing??q.closing??"";storyField(lang,"storyBody").value=editor.story??paragraphsToText(t.storyHtml)??"";storyField(lang,"storyNote").value=editor.note??paragraphsToText(t.irisNoteHtml,true)??""}$("storyEditorStatus").textContent=currentStoryStatus==="published"?"Published":"Draft";setStatus("storyComposeStatus",`Editing ${item.id}. Preview before saving or publishing.`);switchTab("story");window.scrollTo({top:0,behavior:"smooth"})}catch(error){setStatus("storiesStatus",error.message,true)}}
+
+// Manage Stories
+async function loadStories(){if(!currentAdmin)return;setStatus("storiesStatus","Loading Question & Stories…");try{const snap=await getDocs(collection(db,"content"));storyRecords=snap.docs.map(d=>({id:d.id,...d.data()})).filter(x=>x.type==="story").sort((a,b)=>(Number(a.number)||0)-(Number(b.number)||0));renderStories();const published=storyRecords.filter(x=>x.status==="published").length;setStatus("storiesStatus",`${storyRecords.length} Firestore stories · ${published} published · ${storyRecords.length-published} draft or unpublished.`);if(!$("storyId").value)resetStoryEditor()}catch(error){setStatus("storiesStatus",error.message,true)}}
+function renderStories(){const box=$("storyList");box.innerHTML="";if(!storyRecords.length){box.innerHTML='<div class="item-card">No Firestore stories yet.</div>';return}for(const item of storyRecords){const card=document.createElement("article");card.className="item-card story-row";const check=document.createElement("input");check.type="checkbox";check.className="story-select";check.dataset.id=item.id;check.disabled=item.status==="published";const main=document.createElement("div");const badge=document.createElement("span");badge.className=`badge ${item.status||"draft"}`;badge.textContent=item.status||"draft";const title=document.createElement("h3");title.textContent=`#${String(item.number||0).padStart(3,"0")} ${item.title||"Untitled story"}`;const meta=document.createElement("div");meta.className="item-meta";meta.textContent=`Version ${item.sourceVersion||0} · Languages: ${(item.availableLanguages||[]).join(", ")||"none"} · ${dateText(item)}`;main.append(badge,title,meta);const actions=document.createElement("div");actions.className="actions";const edit=document.createElement("button");edit.className="secondary";edit.textContent="Edit";edit.onclick=()=>loadStoryForEdit(item);const state=document.createElement("button");state.textContent=item.status==="published"?"Unpublish":"Publish";state.onclick=()=>item.status==="published"?unpublishStory(item):publishStoredStory(item);actions.append(edit,state);card.append(check,main,actions);box.appendChild(card)}}
+function ensureNoStoryGap(numbers){const available=new Set(storyRecords.filter(x=>x.status==="published").map(x=>Number(x.number)));for(const number of numbers)available.add(Number(number));const max=Math.max(7,...available);for(let number=8;number<=max;number++){if(!available.has(number))throw new Error(`Publish Story #${String(number).padStart(3,"0")} first, so the Garden book has no missing page.`)}}
+async function validateStoredStory(item){for(const lang of languages){const snap=await getDoc(doc(db,"content",item.id,"translations",lang));if(!snap.exists())throw new Error(`${item.id} is missing ${languageNames[lang]}.`);const t=snap.data();if(Number(t.sourceVersion||0)!==Number(item.sourceVersion||0)||!t.fullBodyHtml||!t.title)throw new Error(`${item.id} has an incomplete or outdated ${languageNames[lang]} translation.`);if(t.editor&&!completeStoryTranslation(t.editor))throw new Error(`${item.id} has incomplete ${languageNames[lang]} Story Studio fields.`)}}
+async function publishStoredStory(item){try{setStatus("storiesStatus",`Checking ${item.id}…`);ensureNoStoryGap([item.number]);await validateStoredStory(item);const nowIso=new Date().toISOString();await updateDoc(doc(db,"content",item.id),{status:"published",publishedAt:serverTimestamp(),publishedDate:nowIso,publishedBy:currentAdmin.email,updatedAt:serverTimestamp(),updatedDate:nowIso,updatedBy:currentAdmin.email});await loadStories()}catch(error){setStatus("storiesStatus",error.message,true)}}
+async function unpublishStory(item){if(!confirm(`Temporarily remove Story #${String(item.number).padStart(3,"0")} from the live Garden?`))return;try{const nowIso=new Date().toISOString();await updateDoc(doc(db,"content",item.id),{status:"draft",updatedAt:serverTimestamp(),updatedDate:nowIso,updatedBy:currentAdmin.email});await loadStories()}catch(error){setStatus("storiesStatus",error.message,true)}}
+$("publishSelectedStoriesButton").addEventListener("click",async()=>{const ids=[...document.querySelectorAll(".story-select:checked")].map(x=>x.dataset.id);if(!ids.length){setStatus("storiesStatus","Select at least one draft story first.",true);return}try{setStatus("storiesStatus",`Checking ${ids.length} selected stories…`);const selected=storyRecords.filter(x=>ids.includes(x.id));ensureNoStoryGap(selected.map(x=>x.number));for(const item of selected)await validateStoredStory(item);const batch=writeBatch(db);const nowIso=new Date().toISOString();for(const item of selected)batch.update(doc(db,"content",item.id),{status:"published",publishedAt:serverTimestamp(),publishedDate:nowIso,publishedBy:currentAdmin.email,updatedAt:serverTimestamp(),updatedDate:nowIso,updatedBy:currentAdmin.email});await batch.commit();setStatus("storiesStatus",`${ids.length} stories published together successfully.`);await loadStories()}catch(error){setStatus("storiesStatus",error.message,true)}});
+$("refreshStoriesButton").addEventListener("click",loadStories);
+
+// Coming Soon Manager
+function cloneComing(items){return JSON.parse(JSON.stringify(items))}
+async function loadComingSoon(){if(!currentAdmin)return;setStatus("comingSoonStatus","Loading the current list…");try{const snap=await getDoc(doc(db,"siteSettings","storyLibrary"));comingSoonItems=snap.exists()&&Array.isArray(snap.data().comingSoon)?cloneComing(snap.data().comingSoon):cloneComing(defaultComingSoon);renderComingSoon();setStatus("comingSoonStatus",`${comingSoonItems.length} Coming Soon titles loaded.`)}catch(error){setStatus("comingSoonStatus",error.message,true)}}
+function renderComingSoon(){const box=$("comingSoonRows");box.innerHTML="";comingSoonItems.sort((a,b)=>Number(a.number)-Number(b.number)).forEach((item,index)=>{const row=document.createElement("div");row.className="coming-row grid4";row.innerHTML=`<div><label>Number</label><input type="number" min="1" value="${Number(item.number)||""}" data-coming-index="${index}" data-coming-field="number"></div>${languages.map(lang=>`<div><label>${languageNames[lang]}</label><input value="${escapeHtml(item.translations?.[lang]?.title||"")}" data-coming-index="${index}" data-coming-lang="${lang}"></div>`).join("")}<div><button class="danger" data-remove-coming="${index}">Remove</button></div>`;box.appendChild(row)});box.querySelectorAll("[data-remove-coming]").forEach(btn=>btn.onclick=()=>{comingSoonItems.splice(Number(btn.dataset.removeComing),1);renderComingSoon()})}
+function collectComingSoon(){const rows=[...$("comingSoonRows").querySelectorAll(".coming-row")];return rows.map((row,index)=>{const number=Number(row.querySelector('[data-coming-field="number"]').value);const translations={};for(const lang of languages)translations[lang]={title:row.querySelector(`[data-coming-lang="${lang}"]`).value.trim()};return{number,translations}})}
+$("addComingSoonButton").addEventListener("click",()=>{const next=Math.max(11,...comingSoonItems.map(x=>Number(x.number)||0))+1;comingSoonItems.push({number:next,translations:{en:{title:""},ms:{title:""},zh:{title:""}}});renderComingSoon()});
+$("saveComingSoonButton").addEventListener("click",async()=>{try{const items=collectComingSoon();for(const item of items){if(!Number.isInteger(item.number)||item.number<1)throw new Error("Every Coming Soon row needs a valid number.");for(const lang of languages)if(!item.translations[lang].title)throw new Error(`Complete all three titles for Story #${String(item.number).padStart(3,"0")}.`)}const nums=items.map(x=>x.number);if(new Set(nums).size!==nums.length)throw new Error("Each Coming Soon story number must be unique.");const nowIso=new Date().toISOString();await setDoc(doc(db,"siteSettings","storyLibrary"),{comingSoon:items,updatedAt:serverTimestamp(),updatedDate:nowIso,updatedBy:currentAdmin.email},{merge:true});comingSoonItems=cloneComing(items);setStatus("comingSoonStatus","Coming Soon list saved. The live Garden will use it automatically.")}catch(error){setStatus("comingSoonStatus",error.message,true)}});
+
+// Backup
+$("downloadBackupButton").addEventListener("click",async()=>{try{setStatus("backupStatus","Building backup…");const contentSnap=await getDocs(collection(db,"content"));const stories=[];for(const parentDoc of contentSnap.docs){const parent={id:parentDoc.id,...parentDoc.data()};if(parent.type!=="story")continue;parent.translations={};for(const lang of languages){const t=await getDoc(doc(db,"content",parentDoc.id,"translations",lang));if(t.exists())parent.translations[lang]=t.data()}stories.push(parent)}const setting=await getDoc(doc(db,"siteSettings","storyLibrary"));const messageSnap=await getDocs(collection(db,"broadcastMessages"));const backup={project:"Eye of Garden",generatedAt:new Date().toISOString(),stories,storyLibrary:setting.exists()?setting.data():null,broadcastMessages:messageSnap.docs.map(d=>({id:d.id,...d.data()}))};const clean=JSON.parse(JSON.stringify(backup,(key,value)=>value&&typeof value.toDate==="function"?value.toDate().toISOString():value));const blob=new Blob([JSON.stringify(clean,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=`eye-of-garden-content-backup-${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(url);setStatus("backupStatus",`Backup downloaded successfully with ${stories.length} Firestore stories and ${backup.broadcastMessages.length} Iris messages.`)}catch(error){setStatus("backupStatus",error.message,true)}});
+
 resetEditor();
 </script>
 </body>
