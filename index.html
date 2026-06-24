@@ -2670,13 +2670,47 @@ window.openIrisMessagesFromPopup = openIrisMessagesFromPopup;
       const voices = window.speechSynthesis.getVoices();
       const languagePrefix = utterance.lang.slice(0, 2).toLowerCase();
 
-      const matchingVoice = voices.find(voice =>
-        voice.lang.toLowerCase().startsWith(languagePrefix)
-      );
+    const softEnglishVoiceNames = [
+"aria",
+"jenny",
+"zira",
+"samantha",
+"google us english"
+];
 
-      if (matchingVoice) {
-        utterance.voice = matchingVoice;
-      }
+let matchingVoice;
+
+if (selectedLanguage === "en") {
+matchingVoice =
+voices.find(voice => {
+const voiceName = voice.name.toLowerCase();
+const voiceLanguage = voice.lang.toLowerCase();
+
+```
+  return (
+    voiceLanguage.startsWith("en") &&
+    softEnglishVoiceNames.some(name =>
+      voiceName.includes(name)
+    )
+  );
+}) ||
+voices.find(voice =>
+  voice.lang.toLowerCase().startsWith("en")
+);
+```
+
+utterance.rate = 0.9;
+utterance.pitch = 1.02;
+utterance.volume = 0.9;
+} else {
+matchingVoice = voices.find(voice =>
+voice.lang.toLowerCase().startsWith(languagePrefix)
+);
+}
+
+if (matchingVoice) {
+utterance.voice = matchingVoice;
+}
 
       window.speechSynthesis.speak(utterance);
     },
