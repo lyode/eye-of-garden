@@ -2739,5 +2739,138 @@ utterance.voice = matchingVoice;
     window.speechSynthesis.cancel();
   });
 </script>
+  <script>
+  (function () {
+    const synth = window.speechSynthesis;
+    let currentUtterance = null;
+
+    function getSelectedLanguage() {
+      const selected =
+        document.getElementById("languageSelect")?.value || "en";
+
+      const languages = {
+        en: "en-US",
+        ms: "ms-MY",
+        zh: "zh-CN"
+      };
+
+      return languages[selected] || "en-US";
+    }
+
+    function findVoice(language) {
+      const voices = synth.getVoices();
+      const languagePrefix = language.slice(0, 2).toLowerCase();
+
+      const preferredEnglishVoices = [
+        "microsoft aria",
+        "aria",
+        "microsoft jenny",
+        "jenny",
+        "microsoft zira",
+        "zira",
+        "samantha",
+        "google us english"
+      ];
+
+      if (languagePrefix === "en") {
+        return (
+          voices.find(voice => {
+            const name = voice.name.toLowerCase();
+            const lang = voice.lang.toLowerCase();
+
+            return (
+              lang.startsWith("en") &&
+              preferredEnglishVoices.some(preferred =>
+                name.includes(preferred)
+              )
+            );
+          }) ||
+          voices.find(voice =>
+            voice.lang.toLowerCase().startsWith("en")
+          ) ||
+          null
+        );
+      }
+
+      return (
+        voices.find(voice =>
+          voice.lang.toLowerCase().startsWith(languagePrefix)
+        ) || null
+      );
+    }
+
+    window.irisReader = {
+      read(targetId) {
+        if (!("speechSynthesis" in window)) {
+          alert("Speaker reading is not supported by this browser.");
+          return;
+        }
+
+        const target = document.getElementById(targetId);
+        const text = (
+          target?.innerText ||
+          target?.textContent ||
+          ""
+        ).trim();
+
+        if (!text) {
+          alert("Please open a Question or Story first.");
+          return;
+        }
+
+        synth.cancel();
+
+        const language = getSelectedLanguage();
+        const utterance = new SpeechSynthesisUtterance(text);
+        const voice = findVoice(language);
+
+        utterance.lang = language;
+        utterance.rate = language.startsWith("en") ? 0.9 : 0.95;
+        utterance.pitch = language.startsWith("en") ? 1.02 : 1;
+        utterance.volume = 1;
+
+        if (voice) {
+          utterance.voice = voice;
+        }
+
+        utterance.onerror = function (event) {
+          console.error("Speaker error:", event.error);
+        };
+
+        currentUtterance = utterance;
+
+        setTimeout(function () {
+          synth.speak(currentUtterance);
+        }, 200);
+      },
+
+      pause() {
+        if (synth.speaking && !synth.paused) {
+          synth.pause();
+        }
+      },
+
+      resume() {
+        if (synth.paused) {
+          synth.resume();
+        }
+      },
+
+      stop() {
+        synth.cancel();
+        currentUtterance = null;
+      }
+    };
+
+    synth.getVoices();
+
+    if ("onvoiceschanged" in synth) {
+      synth.onvoiceschanged = function () {
+        synth.getVoices();
+      };
+    }
+  })();
+</script>
+
 </body>
 </html>
