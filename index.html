@@ -412,6 +412,29 @@ body.iris-popup-open{overflow:hidden}
   .iris-popup-actions button{width:100%}
 }
 
+.speaker-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.speaker-btn {
+  min-width: 90px;
+  padding: 10px 14px;
+  border: 1px solid #789269;
+  border-radius: 20px;
+  background: #f1f7ec;
+  color: #29482c;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.speaker-btn:hover {
+  background: #dfedd5;
+}
 </style>
 </head>
 <body>
@@ -436,10 +459,16 @@ body.iris-popup-open{overflow:hidden}
     something changed after seventeen.
   </div>
 
-  <div class="evolution-question">
+  <div class="evolution-question" id="questionSpeakText">
     Can many small actions create something meaningful?
   </div>
 
+        <div class="speaker-controls" aria-label="Question audio controls">
+  <button type="button" class="speaker-btn" onclick="irisReader.read('questionSpeakText')">🔊 Read</button>
+  <button type="button" class="speaker-btn" onclick="irisReader.pause()">⏸ Pause</button>
+  <button type="button" class="speaker-btn" onclick="irisReader.resume()">▶ Continue</button>
+  <button type="button" class="speaker-btn" onclick="irisReader.stop()">⏹ Stop</button>
+</div>
   <div class="evolution-memory">
     originally it was;
     <br><br>
@@ -2604,6 +2633,75 @@ window.prevJournal = prevJournal;
 window.setLanguage = setLanguage;
 window.closeIrisPopup = closeIrisPopup;
 window.openIrisMessagesFromPopup = openIrisMessagesFromPopup;
+</script>
+
+  <script>
+  window.irisReader = {
+    read(targetId) {
+      const target = document.getElementById(targetId);
+
+      if (!target || !target.innerText.trim()) {
+        alert("There is no text to read.");
+        return;
+      }
+
+      window.speechSynthesis.cancel();
+
+      const selectedLanguage =
+        document.getElementById("languageSelect")?.value || "en";
+
+      const languageVoices = {
+        en: "en-US",
+        ms: "ms-MY",
+        zh: "zh-CN"
+      };
+
+      const utterance = new SpeechSynthesisUtterance(
+        target.innerText.trim()
+      );
+
+      utterance.lang = languageVoices[selectedLanguage] || "en-US";
+      utterance.rate = 0.95;
+      utterance.pitch = 1;
+      utterance.volume = 1;
+
+      const voices = window.speechSynthesis.getVoices();
+      const languagePrefix = utterance.lang.slice(0, 2).toLowerCase();
+
+      const matchingVoice = voices.find(voice =>
+        voice.lang.toLowerCase().startsWith(languagePrefix)
+      );
+
+      if (matchingVoice) {
+        utterance.voice = matchingVoice;
+      }
+
+      window.speechSynthesis.speak(utterance);
+    },
+
+    pause() {
+      if (
+        window.speechSynthesis.speaking &&
+        !window.speechSynthesis.paused
+      ) {
+        window.speechSynthesis.pause();
+      }
+    },
+
+    resume() {
+      if (window.speechSynthesis.paused) {
+        window.speechSynthesis.resume();
+      }
+    },
+
+    stop() {
+      window.speechSynthesis.cancel();
+    }
+  };
+
+  window.addEventListener("beforeunload", function () {
+    window.speechSynthesis.cancel();
+  });
 </script>
 </body>
 </html>
