@@ -1100,6 +1100,158 @@ padding: 15px 20px;
     border-radius: 22px;
   }
 }
+/* ==================================================
+   GARDEN — FINAL 3 VISUAL ADJUSTMENTS
+================================================== */
+
+/* 1. Make the real image fill the complete Garden scene */
+#garden .garden-page {
+  width: min(100%, 980px) !important;
+  padding: 24px 14px 40px !important;
+}
+
+#garden .garden-scene {
+  position: relative !important;
+
+  width: min(100%, 760px) !important;
+  min-height: 0 !important;
+  aspect-ratio: 941 / 1672;
+
+  margin: 0 auto !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+
+  border-radius: 28px !important;
+
+  background:
+    url("garden-hanging-real.png")
+    center top / cover
+    no-repeat !important;
+
+  box-shadow: 0 20px 55px rgba(43, 61, 32, 0.18) !important;
+}
+
+/* Remove the old decorative background shapes */
+#garden .garden-scene::before,
+#garden .garden-scene::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* The believer layer now covers the complete photograph */
+#garden #members {
+  position: absolute !important;
+  inset: 0 !important;
+
+  width: 100% !important;
+  max-width: none !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  aspect-ratio: auto !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border-radius: inherit !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+
+/* 2. Remove all butterflies and birds */
+#garden .bird-left,
+#garden .bird-right,
+#garden .garden-butterfly,
+#garden .butterfly,
+#garden [class*="butterfly"] {
+  display: none !important;
+}
+
+/* 3. Show only the believer name — no oval leaf shape */
+#garden #members .garden-believer-leaf {
+  width: auto !important;
+  height: auto !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  aspect-ratio: auto !important;
+
+  padding: 3px 5px !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+
+  color: white !important;
+
+  transform: translate(-50%, -50%) !important;
+}
+
+/* Remove the artificial leaf vein */
+#garden #members .garden-believer-leaf::before {
+  display: none !important;
+  content: none !important;
+}
+
+#garden .garden-believer-leaf-name {
+  position: static !important;
+  inset: auto !important;
+
+  display: block !important;
+  max-width: 90px !important;
+  padding: 0 !important;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  color: #ffffff !important;
+  font-size: clamp(11px, 1.8vw, 17px) !important;
+  font-weight: 800 !important;
+  line-height: 1.15 !important;
+  text-align: center !important;
+
+  text-shadow:
+    0 2px 4px rgba(15, 36, 13, 0.95),
+    0 0 9px rgba(15, 36, 13, 0.75) !important;
+
+  transform: none !important;
+}
+
+#garden .garden-believer-leaf-arrow {
+  display: none !important;
+}
+
+/* Gentle highlight only when tapped or hovered */
+#garden #members .garden-believer-leaf:hover,
+#garden #members .garden-believer-leaf:focus-visible,
+#garden #members .garden-believer-leaf.is-selected {
+  z-index: 30 !important;
+
+  padding: 4px 7px !important;
+  border-radius: 8px !important;
+  background: rgba(24, 65, 25, 0.38) !important;
+
+  transform:
+    translate(-50%, -50%)
+    scale(1.08) !important;
+}
+
+@media (max-width: 520px) {
+  #garden .garden-page {
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+  }
+
+  #garden .garden-scene {
+    width: 100% !important;
+    border-radius: 20px !important;
+  }
+
+  #garden .garden-believer-leaf-name {
+    max-width: 72px !important;
+    font-size: 12px !important;
+  }
+}
 </style>
 </head>
 <body>
