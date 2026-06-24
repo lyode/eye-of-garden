@@ -459,16 +459,11 @@ body.iris-popup-open{overflow:hidden}
     something changed after seventeen.
   </div>
 
-  <div class="evolution-question" id="questionSpeakText">
+ <div class="evolution-question">
     Can many small actions create something meaningful?
   </div>
 
-        <div class="speaker-controls" aria-label="Question audio controls">
-  <button type="button" class="speaker-btn" onclick="irisReader.read('questionSpeakText')">🔊 Read</button>
-  <button type="button" class="speaker-btn" onclick="irisReader.pause()">⏸ Pause</button>
-  <button type="button" class="speaker-btn" onclick="irisReader.resume()">▶ Continue</button>
-  <button type="button" class="speaker-btn" onclick="irisReader.stop()">⏹ Stop</button>
-</div>
+   
   <div class="evolution-memory">
     originally it was;
     <br><br>
@@ -785,7 +780,14 @@ body.iris-popup-open{overflow:hidden}
           <span class="book-badge" id="qsBadge">Garden Page</span>
           <span class="book-page" id="qsPage">Page 1 / 1</span>
         </div>
+
         <div class="book-body" id="questionStoryBook"></div>
+        <div class="speaker-controls" aria-label="Question and story audio controls">
+  <button type="button" class="speaker-btn" onclick="irisReader.read('questionStoryBook')">🔊 Read</button>
+  <button type="button" class="speaker-btn" onclick="irisReader.pause()">⏸ Pause</button>
+  <button type="button" class="speaker-btn" onclick="irisReader.resume()">▶ Continue</button>
+  <button type="button" class="speaker-btn" onclick="irisReader.stop()">⏹ Stop</button>
+</div>
         <div class="book-nav">
           <button class="secondary" onclick="prevQuestionStory()">← Previous</button>
           <button onclick="nextQuestionStory()">Next →</button>
