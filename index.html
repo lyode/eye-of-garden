@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head>fid="garden"
   <link rel="manifest" href="manifest.json">
 
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
@@ -435,6 +435,546 @@ body.iris-popup-open{overflow:hidden}
 .speaker-btn:hover {
   background: #dfedd5;
 }
+/* =========================================================
+EYE OF GARDEN — NEW INTERACTIVE GARDEN
+========================================================= */
+
+#garden.garden-v2 {
+padding: 0;
+background:
+radial-gradient(circle at 15% 20%, rgba(208, 228, 170, 0.34), transparent 30%),
+radial-gradient(circle at 85% 18%, rgba(255, 230, 174, 0.32), transparent 28%),
+linear-gradient(180deg, #fffdf5 0%, #f5f6df 100%);
+}
+
+#garden .garden-page {
+width: min(1500px, calc(100% - 28px));
+margin: 0 auto;
+padding: 42px 0 54px;
+}
+
+#garden .garden-heading-row {
+display: grid;
+grid-template-columns: minmax(300px, 1fr) minmax(420px, 1.2fr);
+gap: 34px;
+align-items: start;
+margin-bottom: 26px;
+}
+
+#garden .garden-heading small {
+display: block;
+margin-bottom: 8px;
+color: #547056;
+font-size: 13px;
+font-weight: 800;
+letter-spacing: 0.22em;
+text-transform: uppercase;
+}
+
+#garden .garden-heading h2 {
+margin: 0;
+color: #163d24;
+font-size: clamp(46px, 7vw, 88px);
+font-weight: 800;
+line-height: 0.98;
+letter-spacing: -0.04em;
+}
+
+#garden .garden-heading > p {
+margin: 18px 0 0;
+color: #4d6e4e;
+font-size: clamp(17px, 2vw, 25px);
+}
+
+#garden .garden-heading-line {
+width: min(430px, 100%);
+height: 1px;
+margin: 25px 0 18px;
+background: rgba(58, 92, 58, 0.18);
+}
+
+#garden .garden-intro {
+font-size: 16px !important;
+color: #4f6550 !important;
+}
+
+#garden .garden-tools {
+display: grid;
+grid-template-columns: auto minmax(220px, 1fr) auto;
+gap: 14px;
+align-items: center;
+justify-content: end;
+padding-top: 24px;
+}
+
+#garden .garden-back-btn,
+#garden .garden-filter,
+#garden .garden-search-box,
+#garden .garden-count-card {
+min-height: 54px;
+border-radius: 28px;
+}
+
+#garden .garden-back-btn {
+padding: 13px 22px;
+border: 1px solid #8aa47c;
+background: rgba(255, 255, 255, 0.72);
+color: #315537;
+font-weight: 800;
+white-space: nowrap;
+}
+
+#garden .garden-search-box {
+display: flex;
+align-items: center;
+gap: 10px;
+padding: 0 18px;
+border: 1px solid rgba(69, 101, 65, 0.18);
+background: rgba(255, 255, 255, 0.86);
+box-shadow: 0 10px 28px rgba(46, 74, 41, 0.08);
+}
+
+#garden .garden-search-box span {
+font-size: 25px;
+color: #234f2f;
+}
+
+#garden .garden-search-box input {
+width: 100%;
+border: 0;
+outline: 0;
+background: transparent;
+color: #294b30;
+font: inherit;
+}
+
+#garden .garden-search-box input::placeholder {
+color: #8b9a87;
+}
+
+#garden .garden-count-card {
+display: flex;
+align-items: center;
+gap: 12px;
+padding: 12px 18px;
+border: 1px solid rgba(103, 116, 65, 0.18);
+background: rgba(255, 250, 226, 0.9);
+box-shadow: 0 12px 30px rgba(70, 80, 42, 0.08);
+}
+
+#garden .garden-count-icon {
+font-size: 31px;
+}
+
+#garden .garden-count-card strong {
+display: block;
+color: #214628;
+font-size: 28px;
+line-height: 1;
+}
+
+#garden .garden-count-card small {
+display: block;
+margin-top: 4px;
+color: #586b58;
+font-size: 12px;
+line-height: 1.2;
+}
+
+#garden .garden-filter {
+grid-column: 3;
+justify-self: end;
+min-width: 170px;
+padding: 0 18px;
+border: 1px solid rgba(69, 101, 65, 0.16);
+background: rgba(255, 255, 255, 0.88);
+color: #315337;
+font-weight: 700;
+box-shadow: 0 9px 22px rgba(40, 67, 37, 0.07);
+}
+
+/* Main garden scene */
+
+#garden .garden-scene {
+position: relative;
+min-height: 760px;
+overflow: hidden;
+border: 1px solid rgba(52, 87, 46, 0.12);
+border-radius: 34px;
+background:
+radial-gradient(circle at 50% 75%, rgba(238, 233, 151, 0.32), transparent 34%),
+radial-gradient(circle at 8% 40%, rgba(180, 211, 141, 0.55), transparent 25%),
+radial-gradient(circle at 92% 38%, rgba(198, 222, 157, 0.55), transparent 25%),
+linear-gradient(180deg, #fffdf0 0%, #eff4d5 42%, #b8cd85 100%);
+box-shadow:
+0 22px 70px rgba(44, 73, 37, 0.13),
+inset 0 0 90px rgba(255, 255, 255, 0.6);
+}
+
+#garden .garden-scene::before,
+#garden .garden-scene::after {
+content: "";
+position: absolute;
+bottom: -70px;
+width: 380px;
+height: 430px;
+border-radius: 50%;
+background:
+radial-gradient(ellipse at center, #5f8937 0 18%, transparent 19%),
+radial-gradient(ellipse at 35% 40%, #3f752e 0 20%, transparent 21%),
+radial-gradient(ellipse at 68% 48%, #78a144 0 19%, transparent 20%);
+filter: blur(9px);
+opacity: 0.58;
+pointer-events: none;
+}
+
+#garden .garden-scene::before {
+left: -130px;
+transform: rotate(-17deg);
+}
+
+#garden .garden-scene::after {
+right: -130px;
+transform: rotate(17deg);
+}
+
+#garden .garden-leaf-layer {
+position: absolute;
+inset: 75px 70px 85px;
+z-index: 3;
+}
+
+/* Each believer leaf */
+
+#garden .garden-believer-leaf {
+--leaf-rotation: 0deg;
+
+position: absolute;
+width: clamp(112px, 11vw, 170px);
+aspect-ratio: 1.45 / 1;
+border: 1px solid rgba(232, 255, 204, 0.33);
+border-radius: 72% 18% 68% 22% / 70% 22% 72% 26%;
+background:
+linear-gradient(135deg, rgba(255,255,255,0.22), transparent 34%),
+repeating-linear-gradient(
+16deg,
+rgba(231, 255, 204, 0.10) 0 1px,
+transparent 1px 8px
+),
+radial-gradient(circle at 28% 24%, #8eb856 0%, #527f36 42%, #285b2d 78%, #174321 100%);
+color: #fff;
+cursor: pointer;
+transform: rotate(var(--leaf-rotation));
+transform-origin: center;
+box-shadow:
+inset 0 1px 8px rgba(255, 255, 255, 0.3),
+inset -12px -15px 22px rgba(13, 55, 26, 0.26),
+0 16px 32px rgba(27, 67, 33, 0.24);
+transition:
+transform 0.25s ease,
+filter 0.25s ease,
+box-shadow 0.25s ease;
+}
+
+#garden .garden-believer-leaf::before {
+content: "";
+position: absolute;
+left: 13%;
+top: 52%;
+width: 75%;
+height: 1px;
+background: linear-gradient(
+90deg,
+transparent,
+rgba(226, 247, 190, 0.55),
+transparent
+);
+transform: rotate(-22deg);
+transform-origin: center;
+}
+
+#garden .garden-believer-leaf:hover,
+#garden .garden-believer-leaf:focus-visible {
+z-index: 20;
+filter: brightness(1.12);
+transform:
+rotate(var(--leaf-rotation))
+translateY(-8px)
+scale(1.06);
+outline: 0;
+}
+
+#garden .garden-believer-leaf.is-selected {
+z-index: 25;
+filter: brightness(1.16);
+box-shadow:
+0 0 0 3px rgba(255, 241, 151, 0.9),
+0 0 30px rgba(255, 218, 77, 0.9),
+inset 0 1px 8px rgba(255, 255, 255, 0.4),
+0 18px 36px rgba(27, 67, 33, 0.28);
+}
+
+#garden .garden-believer-leaf-name {
+position: absolute;
+inset: 0;
+display: grid;
+place-items: center;
+padding: 12px 18px;
+color: #fff;
+font-size: clamp(15px, 1.7vw, 25px);
+font-weight: 800;
+text-align: center;
+text-shadow: 0 2px 7px rgba(7, 35, 16, 0.68);
+transform: rotate(calc(var(--leaf-rotation) * -1));
+}
+
+#garden .garden-believer-leaf-arrow {
+position: absolute;
+right: 16%;
+bottom: 18%;
+display: grid;
+place-items: center;
+width: 24px;
+height: 24px;
+border-radius: 50%;
+background: rgba(26, 69, 35, 0.58);
+color: #fff;
+font-size: 14px;
+transform: rotate(calc(var(--leaf-rotation) * -1));
+}
+
+/* Believer detail popup */
+
+#garden .believer-popup {
+position: absolute;
+z-index: 50;
+top: 46%;
+left: 50%;
+width: min(330px, calc(100% - 36px));
+padding: 22px;
+border: 1px solid rgba(157, 128, 49, 0.26);
+border-radius: 24px;
+background: rgba(255, 252, 239, 0.97);
+color: #29402d;
+box-shadow:
+0 24px 60px rgba(42, 64, 32, 0.24),
+0 0 0 1px rgba(255,255,255,0.7) inset;
+transform: translate(-50%, -50%);
+backdrop-filter: blur(10px);
+}
+
+#garden .believer-popup[hidden] {
+display: none !important;
+}
+
+#garden .believer-popup-close {
+position: absolute;
+top: 12px;
+right: 12px;
+width: 34px;
+height: 34px;
+padding: 0;
+border: 0;
+border-radius: 50%;
+background: rgba(80, 92, 61, 0.08);
+color: #415440;
+font-size: 24px;
+line-height: 1;
+}
+
+#garden .believer-popup-top {
+display: flex;
+align-items: center;
+gap: 15px;
+padding-right: 30px;
+}
+
+#garden .believer-popup-icon {
+display: grid;
+flex: 0 0 64px;
+place-items: center;
+width: 64px;
+height: 64px;
+border-radius: 50%;
+background: #f7edc9;
+font-size: 35px;
+}
+
+#garden .believer-popup h3 {
+margin: 0;
+color: #173d22;
+font-size: 26px;
+}
+
+#garden .believer-popup strong {
+color: #39713b;
+}
+
+#garden .believer-popup p {
+margin: 6px 0 0;
+line-height: 1.55;
+}
+
+#garden .believer-popup-divider {
+height: 1px;
+margin: 18px 0;
+background: rgba(68, 94, 62, 0.15);
+}
+
+#garden .believer-popup-dreams p {
+color: #4c5f4d;
+}
+
+/* Birds and butterflies */
+
+#garden .garden-butterfly,
+#garden .garden-bird {
+position: absolute;
+z-index: 12;
+pointer-events: none;
+filter: drop-shadow(0 4px 6px rgba(48, 66, 31, 0.18));
+}
+
+#garden .butterfly-one {
+top: 70px;
+left: 36%;
+font-size: 38px;
+animation: gardenFloat 5.5s ease-in-out infinite;
+}
+
+#garden .butterfly-two {
+right: 7%;
+bottom: 145px;
+font-size: 34px;
+animation: gardenFloat 6.5s ease-in-out infinite reverse;
+}
+
+#garden .bird-left {
+left: 3%;
+top: 42%;
+font-size: 58px;
+}
+
+#garden .bird-right {
+right: 3%;
+top: 30%;
+font-size: 58px;
+transform: scaleX(-1);
+}
+
+@keyframes gardenFloat {
+0%, 100% {
+transform: translate(0, 0) rotate(-5deg);
+}
+
+50% {
+transform: translate(18px, -22px) rotate(8deg);
+}
+}
+
+/* Bottom message */
+
+#garden .garden-bottom-message {
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 18px;
+width: min(650px, calc(100% - 32px));
+margin: -38px auto 26px;
+padding: 18px 28px;
+border: 1px solid rgba(126, 112, 65, 0.16);
+border-radius: 40px;
+background: rgba(255, 252, 235, 0.96);
+color: #3e5a40;
+box-shadow: 0 15px 36px rgba(48, 69, 36, 0.12);
+position: relative;
+z-index: 15;
+}
+
+#garden .garden-bottom-message p {
+margin: 0;
+text-align: center;
+}
+
+#garden .garden-share {
+margin-top: 26px;
+}
+
+/* Mobile and tablet */
+
+@media (max-width: 980px) {
+#garden .garden-heading-row {
+grid-template-columns: 1fr;
+}
+
+#garden .garden-tools {
+grid-template-columns: 1fr 1fr;
+padding-top: 0;
+}
+
+#garden .garden-count-card {
+grid-column: auto;
+}
+
+#garden .garden-filter {
+grid-column: auto;
+justify-self: stretch;
+}
+
+#garden .garden-scene {
+min-height: 700px;
+}
+
+#garden .garden-leaf-layer {
+inset: 80px 25px 90px;
+}
+}
+
+@media (max-width: 640px) {
+#garden .garden-page {
+width: min(100% - 18px, 1500px);
+padding-top: 25px;
+}
+
+#garden .garden-heading h2 {
+font-size: 52px;
+}
+
+#garden .garden-tools {
+grid-template-columns: 1fr;
+}
+
+#garden .garden-back-btn,
+#garden .garden-filter,
+#garden .garden-search-box,
+#garden .garden-count-card {
+width: 100%;
+}
+
+#garden .garden-scene {
+min-height: 780px;
+border-radius: 24px;
+}
+
+#garden .garden-leaf-layer {
+inset: 70px 10px 95px;
+}
+
+#garden .garden-believer-leaf {
+width: 112px;
+}
+
+#garden .bird-left,
+#garden .bird-right {
+font-size: 42px;
+}
+
+#garden .garden-bottom-message {
+margin-top: -30px;
+padding: 15px 20px;
+}
+}
+
 </style>
 </head>
 <body>
@@ -595,55 +1135,127 @@ body.iris-popup-open{overflow:hidden}
       </div></div>
   </section>
 
-  <section id="garden" class="section">
-    <button class="secondary" onclick="showHome()">← Back to Garden</button>
-    <div class="panel">
-      <h2>🌳 The Garden</h2>
-      <div class="spark-banner">
-        <div class="mini-title">Closed Chapter</div>
-        <b>🌱 THE SPARK</b><br>
-        <small>#0001 - #0017 · Closed forever</small>
-        <p>These first 17 leaves are now part of Eye of Garden's beginning.</p>
+  <section id="garden" class="section garden-v2">
+  <div class="garden-page">
+
+<div class="garden-heading-row">
+  <div class="garden-heading">
+    <small>Eye of Garden</small>
+    <h2>The Garden 🌿</h2>
+    <p>Every leaf belongs to someone who believed.</p>
+    <div class="garden-heading-line"></div>
+    <p class="garden-intro">
+      🍃 A space of hope, dreams, and shared goodness.
+    </p>
+  </div>
+
+  <div class="garden-tools">
+    <button
+      type="button"
+      class="secondary garden-back-btn"
+      onclick="showHome()"
+    >
+      ← Back to Garden
+    </button>
+
+    <label class="garden-search-box">
+      <span>⌕</span>
+      <input
+        id="gardenSearch"
+        type="search"
+        placeholder="Find My Leaf..."
+        autocomplete="off"
+      >
+    </label>
+
+    <div class="garden-count-card">
+      <span class="garden-count-icon">🍃</span>
+      <div>
+        <strong id="gardenLeafCount">0</strong>
+        <small>leaves planted<br>so far.</small>
       </div>
+    </div>
 
-      <div class="spark-leaf-stage">
-        <div class="spark-leaf-shape"></div>
-       <div class="spark-leaf-title">
-  <div class="mini-title">The Beginning</div>
-
-  <h3>🌟 The First Light</h3>
-
-  <p>
-  Before the Garden had branches,
-  before it had stories,
-  before anyone knew where it might grow.
-  </p>
-
-  <p>
-  Seventeen names quietly appeared.
-  </p>
-
-  <p><b>The Garden remembers them.</b></p>
-</div>
-        <div class="spark-leaf-grid" id="sparkLeafMembers"></div>
-       <div class="spark-legacy-note">
-  <small>
-  The first lights remain part of the Garden's story.
-  </small>
+    <select id="gardenFilter" class="garden-filter">
+      <option value="all">All Leaves</option>
+      <option value="spark">The Spark</option>
+      <option value="newest">Newest Leaves</option>
+    </select>
+  </div>
 </div>
 
-      <p>Every believer becomes one leaf in the Garden.</p>
-      <div class="leaf-list" id="members"></div>
+<div class="garden-scene" id="gardenScene">
+  <div class="garden-butterfly butterfly-one">🦋</div>
+  <div class="garden-butterfly butterfly-two">🦋</div>
+  <div class="garden-bird bird-left">🐦</div>
+  <div class="garden-bird bird-right">🐦</div>
 
-      <div class="share-nudge">
-        <p>Some leaves arrive quietly. Some leaves branch gently.</p>
-        <button onclick="inviteNewLeaf()">🌱 Invite them join this Garden</button>
-        <p class="hint" id="shareMsgGarden"></p>
+  <div
+    class="garden-leaf-layer"
+    id="members"
+    aria-label="Eye of Garden believers"
+  ></div>
+
+  <div
+    class="believer-popup"
+    id="believerPopup"
+    hidden
+  >
+    <button
+      type="button"
+      class="believer-popup-close"
+      id="believerPopupClose"
+      aria-label="Close believer details"
+    >
+      ×
+    </button>
+
+    <div class="believer-popup-top">
+      <div class="believer-popup-icon">🍃</div>
+
+      <div>
+        <h3 id="believerPopupName">Believer</h3>
+        <strong id="believerPopupNumber">Leaf #0000</strong>
+        <p id="believerPopupCountry">📍 Our Garden</p>
       </div>
-    <div class="page-nav center" id="bottomBack-garden">
-        <button class="secondary" onclick="showHome()">← Back to Garden</button>
-      </div></div>
-  </section>
+    </div>
+
+    <div class="believer-popup-divider"></div>
+
+    <div class="believer-popup-dreams">
+      <strong>🌱 Dreams:</strong>
+      <p id="believerPopupDreams">
+        Hope, kindness, and a better future.
+      </p>
+    </div>
+  </div>
+</div>
+
+<div class="garden-bottom-message">
+  <span>🌿</span>
+  <p>Small actions, many hearts, one beautiful garden.</p>
+  <span>♡</span>
+</div>
+
+<div class="share-nudge garden-share">
+  <p>Some leaves arrive quietly. Some leaves branch gently.</p>
+
+  <button type="button" onclick="inviteNewLeaf()">
+    🌱 Invite them to join this Garden
+  </button>
+
+  <p class="hint" id="shareMsgGarden"></p>
+</div>
+
+<div class="page-nav center" id="bottomBack-garden">
+  <button class="secondary" onclick="showHome()">
+    ← Back to Garden
+  </button>
+</div>
+
+  </div>
+</section>
+
 
   <section id="dream" class="section">
     <button class="secondary" onclick="showHome()">← Back to Garden</button>
@@ -2562,20 +3174,296 @@ function updateToken(m){
   document.getElementById("tokenName").textContent = (m.nickname || m.name || tr("Believer"))+" • "+placeOf(m)+" • "+tr("Every leaf matters.");
 }
 
+const gardenLeafPositions = [
+  { left: 22, top: 22, rotate: -18 },
+  { left: 35, top: 14, rotate: -7 },
+  { left: 47, top: 10, rotate: 3 },
+  { left: 59, top: 14, rotate: 12 },
+  { left: 70, top: 20, rotate: 21 },
+
+  { left: 14, top: 34, rotate: -23 },
+  { left: 28, top: 34, rotate: -10 },
+  { left: 42, top: 29, rotate: 1 },
+  { left: 56, top: 31, rotate: 10 },
+  { left: 72, top: 33, rotate: 19 },
+  { left: 82, top: 40, rotate: 25 },
+
+  { left: 9, top: 49, rotate: -25 },
+  { left: 22, top: 49, rotate: -13 },
+  { left: 36, top: 46, rotate: -4 },
+  { left: 50, top: 45, rotate: 5 },
+  { left: 64, top: 47, rotate: 14 },
+  { left: 78, top: 52, rotate: 22 },
+
+  { left: 14, top: 63, rotate: -20 },
+  { left: 28, top: 61, rotate: -9 },
+  { left: 42, top: 60, rotate: 0 },
+  { left: 56, top: 60, rotate: 9 },
+  { left: 70, top: 64, rotate: 18 },
+  { left: 84, top: 66, rotate: 26 },
+
+  { left: 22, top: 76, rotate: -13 },
+  { left: 38, top: 73, rotate: -3 },
+  { left: 53, top: 74, rotate: 7 },
+  { left: 67, top: 76, rotate: 15 },
+  { left: 78, top: 78, rotate: 22 }
+];
+
+function closeGardenBeliever(){
+  const popup = document.getElementById("believerPopup");
+
+  if(popup){
+    popup.hidden = true;
+  }
+
+  document
+    .querySelectorAll("#members .garden-believer-leaf.is-selected")
+    .forEach(leaf => leaf.classList.remove("is-selected"));
+}
+
+function openGardenBeliever(member, leafButton){
+  const popup = document.getElementById("believerPopup");
+
+  if(!popup) return;
+
+  closeGardenBeliever();
+
+  const name =
+    member.nickname ||
+    member.name ||
+    tr("Believer");
+
+  const no = Number(
+    member.memberNo ||
+    member.no ||
+    0
+  );
+
+  const location = [
+    member.region,
+    member.country || member.state
+  ]
+    .filter(Boolean)
+    .join(", ") || tr("Our Garden");
+
+  const dreams = Array.isArray(member.dreams)
+    ? member.dreams.filter(Boolean)
+    : member.dreams
+      ? [member.dreams]
+      : [];
+
+  document.getElementById("believerPopupName").textContent =
+    name;
+
+  document.getElementById("believerPopupNumber").textContent =
+    `${tr("Leaf")} #${padNo(no)}`;
+
+  document.getElementById("believerPopupCountry").textContent =
+    `📍 ${location}`;
+
+  document.getElementById("believerPopupDreams").textContent =
+    dreams.length
+      ? dreams.map(dream => tr(dream)).join(", ")
+      : tr("Hope, kindness, and a better future.");
+
+  leafButton.classList.add("is-selected");
+  popup.hidden = false;
+}
+
 function renderMembers(){
-  const box=document.getElementById("members");
+  const box = document.getElementById("members");
+  const countCard = document.getElementById("gardenLeafCount");
+  const searchInput = document.getElementById("gardenSearch");
+  const filterSelect = document.getElementById("gardenFilter");
+  const popupClose = document.getElementById("believerPopupClose");
+
+  if(!box) return;
+
+  if(countCard){
+    countCard.textContent = members.length;
+  }
+
+  if(
+    searchInput &&
+    !searchInput.dataset.gardenBound
+  ){
+    searchInput.addEventListener("input", renderMembers);
+    searchInput.dataset.gardenBound = "true";
+  }
+
+  if(
+    filterSelect &&
+    !filterSelect.dataset.gardenBound
+  ){
+    filterSelect.addEventListener("change", renderMembers);
+    filterSelect.dataset.gardenBound = "true";
+  }
+
+  if(
+    popupClose &&
+    !popupClose.dataset.gardenBound
+  ){
+    popupClose.addEventListener(
+      "click",
+      closeGardenBeliever
+    );
+
+    popupClose.dataset.gardenBound = "true";
+  }
+
+  closeGardenBeliever();
+  box.innerHTML = "";
 
   if(!members.length){
-    box.innerHTML=`<p>${tr("No leaves planted yet. Be the first.")}</p>`;
+    box.innerHTML =
+      `<p>${tr("No leaves planted yet. Be the first.")}</p>`;
+
     return;
   }
 
-  box.innerHTML = members.slice(0,100).map(m=>{
-    const no = Number(m.memberNo || m.no || 0);
-    return `<div class="member">🌿 <b>${escapeHtml(m.nickname || m.name || "Believer")}</b><br><small>${escapeHtml(tr(m.tier || "THE BELIEVER"))} • #${padNo(no)}<br>${escapeHtml(placeOf(m))}</small></div>`;
-  }).join("");
-}
+  const searchTerm = (
+    searchInput?.value || ""
+  )
+    .trim()
+    .toLowerCase();
 
+  const selectedFilter =
+    filterSelect?.value || "all";
+
+  let visibleMembers = members.filter(member => {
+    const dreams = Array.isArray(member.dreams)
+      ? member.dreams
+      : [member.dreams || ""];
+
+    const searchableText = [
+      member.nickname,
+      member.name,
+      member.memberNo,
+      member.no,
+      member.country,
+      member.state,
+      member.region,
+      member.tier,
+      ...dreams
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+
+    return !searchTerm ||
+      searchableText.includes(searchTerm);
+  });
+
+  if(selectedFilter === "spark"){
+    visibleMembers = visibleMembers.filter(member => {
+      const no = Number(
+        member.memberNo ||
+        member.no ||
+        0
+      );
+
+      const tier = String(
+        member.tier || ""
+      ).toUpperCase();
+
+      return no <= 17 || tier.includes("SPARK");
+    });
+  }
+
+  if(selectedFilter === "newest"){
+    visibleMembers = [...visibleMembers].sort((a, b) => {
+      const aNo = Number(
+        a.memberNo ||
+        a.no ||
+        0
+      );
+
+      const bNo = Number(
+        b.memberNo ||
+        b.no ||
+        0
+      );
+
+      return bNo - aNo;
+    });
+  }
+
+  if(!visibleMembers.length){
+    box.innerHTML =
+      `<p>${tr("No matching leaf was found.")}</p>`;
+
+    return;
+  }
+
+  visibleMembers
+    .slice(0, 40)
+    .forEach((member, index) => {
+      const position =
+        gardenLeafPositions[
+          index % gardenLeafPositions.length
+        ];
+
+      const name =
+        member.nickname ||
+        member.name ||
+        tr("Believer");
+
+      const no = Number(
+        member.memberNo ||
+        member.no ||
+        0
+      );
+
+      const leaf = document.createElement("button");
+
+      leaf.type = "button";
+      leaf.className = "garden-believer-leaf";
+
+      leaf.style.left = `${position.left}%`;
+      leaf.style.top = `${position.top}%`;
+
+      leaf.style.setProperty(
+        "--leaf-rotation",
+        `${position.rotate}deg`
+      );
+
+      leaf.style.zIndex = String(
+        10 + Math.round(position.top)
+      );
+
+      leaf.setAttribute(
+        "aria-label",
+        `${name}, ${tr("Leaf")} #${padNo(no)}`
+      );
+
+      leaf.title =
+        `${name} · ${tr("Leaf")} #${padNo(no)}`;
+
+      const nameText = document.createElement("span");
+
+      nameText.className =
+        "garden-believer-leaf-name";
+
+      nameText.textContent = name;
+
+      const arrow = document.createElement("span");
+
+      arrow.className =
+        "garden-believer-leaf-arrow";
+
+      arrow.textContent = "›";
+      arrow.setAttribute("aria-hidden", "true");
+
+      leaf.appendChild(nameText);
+      leaf.appendChild(arrow);
+
+      leaf.addEventListener("click", () => {
+        openGardenBeliever(member, leaf);
+      });
+
+      box.appendChild(leaf);
+    });
+}
 function renderDreamStats(){
   const counts={};
 
@@ -2686,7 +3574,6 @@ voices.find(voice => {
 const voiceName = voice.name.toLowerCase();
 const voiceLanguage = voice.lang.toLowerCase();
 
-```
   return (
     voiceLanguage.startsWith("en") &&
     softEnglishVoiceNames.some(name =>
@@ -2697,7 +3584,6 @@ const voiceLanguage = voice.lang.toLowerCase();
 voices.find(voice =>
   voice.lang.toLowerCase().startsWith("en")
 );
-```
 
 utterance.rate = 0.9;
 utterance.pitch = 1.02;
