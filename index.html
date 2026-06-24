@@ -975,6 +975,131 @@ padding: 15px 20px;
 }
 }
 
+/* REAL HANGING MOBILE GARDEN */
+
+#garden.garden-v2 {
+  padding: 0;
+  background: linear-gradient(180deg, #fffaf1, #f3e8da);
+}
+
+#garden .garden-page {
+  width: min(100%, 560px);
+  margin: 0 auto;
+  padding: 22px 10px 34px;
+}
+
+#garden #members {
+  position: relative !important;
+  display: block !important;
+
+  width: 100% !important;
+  max-width: 520px;
+  aspect-ratio: 941 / 1672;
+
+  margin: 18px auto 24px !important;
+  padding: 0 !important;
+  overflow: hidden;
+
+  border-radius: 26px;
+
+  background:
+    url("garden-hanging-real.png")
+    center top / cover
+    no-repeat !important;
+
+  box-shadow:
+    0 22px 50px rgba(48, 66, 35, 0.18);
+
+  isolation: isolate;
+}
+
+#garden #members::before,
+#garden #members::after {
+  display: none !important;
+  content: none !important;
+}
+
+#garden .bird-left,
+#garden .bird-right {
+  display: none !important;
+}
+
+#garden #members .garden-believer-leaf {
+  position: absolute !important;
+  margin: 0 !important;
+
+  width: clamp(82px, 24vw, 116px);
+  min-height: clamp(48px, 13vw, 66px);
+  padding: 10px 13px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+
+  border: 1px solid rgba(69, 94, 36, 0.25);
+  border-radius: 62% 38% 60% 40% / 56% 44% 58% 42%;
+
+  background: linear-gradient(
+    145deg,
+    rgba(239, 243, 190, 0.97),
+    rgba(203, 219, 129, 0.95)
+  );
+
+  color: #264d22;
+  font-size: clamp(12px, 3.4vw, 16px);
+  font-weight: 700;
+  line-height: 1.1;
+  text-align: center;
+
+  box-shadow:
+    0 8px 18px rgba(44, 67, 28, 0.2);
+
+  cursor: pointer;
+
+  transform:
+    translate(-50%, -50%)
+    rotate(var(--leaf-rotation, 0deg));
+
+  transition: 0.2s ease;
+}
+
+#garden #members .garden-believer-leaf:hover,
+#garden #members .garden-believer-leaf:focus-visible,
+#garden #members .garden-believer-leaf.is-selected {
+  z-index: 30 !important;
+
+  transform:
+    translate(-50%, -50%)
+    rotate(var(--leaf-rotation, 0deg))
+    scale(1.08);
+
+  box-shadow:
+    0 13px 28px rgba(44, 67, 28, 0.3),
+    0 0 0 3px rgba(241, 211, 101, 0.38);
+}
+
+#garden .garden-believer-leaf-name {
+  max-width: 88px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#garden .garden-believer-leaf-arrow {
+  display: none;
+}
+
+@media (max-width: 520px) {
+  #garden .garden-page {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  #garden #members {
+    border-radius: 22px;
+  }
+}
 </style>
 </head>
 <body>
