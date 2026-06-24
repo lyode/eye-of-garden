@@ -1252,6 +1252,45 @@ padding: 15px 20px;
     font-size: 12px !important;
   }
 }
+/* FINAL MOBILE NAME SIZE ADJUSTMENT */
+
+#garden #members .garden-believer-leaf {
+  max-width: 96px !important;
+  padding: 3px 4px !important;
+}
+
+#garden .garden-believer-leaf-name {
+  display: block !important;
+  width: auto !important;
+  max-width: 96px !important;
+
+  font-size: clamp(20px, 5.6vw, 24px) !important;
+  font-weight: 800 !important;
+  line-height: 1.02 !important;
+
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  overflow-wrap: anywhere !important;
+  word-break: normal !important;
+
+  text-align: center !important;
+
+  text-shadow:
+    0 2px 4px rgba(13, 35, 12, 0.95),
+    0 0 8px rgba(13, 35, 12, 0.75) !important;
+}
+
+@media (max-width: 390px) {
+  #garden #members .garden-believer-leaf {
+    max-width: 88px !important;
+  }
+
+  #garden .garden-believer-leaf-name {
+    max-width: 88px !important;
+    font-size: 20px !important;
+  }
+}
 </style>
 </head>
 <body>
