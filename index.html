@@ -725,6 +725,7 @@ body.iris-popup-open{overflow:hidden}
 
 <p><b>Opened Pages</b></p>
 
+<div id="openedStoryPages">
 <button class="story-link" onclick="openQuestionStory(1)">✅ #001 The First Small Bridge</button>
 <button class="story-link" onclick="openQuestionStory(2)">✅ #002 Suspended Coffee</button>
 <button class="story-link" onclick="openQuestionStory(3)">✅ #003 The Bag Beside The Bin</button>
@@ -732,23 +733,17 @@ body.iris-popup-open{overflow:hidden}
 <button class="story-link" onclick="openQuestionStory(5)">✅ #005 The Room Nobody Could Open</button>
 <button class="story-link" onclick="openQuestionStory(6)">✅ #006 The House That Forgot Its Owner</button>
 <button class="story-link" onclick="openQuestionStory(7)">✅ #007 The Cat That Refused To Stay Lost</button>
-<button class="story-link" id="storyLink008" onclick="openQuestionStory(8)" hidden></button>
-<button class="story-link" id="storyLink009" onclick="openQuestionStory(9)" hidden></button>
-<button class="story-link" id="storyLink010" onclick="openQuestionStory(10)" hidden></button>
-<button class="story-link" id="storyLink011" onclick="openQuestionStory(11)" hidden></button>
+</div>
 
 <hr>
 
 <p><b>🔒 Coming Soon</b></p>
-
-<p id="comingSoon008">#008 The Coin From Tomorrow</p>
-<p id="comingSoon009">#009 The Passenger Nobody Remembered</p>
-<p id="comingSoon010">#010 The Letter That Arrived Forty Years Late</p>
-<p id="comingSoon011">#011 The Village Without Doors</p>
+<div id="comingSoonStoryPages">
 <p>#012 The Light Above The Ocean</p>
 <p>#013 The Ship That Returned Empty</p>
 <p>#014 The Room Beneath The Lake</p>
 <p>#015 The Child Who Remembered Tomorrow</p>
+</div>
 
 <p><i>...and many more pages waiting to be discovered.</i></p>
 
@@ -2304,74 +2299,140 @@ const journalEntries = [
 `},
 ];
 
-// Firestore-managed Question & Story pages begin with #008 and continue here.
+// Firestore-managed Question & Story pages are discovered dynamically.
 const firestoreStoryRecords = new Map();
+const firestoreJournalRecords = new Map();
+let comingSoonStoryItems = [
+  {number:12,translations:{en:{title:"The Light Above The Ocean"},ms:{title:"Cahaya Di Atas Lautan"},zh:{title:"海面上的光"}}},
+  {number:13,translations:{en:{title:"The Ship That Returned Empty"},ms:{title:"Kapal Yang Pulang Kosong"},zh:{title:"空船归来"}}},
+  {number:14,translations:{en:{title:"The Room Beneath The Lake"},ms:{title:"Bilik Di Bawah Tasik"},zh:{title:"湖底的房间"}}},
+  {number:15,translations:{en:{title:"The Child Who Remembered Tomorrow"},ms:{title:"Kanak-kanak Yang Mengingati Hari Esok"},zh:{title:"记得明天的孩子"}}}
+];
 
-async function readPublishedFirestoreStory(number){
-  const contentId = `story-${String(number).padStart(4,"0")}`;
-  const parentSnapshot = await getDoc(doc(db, "content", contentId));
-  if(!parentSnapshot.exists()) return null;
-
+async function readPublishedFirestoreStory(parentSnapshot){
   const parent = parentSnapshot.data();
-  if(parent.status !== "published") return null;
+  const number = Number(parent.number || String(parentSnapshot.id).replace(/\D/g,""));
+  if(!number || parent.status !== "published" || parent.type !== "story") return null;
 
   const translations = {};
-  for(const language of ["en","ms","zh"]){
-    const translationSnapshot = await getDoc(doc(db, "content", contentId, "translations", language));
-    if(!translationSnapshot.exists()) continue;
+  await Promise.all(["en","ms","zh"].map(async language=>{
+    const translationSnapshot = await getDoc(doc(db,"content",parentSnapshot.id,"translations",language));
+    if(!translationSnapshot.exists()) return;
     const translation = translationSnapshot.data();
-    if(Number(translation.sourceVersion || 0) !== Number(parent.sourceVersion || 0)) continue;
-    if(!translation.fullBodyHtml) continue;
-    translations[language] = translation;
-  }
+    if(Number(translation.sourceVersion||0)!==Number(parent.sourceVersion||0)) return;
+    if(!translation.fullBodyHtml) return;
+    translations[language]=translation;
+  }));
 
   if(!translations.en) return null;
-  return { id:contentId, number, parent, translations };
+  return {id:parentSnapshot.id,number,parent,translations};
 }
 
-function refreshFirestoreStoryLinks(){
-  for(const number of [8,9,10,11]){
-    const record = firestoreStoryRecords.get(number);
-    const link = document.getElementById(`storyLink${String(number).padStart(3,"0")}`);
-    const comingSoon = document.getElementById(`comingSoon${String(number).padStart(3,"0")}`);
-    if(!record || !link) continue;
 
-    const selected = record.translations[currentLang] || record.translations.en;
-    link.textContent = `✅ #${String(number).padStart(3,"0")} ${selected.title}`;
-    link.hidden = false;
-    if(comingSoon) comingSoon.hidden = true;
+async function readPublishedFirestoreJournal(parentSnapshot){
+  const parent = parentSnapshot.data();
+  const number = Number(parent.number || String(parentSnapshot.id).replace(/\D/g,""));
+  if(!number || parent.status !== "published" || parent.type !== "journal") return null;
+
+  const translations = {};
+  await Promise.all(["en","ms","zh"].map(async language=>{
+    const translationSnapshot = await getDoc(doc(db,"content",parentSnapshot.id,"translations",language));
+    if(!translationSnapshot.exists()) return;
+    const translation = translationSnapshot.data();
+    if(Number(translation.sourceVersion||0)!==Number(parent.sourceVersion||0)) return;
+    if(!translation.fullBodyHtml) return;
+    translations[language]=translation;
+  }));
+
+  if(!translations.en) return null;
+  return {id:parentSnapshot.id,number,parent,translations};
+}
+
+function staticOpenedTitle(number){
+  const keys={
+    1:"✅ #001 The First Small Bridge",2:"✅ #002 Suspended Coffee",3:"✅ #003 The Bag Beside The Bin",
+    4:"✅ #004 The Broken Pot",5:"✅ #005 The Room Nobody Could Open",6:"✅ #006 The House That Forgot Its Owner",
+    7:"✅ #007 The Cat That Refused To Stay Lost"
+  };
+  return tr(keys[number]);
+}
+
+function renderStoryLibrary(){
+  const opened=document.getElementById("openedStoryPages");
+  const coming=document.getElementById("comingSoonStoryPages");
+  if(opened){
+    opened.innerHTML="";
+    for(let number=1;number<=7;number++){
+      const button=document.createElement("button");button.className="story-link";button.textContent=staticOpenedTitle(number);button.onclick=()=>openQuestionStory(number);opened.appendChild(button);
+    }
+    for(const record of [...firestoreStoryRecords.values()].sort((a,b)=>a.number-b.number)){
+      const selected=record.translations[currentLang]||record.translations.en;
+      const button=document.createElement("button");button.className="story-link";button.textContent=`✅ #${String(record.number).padStart(3,"0")} ${selected.title}`;button.onclick=()=>openQuestionStory(record.number);opened.appendChild(button);
+    }
   }
+  if(coming){
+    coming.innerHTML="";
+    for(const item of [...comingSoonStoryItems].sort((a,b)=>Number(a.number)-Number(b.number))){
+      if(firestoreStoryRecords.has(Number(item.number))) continue;
+      const selected=item.translations?.[currentLang]||item.translations?.en||{title:"Untitled"};
+      const p=document.createElement("p");p.textContent=`#${String(item.number).padStart(3,"0")} ${selected.title}`;coming.appendChild(p);
+    }
+    if(!coming.children.length){const p=document.createElement("p");p.textContent="The next page is still growing quietly.";coming.appendChild(p)}
+  }
+}
+
+function refreshFirestoreStoryLinks(){renderStoryLibrary()}
+
+async function loadStoryLibrarySettings(){
+  try{
+    const snapshot=await getDoc(doc(db,"siteSettings","storyLibrary"));
+    if(snapshot.exists()&&Array.isArray(snapshot.data().comingSoon))comingSoonStoryItems=snapshot.data().comingSoon;
+  }catch(error){console.warn("Coming Soon settings could not be loaded; the Garden will use its safe fallback list.",error)}
 }
 
 async function loadFirestoreStories(){
   try{
-    const records = await Promise.all([8,9,10,11].map(readPublishedFirestoreStory));
-    for(const record of records.filter(Boolean).sort((a,b)=>a.number-b.number)){
-      firestoreStoryRecords.set(record.number, record);
-      const index = record.number - 1;
-      const english = record.translations.en;
-      questionStoryEntries[index] = { badge:english.badge, body:english.fullBodyHtml };
+    await loadStoryLibrarySettings();
+    const parentSnapshots=await getDocs(query(collection(db,"content"),where("status","==","published")));
+    const storyRecords=(await Promise.all(parentSnapshots.docs.map(readPublishedFirestoreStory))).filter(Boolean).sort((a,b)=>a.number-b.number);
+    const journalRecords=(await Promise.all(parentSnapshots.docs.map(readPublishedFirestoreJournal))).filter(Boolean).sort((a,b)=>a.number-b.number);
 
+    firestoreStoryRecords.clear();
+    for(const record of storyRecords){
+      firestoreStoryRecords.set(record.number,record);
+      const index=record.number-1;
+      const english=record.translations.en;
+      questionStoryEntries[index]={badge:english.badge,body:english.fullBodyHtml};
       for(const language of ["ms","zh"]){
-        const translated = record.translations[language] || english;
-        questionStoryTranslations[language][index] = {
-          badge:translated.badge,
-          body:translated.fullBodyHtml
-        };
+        const translated=record.translations[language]||english;
+        questionStoryTranslations[language][index]={badge:translated.badge,body:translated.fullBodyHtml};
       }
     }
+    while(questionStoryEntries.length&&!questionStoryEntries[questionStoryEntries.length-1])questionStoryEntries.pop();
+    if(storyRecords.length)questionStoryIndex=questionStoryEntries.length-1;
 
-    // Remove any accidental empty slots and open the newest published Garden page.
-    while(questionStoryEntries.length && !questionStoryEntries[questionStoryEntries.length-1]){
-      questionStoryEntries.pop();
+    firestoreJournalRecords.clear();
+    for(const record of journalRecords){
+      firestoreJournalRecords.set(record.number,record);
+      const index=record.number-1;
+      const english=record.translations.en;
+      journalEntries[index]={badge:english.badge,body:english.fullBodyHtml};
+      for(const language of ["ms","zh"]){
+        const translated=record.translations[language]||english;
+        if(!journalTranslations[language])journalTranslations[language]=[];
+        journalTranslations[language][index]={badge:translated.badge,body:translated.fullBodyHtml};
+      }
     }
-    if(firestoreStoryRecords.size){
-      questionStoryIndex = questionStoryEntries.length - 1;
-      refreshFirestoreStoryLinks();
-      renderQuestionStoryBook();
-    }
+    while(journalEntries.length&&!journalEntries[journalEntries.length-1])journalEntries.pop();
+    if(journalRecords.length)journalIndex=journalEntries.length-1;
+
+    renderStoryLibrary();
+    renderQuestionStoryBook();
+    renderJournalBook();
   }catch(error){
-    console.warn("Firestore stories could not be loaded; embedded pages remain available.", error);
+    console.warn("Firestore stories or Founder Journals could not be loaded; embedded pages remain available.",error);
+    renderStoryLibrary();
+    renderJournalBook();
   }
 }
 
