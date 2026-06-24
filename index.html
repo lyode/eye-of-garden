@@ -2739,10 +2739,16 @@ utterance.voice = matchingVoice;
     window.speechSynthesis.cancel();
   });
 </script>
-  <script>
+
+<script>
   (function () {
     const synth = window.speechSynthesis;
+
+    let textParts = [];
+    let currentPart = 0;
     let currentUtterance = null;
+    let isPaused = false;
+    let isStopped = true;
 
     function getSelectedLanguage() {
       const selected =
@@ -2755,6 +2761,15 @@ utterance.voice = matchingVoice;
       };
 
       return languages[selected] || "en-US";
+    }
+
+    function splitText(text) {
+      const sentences =
+        text.match(/[^.!?。！？\n]+[.!?。！？]?/g) || [text];
+
+      return sentences
+        .map(sentence => sentence.trim())
+        .filter(Boolean);
     }
 
     function findVoice(language) {
@@ -2775,13 +2790,13 @@ utterance.voice = matchingVoice;
       if (languagePrefix === "en") {
         return (
           voices.find(voice => {
-            const name = voice.name.toLowerCase();
-            const lang = voice.lang.toLowerCase();
+            const voiceName = voice.name.toLowerCase();
+            const voiceLanguage = voice.lang.toLowerCase();
 
             return (
-              lang.startsWith("en") &&
-              preferredEnglishVoices.some(preferred =>
-                name.includes(preferred)
+              voiceLanguage.startsWith("en") &&
+              preferredEnglishVoices.some(name =>
+                voiceName.includes(name)
               )
             );
           }) ||
@@ -2799,14 +2814,58 @@ utterance.voice = matchingVoice;
       );
     }
 
-    window.irisReader = {
-      read(targetId) {
-        if (!("speechSynthesis" in window)) {
-          alert("Speaker reading is not supported by this browser.");
+    function speakCurrentPart() {
+      if (
+        isStopped ||
+        isPaused ||
+        currentPart >= textParts.length
+      ) {
+        return;
+      }
+
+      const language = getSelectedLanguage();
+
+      const utterance = new SpeechSynthesisUtterance(
+        textParts[currentPart]
+      );
+
+      const voice = findVoice(language);
+
+      utterance.lang = language;
+      utterance.rate = language.startsWith("en") ? 0.9 : 0.95;
+      utterance.pitch = language.startsWith("en") ? 1.02 : 1;
+      utterance.volume = 1;
+
+      if (voice) {
+        utterance.voice = voice;
+      }
+
+      utterance.onend = function () {
+        if (isStopped || isPaused) {
           return;
         }
 
+        currentPart += 1;
+        speakCurrentPart();
+      };
+
+      utterance.onerror = function (event) {
+        if (
+          event.error !== "interrupted" &&
+          event.error !== "canceled"
+        ) {
+          console.error("Speaker error:", event.error);
+        }
+      };
+
+      currentUtterance = utterance;
+      synth.speak(utterance);
+    }
+
+    window.irisReader = {
+      read(targetId) {
         const target = document.getElementById(targetId);
+
         const text = (
           target?.innerText ||
           target?.textContent ||
@@ -2820,44 +2879,42 @@ utterance.voice = matchingVoice;
 
         synth.cancel();
 
-        const language = getSelectedLanguage();
-        const utterance = new SpeechSynthesisUtterance(text);
-        const voice = findVoice(language);
+        textParts = splitText(text);
+        currentPart = 0;
+        currentUtterance = null;
+        isPaused = false;
+        isStopped = false;
 
-        utterance.lang = language;
-        utterance.rate = language.startsWith("en") ? 0.9 : 0.95;
-        utterance.pitch = language.startsWith("en") ? 1.02 : 1;
-        utterance.volume = 1;
-
-        if (voice) {
-          utterance.voice = voice;
-        }
-
-        utterance.onerror = function (event) {
-          console.error("Speaker error:", event.error);
-        };
-
-        currentUtterance = utterance;
-
-        setTimeout(function () {
-          synth.speak(currentUtterance);
-        }, 200);
+        setTimeout(speakCurrentPart, 200);
       },
 
       pause() {
-        if (synth.speaking && !synth.paused) {
-          synth.pause();
+        if (isStopped) {
+          return;
         }
+
+        isPaused = true;
+        synth.cancel();
       },
 
       resume() {
-        if (synth.paused) {
-          synth.resume();
+        if (isStopped || !isPaused) {
+          return;
         }
+
+        isPaused = false;
+
+        setTimeout(speakCurrentPart, 200);
       },
 
       stop() {
+        isStopped = true;
+        isPaused = false;
+
         synth.cancel();
+
+        textParts = [];
+        currentPart = 0;
         currentUtterance = null;
       }
     };
@@ -2869,8 +2926,13 @@ utterance.voice = matchingVoice;
         synth.getVoices();
       };
     }
+
+    window.addEventListener("beforeunload", function () {
+      synth.cancel();
+    });
   })();
 </script>
+
 
 </body>
 </html>
