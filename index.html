@@ -1442,6 +1442,39 @@ font-size: 20px !important; {
         <small id="tokenName">Every leaf matters.</small>
       </div>
 
+<div
+  id="newRecoveryKeyCard"
+  class="story-card"
+  hidden
+>
+  <div class="mini-title">
+    Keep This Somewhere Safe
+  </div>
+
+  <h3>🔑 My Private Recovery Key</h3>
+
+  <p>
+    This key can reopen your My Leaf room on another phone or browser.
+  </p>
+
+  <p>
+    <b id="newRecoveryKeyText">
+      GARDEN-XXXX-XXXX-XXXX
+    </b>
+  </p>
+
+  <button
+    type="button"
+    onclick="copyRecoveryKey()"
+  >
+    Copy Recovery Key
+  </button>
+
+  <p class="hint">
+    Save it privately. The Garden cannot show the same key again later.
+  </p>
+</div>
+
       <div class="share-nudge">
         <p>If someone comes to mind, the Garden may travel quietly.</p>
         <button onclick="inviteNewLeaf()">🌱 Invite them gently</button>
@@ -1548,6 +1581,7 @@ font-size: 20px !important; {
         <button
           type="button"
           id="myLeafRecoverButton"
+          onclick="recoverMyLeaf()"
         >
           Find My Leaf
         </button>
@@ -1887,6 +1921,7 @@ import {
   where,
   serverTimestamp,
   doc,
+  setDoc,
   runTransaction
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
@@ -2411,8 +2446,169 @@ function normaliseName(name){
 function normalisePhone(phone){
   return String(phone || "").replace(/[\s\-()+]/g,"");
 }
+function normaliseRecoveryKey(key){
+  return String(key || "")
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g,"");
+}
 
+function generateRecoveryKey(){
+  const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  const bytes = new Uint8Array(12);
 
+  crypto.getRandomValues(bytes);
+
+  const characters = Array.from(
+    bytes,
+    byte => alphabet[byte % alphabet.length]
+  ).join("");
+
+  return `GARDEN-${characters.slice(0,4)}-${characters.slice(4,8)}-${characters.slice(8,12)}`;
+}
+
+async function hashRecoveryKey(key){
+  const cleanKey = normaliseRecoveryKey(key);
+  const encodedKey = new TextEncoder().encode(cleanKey);
+
+  const hashBuffer = await crypto.subtle.digest(
+    "SHA-256",
+    encodedKey
+  );
+
+  return Array.from(
+    new Uint8Array(hashBuffer),
+    byte => byte.toString(16).padStart(2,"0")
+  ).join("");
+}
+async function copyRecoveryKey(){
+  const keyElement =
+    document.getElementById("newRecoveryKeyText");
+
+  const recoveryKey =
+    keyElement?.textContent?.trim() || "";
+
+  if(!recoveryKey || recoveryKey.includes("XXXX")){
+    alert("No Recovery Key is available yet.");
+    return;
+  }
+
+  try{
+    await navigator.clipboard.writeText(recoveryKey);
+
+    alert(
+      "Recovery Key copied. Please keep it somewhere safe."
+    );
+  }catch(error){
+    prompt(
+      "Copy and save your Recovery Key:",
+      recoveryKey
+    );
+  }
+}
+
+async function recoverMyLeaf(){
+  const numberInput =
+    document.getElementById("myLeafRecoveryNumber");
+
+  const keyInput =
+    document.getElementById("myLeafRecoveryKey");
+
+  const message =
+    document.getElementById("myLeafRecoveryMessage");
+
+  const button =
+    document.getElementById("myLeafRecoverButton");
+
+  const leafNo = Number(
+    String(numberInput?.value || "").replace(/\D/g,"")
+  );
+
+  const recoveryKey =
+    normaliseRecoveryKey(keyInput?.value || "");
+
+  if(message){
+    message.textContent = "";
+  }
+
+  if(!leafNo || !recoveryKey){
+    if(message){
+      message.textContent =
+        "Please enter both your Leaf Number and Recovery Key.";
+    }
+    return;
+  }
+
+  if(button){
+    button.disabled = true;
+    button.textContent = "Looking for your leaf...";
+  }
+
+  try{
+    const recoveryHash =
+      await hashRecoveryKey(recoveryKey);
+
+    const recoverySnap = await getDoc(
+      doc(db, "memberRecovery", recoveryHash)
+    );
+
+    if(!recoverySnap.exists()){
+      throw new Error("RECOVERY_NOT_FOUND");
+    }
+
+    const recoveryData = recoverySnap.data();
+
+    if(Number(recoveryData.memberNo || 0) !== leafNo){
+      throw new Error("RECOVERY_NOT_FOUND");
+    }
+
+    const memberSnap = await getDoc(
+      doc(db, "members", recoveryData.memberId)
+    );
+
+    if(!memberSnap.exists()){
+      throw new Error("MEMBER_NOT_FOUND");
+    }
+
+    const recoveredMember = {
+      id: memberSnap.id,
+      ...memberSnap.data()
+    };
+
+    const existingIndex = members.findIndex(member =>
+      Number(member.memberNo || member.no || 0) === leafNo
+    );
+
+    if(existingIndex >= 0){
+      members[existingIndex] = recoveredMember;
+    }else{
+      members.push(recoveredMember);
+    }
+
+    localStorage.setItem(
+      "eog_my_leaf_no",
+      String(leafNo)
+    );
+
+    if(keyInput){
+      keyInput.value = "";
+    }
+
+    renderMyLeaf();
+    updateToken(recoveredMember);
+
+  }catch(error){
+    if(message){
+      message.textContent =
+        "The Leaf Number and Recovery Key do not match.";
+    }
+  }finally{
+    if(button){
+      button.disabled = false;
+      button.textContent = "Find My Leaf";
+    }
+  }
+}
 function padNo(n){
   return String(Number(n || 0)).padStart(4,"0");
 }
@@ -2436,11 +2632,26 @@ function getReferrerNo(){
 }
 
 function getMyMember(){
-  const phone = localStorage.getItem("eog_stage1_last_phone");
-  if(!phone) return null;
-  return members.find(x=>x.phone===phone) || null;
-}
+  const savedNo = Number(
+    localStorage.getItem("eog_my_leaf_no") || 0
+  );
 
+  if(savedNo > 0){
+    const byNumber = members.find(member =>
+      Number(member.memberNo || member.no || 0) === savedNo
+    );
+
+    if(byNumber) return byNumber;
+  }
+
+  const phone = localStorage.getItem("eog_stage1_last_phone");
+
+  if(!phone) return null;
+
+  return members.find(member =>
+    member.phone === phone
+  ) || null;
+}  
 function renderMyLeaf(){
   const rememberedBox = document.getElementById("myLeafRemembered");
   const recoveryBox = document.getElementById("myLeafRecovery");
@@ -2574,7 +2785,9 @@ async function plantLeaf(){
     const referrerNo = getReferrerNo();
     const branchCode = "EOG-" + padNo(no);
     const referrerCode = referrerNo > 0 ? "EOG-" + padNo(referrerNo) : "";
-
+const recoveryKey = generateRecoveryKey();
+const recoveryHash = await hashRecoveryKey(recoveryKey);
+    
     const member = {
       nickname: name,
       nicknameKey: cleanName,
@@ -2594,10 +2807,31 @@ async function plantLeaf(){
       createdDate: new Date().toISOString()
     };
 
-    await addDoc(collection(db, "members"), member);
+   const memberDoc = await addDoc(collection(db, "members"), member);
 
+await setDoc(
+doc(db, "memberRecovery", recoveryHash),  {
+    memberId: memberDoc.id,
+    memberNo: no,
+    recoveryHash: recoveryHash,
+    createdAt: serverTimestamp()
+  }
+);
     localStorage.setItem("eog_stage1_last_phone", phone);
+localStorage.setItem("eog_my_leaf_no", String(no));
+const recoveryCard =
+  document.getElementById("newRecoveryKeyCard");
 
+const recoveryText =
+  document.getElementById("newRecoveryKeyText");
+
+if(recoveryText){
+  recoveryText.textContent = recoveryKey;
+}
+
+if(recoveryCard){
+  recoveryCard.hidden = false;
+}
     msg.textContent=tr("Your leaf has been planted. Your token is ready.");
 
     await loadMembers();
@@ -4007,6 +4241,8 @@ if(languageSelect){
 }
   window.show = show;
 window.showHome = showHome;
+  window.copyRecoveryKey = copyRecoveryKey;
+  window.recoverMyLeaf = recoverMyLeaf;
 window.plantLeaf = plantLeaf;
 window.inviteNewLeaf = inviteNewLeaf;
 window.sendGardenThought = sendGardenThought;
