@@ -2331,6 +2331,7 @@ function show(id){
   if(id==="garden"){ renderMembers(); renderSparkLeafMembers(); }
   if(id==="dreams") renderDreamStats();
   if(id==="token") updateToken();
+  if(id==="myLeaf") renderMyLeaf();
   if(id==="question") renderQuestionStoryBook();
   if(id==="journal") renderJournalBook();
   if(id==="irisMessages") renderBroadcastMessages();
@@ -2440,6 +2441,63 @@ function getMyMember(){
   return members.find(x=>x.phone===phone) || null;
 }
 
+function renderMyLeaf(){
+  const rememberedBox = document.getElementById("myLeafRemembered");
+  const recoveryBox = document.getElementById("myLeafRecovery");
+
+  if(!rememberedBox || !recoveryBox) return;
+
+  const member = getMyMember();
+
+  if(!member){
+    rememberedBox.hidden = true;
+    recoveryBox.hidden = false;
+    return;
+  }
+
+  const no = Number(member.memberNo || member.no || 0);
+  const name = member.nickname || member.name || tr("Believer");
+  const title = member.tier || "THE BELIEVER";
+  const place = placeOf(member) || tr("The Garden");
+
+  const dreams = Array.isArray(member.dreams)
+    ? member.dreams.filter(Boolean)
+    : [];
+
+  rememberedBox.hidden = false;
+  recoveryBox.hidden = true;
+
+  document.getElementById("myLeafName").textContent = name;
+
+  document.getElementById("myLeafNumber").textContent =
+    `Leaf #${padNo(no)}`;
+
+  document.getElementById("myLeafTitle").textContent =
+    tr(title);
+
+  document.getElementById("myLeafPlace").textContent =
+    `📍 ${place}`;
+
+  const dreamsBox = document.getElementById("myLeafDreams");
+
+  if(dreamsBox){
+    dreamsBox.innerHTML = "";
+
+    if(dreams.length){
+      dreams.forEach(dream=>{
+        const item = document.createElement("div");
+        item.className = "dream-row";
+        item.textContent = tr(dream);
+        dreamsBox.appendChild(item);
+      });
+    }else{
+      dreamsBox.textContent = "No dreams saved yet.";
+    }
+  }
+
+  updateToken(member);
+}
+  
 async function getNextMemberNo(){
   const counterRef = doc(db, "counters", "members");
   return await runTransaction(db, async (transaction) => {
