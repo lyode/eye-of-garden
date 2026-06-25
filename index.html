@@ -1329,6 +1329,7 @@ font-size: 20px !important; {
 
 </div>      <div class="actions">
         <button onclick="show('plant')">🌱 Plant Your Leaf</button>
+  <button class="secondary" onclick="show('myLeaf')">🍃 My Leaf</button>
         <button class="secondary" onclick="show('journal')">📖 Founder Journal</button>
         <button class="secondary" onclick="show('question')">💭 Garden Question</button>
   <button class="secondary" onclick="show('tell')">👁️ Tell The Garden</button>
@@ -1451,6 +1452,126 @@ font-size: 20px !important; {
       </div></div>
   </section>
 
+<section id="myLeaf" class="section">
+
+  <button class="secondary" onclick="showHome()">
+    ← Back to Garden
+  </button>
+
+  <div class="panel">
+
+    <div class="mini-title">
+      Your Place in the Garden
+    </div>
+
+    <h2>🍃 My Leaf</h2>
+
+    <p>
+      Return to the leaf you planted and see what the Garden remembers.
+    </p>
+
+    <!-- Shown when this device remembers the believer -->
+    <div id="myLeafRemembered" hidden>
+
+      <div class="story-card">
+
+        <h3 id="myLeafName">
+          Believer
+        </h3>
+
+        <p>
+          <b id="myLeafNumber">Leaf #----</b>
+        </p>
+
+        <p id="myLeafTitle">
+          Garden title
+        </p>
+
+        <p id="myLeafPlace">
+          📍 The Garden
+        </p>
+
+        <hr>
+
+        <p><b>🌱 My Dreams</b></p>
+
+        <div id="myLeafDreams">
+          Your dreams will appear here.
+        </div>
+
+      </div>
+
+      <button type="button" onclick="show('token')">
+        ⭐ View My Digital Token
+      </button>
+
+    </div>
+
+    <!-- Shown when the leaf must be recovered -->
+    <div id="myLeafRecovery">
+
+      <div class="story-card">
+
+        <h3>Recover My Leaf</h3>
+
+        <p>
+          Use your Leaf Number and private Recovery Key.
+        </p>
+
+        <label for="myLeafRecoveryNumber">
+          Leaf Number
+        </label>
+
+        <input
+          id="myLeafRecoveryNumber"
+          type="text"
+          inputmode="numeric"
+          placeholder="Example: 0026"
+          autocomplete="off"
+        >
+
+        <br><br>
+
+        <label for="myLeafRecoveryKey">
+          Private Recovery Key
+        </label>
+
+        <input
+          id="myLeafRecoveryKey"
+          type="text"
+          placeholder="Example: GARDEN-7K4M-P2Q8"
+          autocomplete="off"
+        >
+
+        <br><br>
+
+        <button
+          type="button"
+          id="myLeafRecoverButton"
+        >
+          Find My Leaf
+        </button>
+
+        <p
+          id="myLeafRecoveryMessage"
+          class="hint"
+        ></p>
+
+      </div>
+
+    </div>
+
+    <div class="page-nav center">
+      <button class="secondary" onclick="showHome()">
+        ← Back to Garden
+      </button>
+    </div>
+
+  </div>
+
+</section>
+
+  
   <section id="garden" class="section garden-v2">
   <div class="garden-page">
 
