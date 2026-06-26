@@ -1291,6 +1291,204 @@ font-size: 20px !important; {
     font-size: 20px !important;
   }
 }
+
+/* My Leaf — Phase 1 growing plant */
+
+#leafGrowthCard{
+  margin-top: 22px;
+  padding: 22px;
+  border-radius: 24px;
+  border: 1px solid rgba(74, 111, 70, 0.22);
+  background:
+    linear-gradient(
+      145deg,
+      rgba(250, 248, 237, 0.96),
+      rgba(232, 241, 220, 0.92)
+    );
+  box-shadow: 0 18px 40px rgba(48, 66, 35, 0.10);
+}
+
+.growth-plant-wrap{
+  position: relative;
+  min-height: 190px;
+  margin: 22px 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.growth-main-leaf{
+  position: relative;
+  z-index: 2;
+  font-size: 88px;
+  filter: drop-shadow(0 12px 14px rgba(42, 82, 47, 0.18));
+  transform: rotate(-10deg);
+}
+
+.growth-small-leaves{
+  position: absolute;
+  inset: 0;
+}
+
+.growth-small-leaf{
+  position: absolute;
+  font-size: 38px;
+  opacity: 0.22;
+  filter: grayscale(0.55);
+  transition:
+    opacity 0.5s ease,
+    transform 0.5s ease,
+    filter 0.5s ease;
+}
+
+.growth-small-leaf.active{
+  opacity: 1;
+  filter: none;
+  transform: scale(1.08);
+}
+
+.growth-small-leaf:nth-child(1){
+  left: 20%;
+  top: 38%;
+  transform: rotate(-28deg);
+}
+
+.growth-small-leaf:nth-child(2){
+  right: 20%;
+  top: 35%;
+  transform: rotate(24deg);
+}
+
+.growth-small-leaf:nth-child(3){
+  left: 42%;
+  bottom: 2%;
+  transform: rotate(6deg);
+}
+.growth-small-leaf:nth-child(4){
+  left: 12%;
+  top: 18%;
+  transform: rotate(-38deg) scale(0.88);
+}
+
+.growth-small-leaf:nth-child(5){
+  right: 12%;
+  top: 16%;
+  transform: rotate(34deg) scale(0.92);
+}
+
+.growth-small-leaf:nth-child(6){
+  left: 29%;
+  top: 8%;
+  transform: rotate(-18deg) scale(0.82);
+}
+
+.growth-small-leaf:nth-child(7){
+  right: 29%;
+  top: 7%;
+  transform: rotate(18deg) scale(0.86);
+}
+
+.growth-small-leaf:nth-child(8){
+  left: 8%;
+  bottom: 14%;
+  transform: rotate(-42deg) scale(0.78);
+}
+
+.growth-small-leaf:nth-child(9){
+  right: 8%;
+  bottom: 12%;
+  transform: rotate(40deg) scale(0.82);
+}
+
+.growth-small-leaf:nth-child(10){
+  left: 30%;
+  bottom: 0;
+  transform: rotate(-12deg) scale(0.74);
+}
+
+.growth-small-leaf:nth-child(11){
+  right: 30%;
+  bottom: -1%;
+  transform: rotate(14deg) scale(0.78);
+}
+
+.growth-small-leaf:nth-child(12){
+  left: 48%;
+  top: 0;
+  transform: rotate(2deg) scale(0.72);
+}
+.growth-progress-line{
+  margin: 12px 0 18px;
+  padding: 12px 16px;
+  border-radius: 999px;
+  background: rgba(69, 123, 75, 0.10);
+  color: #274c32;
+  font-weight: 700;
+  text-align: center;
+}
+
+.growth-unlocks{
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.growth-unlock{
+  padding: 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(62, 98, 62, 0.20);
+  background: rgba(255, 255, 255, 0.82);
+  transition:
+    opacity 0.4s ease,
+    transform 0.4s ease,
+    box-shadow 0.4s ease;
+}
+
+.growth-unlock.locked{
+  opacity: 0.42;
+  filter: grayscale(0.45);
+}
+
+.growth-unlock.unlocked{
+  opacity: 1;
+  filter: none;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(45, 93, 52, 0.12);
+}
+
+.growth-unlock-title{
+  font-weight: 800;
+  color: #21482d;
+  margin-bottom: 6px;
+}
+
+.growth-unlock-desc{
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: #5d6e60;
+}
+
+@media (max-width: 640px){
+  #leafGrowthCard{
+    padding: 18px;
+  }
+
+  .growth-plant-wrap{
+    min-height: 160px;
+  }
+
+  .growth-main-leaf{
+    font-size: 72px;
+  }
+
+  .growth-small-leaf{
+    font-size: 32px;
+  }
+
+  .growth-unlocks{
+    grid-template-columns: 1fr;
+  }
+}
 </style>
 </head>
 <body>
@@ -1534,6 +1732,47 @@ font-size: 20px !important; {
 
       </div>
 
+<div class="story-card" id="leafGrowthCard" hidden>
+  <div class="mini-title">🌿 Growing With The Garden</div>
+  <h3>My Growing Plant</h3>
+  <p id="leafGrowthSummary">
+    Each new leaf you gently invite helps your plant grow.
+  </p>
+
+  <div class="growth-plant-wrap">
+    <div class="growth-main-leaf">🍃</div>
+    <div class="growth-small-leaves" id="growthSmallLeaves"></div>
+  </div>
+
+  <div class="growth-progress-line" id="growthProgressLine">
+    0 / 3 leaves to unlock Story Voice
+  </div>
+
+  <div class="growth-unlocks" id="growthUnlocks">
+
+  <div class="growth-unlock locked" data-unlock="3">
+    <div class="growth-unlock-title">✍️ Story Voice</div>
+    <div class="growth-unlock-desc">Unlock when your plant grows 3 leaves</div>
+  </div>
+
+  <div class="growth-unlock locked" data-unlock="6">
+    <div class="growth-unlock-title">✨ My Leaf Words</div>
+    <div class="growth-unlock-desc">Unlock when your plant grows 6 leaves</div>
+  </div>
+
+  <div class="growth-unlock locked" data-unlock="9">
+    <div class="growth-unlock-title">🦋 My Leaf Mark</div>
+    <div class="growth-unlock-desc">Unlock when your plant grows 9 leaves</div>
+  </div>
+
+  <div class="growth-unlock locked" data-unlock="12">
+    <div class="growth-unlock-title">🏅 First Garden Badge</div>
+    <div class="growth-unlock-desc">Unlock when your plant grows 12 leaves</div>
+  </div>
+
+</div>
+</div>
+      
       <button type="button" onclick="show('token')">
         ⭐ View My Digital Token
       </button>
@@ -2678,6 +2917,77 @@ function renderMyLeaf(){
   rememberedBox.hidden = false;
   recoveryBox.hidden = true;
 
+  const growthCard =
+  document.getElementById("leafGrowthCard");
+
+const smallLeavesBox =
+  document.getElementById("growthSmallLeaves");
+
+const progressLine =
+  document.getElementById("growthProgressLine");
+
+const directLeafCount = members.filter(otherMember =>
+  Number(otherMember.referrerNo || 0) === no
+).length;
+
+if(growthCard){
+  growthCard.hidden = false;
+}
+
+if(smallLeavesBox){
+  smallLeavesBox.innerHTML = "";
+
+  for(let leafIndex = 1; leafIndex <= 12; leafIndex++){
+    const smallLeaf = document.createElement("span");
+
+    smallLeaf.className =
+      "growth-small-leaf" +
+      (leafIndex <= directLeafCount ? " active" : "");
+
+    smallLeaf.textContent = "🍃";
+
+    smallLeavesBox.appendChild(smallLeaf);
+  }
+}
+
+if(progressLine){
+  if(directLeafCount < 3){
+    progressLine.textContent =
+      `${directLeafCount} / 3 leaves to unlock Story Voice`;
+  }else if(directLeafCount < 6){
+    progressLine.textContent =
+      `${directLeafCount} / 6 leaves to unlock My Leaf Words`;
+  }else if(directLeafCount < 9){
+    progressLine.textContent =
+      `${directLeafCount} / 9 leaves to unlock My Leaf Mark`;
+  }else if(directLeafCount < 12){
+    progressLine.textContent =
+      `${directLeafCount} / 12 leaves to unlock First Garden Badge`;
+  }else{
+    progressLine.textContent =
+      `${directLeafCount} leaves are growing on your plant`;
+  }
+}
+
+document
+  .querySelectorAll("#growthUnlocks .growth-unlock")
+  .forEach(unlockCard => {
+    const requiredLeaves =
+      Number(unlockCard.dataset.unlock || 0);
+
+    const isUnlocked =
+      directLeafCount >= requiredLeaves;
+
+    unlockCard.classList.toggle(
+      "unlocked",
+      isUnlocked
+    );
+
+    unlockCard.classList.toggle(
+      "locked",
+      !isUnlocked
+    );
+  });
   document.getElementById("myLeafName").textContent = name;
 
   document.getElementById("myLeafNumber").textContent =
