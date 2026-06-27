@@ -98,6 +98,7 @@ button:disabled{opacity:.45;cursor:not-allowed}.actions{display:flex;gap:10px;fl
       <button class="tab" data-tab="manage">💌 Manage Messages</button>
       <button class="tab" data-tab="story">📝 Story Studio</button>
       <button class="tab" data-tab="stories">📚 Manage Stories</button>
+      <button class="tab" data-tab="storyVoice">✍️ Story Voice Review</button>
       <button class="tab" data-tab="journal">📖 Journal Studio</button>
       <button class="tab" data-tab="journals">🗂️ Manage Journals</button>
       <button class="tab" data-tab="coming">🔒 Coming Soon</button>
@@ -160,7 +161,39 @@ button:disabled{opacity:.45;cursor:not-allowed}.actions{display:flex;gap:10px;fl
       <div class="status" id="storiesStatus">Loading stories…</div>
       <div class="card-list" id="storyList"></div>
     </section>
+<section id="tab-storyVoice" class="panel tab-panel hidden">
 
+  <div class="topline">
+    <div>
+      <h2>✍️ Story Voice Review</h2>
+
+      <div class="hint">
+        Review short stories submitted by Garden members.
+        Nothing becomes public until you approve it.
+      </div>
+    </div>
+
+    <button
+      type="button"
+      id="refreshStoryVoiceButton"
+    >
+      Refresh
+    </button>
+  </div>
+
+  <div
+    class="status"
+    id="storyVoiceReviewStatus"
+  >
+    Loading Story Voice submissions...
+  </div>
+
+  <div
+    class="card-list"
+    id="storyVoiceReviewList"
+  ></div>
+
+</section>
 
     <section id="tab-journal" class="panel tab-panel hidden">
       <div class="topline"><div><h2>📖 Founder Journal Studio</h2><div class="hint">Write the founder's journey, prepare all three languages, preview it, save privately, and publish from this one Control Room.</div></div><button class="secondary" id="newJournalButton">New journal</button></div>
@@ -342,7 +375,204 @@ async function unpublishStory(item){if(!confirm(`Temporarily remove Story #${Str
 $("publishSelectedStoriesButton").addEventListener("click",async()=>{const ids=[...document.querySelectorAll(".story-select:checked")].map(x=>x.dataset.id);if(!ids.length){setStatus("storiesStatus","Select at least one draft story first.",true);return}try{setStatus("storiesStatus",`Checking ${ids.length} selected stories…`);const selected=storyRecords.filter(x=>ids.includes(x.id));ensureNoStoryGap(selected.map(x=>x.number));for(const item of selected)await validateStoredStory(item);const batch=writeBatch(db);const nowIso=new Date().toISOString();for(const item of selected)batch.update(doc(db,"content",item.id),{status:"published",publishedAt:serverTimestamp(),publishedDate:nowIso,publishedBy:currentAdmin.email,updatedAt:serverTimestamp(),updatedDate:nowIso,updatedBy:currentAdmin.email});await batch.commit();setStatus("storiesStatus",`${ids.length} stories published together successfully.`);await loadStories()}catch(error){setStatus("storiesStatus",error.message,true)}});
 $("refreshStoriesButton").addEventListener("click",loadStories);
 
+// Story Voice Review
 
+async function loadStoryVoiceSubmissions(){
+  if(!currentAdmin) return;
+
+  const statusBox =
+    $("storyVoiceReviewStatus");
+
+  const listBox =
+    $("storyVoiceReviewList");
+
+  if(!statusBox || !listBox) return;
+
+  statusBox.textContent =
+    "Loading Story Voice submissions...";
+
+  listBox.innerHTML = "";
+
+  try{
+    const snapshot = await getDocs(
+      collection(db, "storyVoiceSubmissions")
+    );
+
+    const submissions = snapshot.docs
+      .map(submissionDoc => ({
+        id: submissionDoc.id,
+        ...submissionDoc.data()
+      }))
+      .sort((a, b) => {
+        const aTime =
+          a.createdAt?.seconds || 0;
+
+        const bTime =
+          b.createdAt?.seconds || 0;
+
+        return bTime - aTime;
+      });
+
+    const pendingSubmissions =
+      submissions.filter(item =>
+        item.status === "pending"
+      );
+
+    statusBox.textContent =
+      pendingSubmissions.length
+        ? `${pendingSubmissions.length} pending Story Voice submission${pendingSubmissions.length === 1 ? "" : "s"}.`
+        : "No pending Story Voice submissions.";
+
+    if(!pendingSubmissions.length){
+      listBox.innerHTML =
+        '<div class="item-card">The Story Voice inbox is quiet.</div>';
+      return;
+    }
+
+    pendingSubmissions.forEach(item => {
+      const card =
+        document.createElement("div");
+
+      card.className = "item-card";
+
+      const heading =
+        document.createElement("h3");
+
+      heading.textContent =
+        item.title || "Untitled Story";
+
+      const author =
+        document.createElement("div");
+
+      author.className = "hint";
+
+      author.textContent =
+        `${item.displayName || "A Leaf from the Garden"} · Leaf #${String(item.memberNo || 0).padStart(4,"0")} · ${item.directLeafCount || 0} growing leaves`;
+
+      const story =
+        document.createElement("p");
+
+      story.style.whiteSpace = "pre-wrap";
+      story.textContent =
+        item.story || "";
+
+      const actions =
+        document.createElement("div");
+
+      actions.className = "actions";
+
+      const approveButton =
+        document.createElement("button");
+
+      approveButton.type = "button";
+      approveButton.textContent =
+        "Approve";
+
+      approveButton.addEventListener(
+        "click",
+        () => reviewStoryVoice(
+          item.id,
+          "approved"
+        )
+      );
+
+      const rejectButton =
+        document.createElement("button");
+
+      rejectButton.type = "button";
+      rejectButton.className = "secondary";
+      rejectButton.textContent =
+        "Keep Private";
+
+      rejectButton.addEventListener(
+        "click",
+        () => reviewStoryVoice(
+          item.id,
+          "rejected"
+        )
+      );
+
+      actions.append(
+        approveButton,
+        rejectButton
+      );
+
+      card.append(
+        heading,
+        author,
+        story,
+        actions
+      );
+
+      listBox.appendChild(card);
+    });
+
+  }catch(error){
+    console.error(
+      "Story Voice review failed:",
+      error
+    );
+
+    statusBox.textContent =
+      "Story Voice submissions could not be loaded.";
+  }
+}
+
+async function reviewStoryVoice(
+  submissionId,
+  newStatus
+){
+  const actionText =
+    newStatus === "approved"
+      ? "approve this story"
+      : "keep this story private";
+
+  if(!confirm(`Are you sure you want to ${actionText}?`)){
+    return;
+  }
+
+  try{
+    await updateDoc(
+      doc(
+        db,
+        "storyVoiceSubmissions",
+        submissionId
+      ),
+      {
+        status: newStatus,
+        reviewedAt: serverTimestamp()
+      }
+    );
+
+    await loadStoryVoiceSubmissions();
+
+  }catch(error){
+    console.error(
+      "Story Voice review update failed:",
+      error
+    );
+
+    alert(
+      "The Story Voice decision could not be saved."
+    );
+  }
+}
+
+$("refreshStoryVoiceButton")
+  .addEventListener(
+    "click",
+    loadStoryVoiceSubmissions
+  );
+
+document
+  .querySelector(
+    '[data-tab="storyVoice"]'
+  )
+  .addEventListener(
+    "click",
+    loadStoryVoiceSubmissions
+  );
+  
 // Founder Journal Studio helpers
 function journalField(lang,key){return $(key+langSuffix[lang])}
 function journalLanguageCard(lang){const names={en:{title:"Journal title",body:"Journal writing"},ms:{title:"Tajuk jurnal",body:"Penulisan jurnal"},zh:{title:"日记标题",body:"日记内容"}}[lang];const suffix=langSuffix[lang];return `<div class="language-card"><h3>${languageNames[lang]}</h3><label for="journalTitle${suffix}">${names.title}</label><input id="journalTitle${suffix}"><label for="journalBody${suffix}">${names.body}</label><textarea class="story-area" id="journalBody${suffix}" placeholder="Write one paragraph per line..."></textarea></div>`}
