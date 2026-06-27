@@ -1750,11 +1750,22 @@ font-size: 20px !important; {
 
   <div class="growth-unlocks" id="growthUnlocks">
 
-  <div class="growth-unlock locked" data-unlock="3">
-    <div class="growth-unlock-title">✍️ Story Voice</div>
-    <div class="growth-unlock-desc">Unlock when your plant grows 3 leaves</div>
+<button
+  type="button"
+  class="growth-unlock locked"
+  data-unlock="3"
+  id="storyVoiceUnlock"
+  onclick="openStoryVoice()"
+  disabled
+>
+  <div class="growth-unlock-title">✍️ Story Voice</div>
+  <div
+    class="growth-unlock-desc"
+    id="storyVoiceUnlockText"
+  >
+    Unlock when your plant grows 3 leaves
   </div>
-
+</button>
   <div class="growth-unlock locked" data-unlock="6">
     <div class="growth-unlock-title">✨ My Leaf Words</div>
     <div class="growth-unlock-desc">Unlock when your plant grows 6 leaves</div>
@@ -1776,7 +1787,96 @@ font-size: 20px !important; {
       <button type="button" onclick="show('token')">
         ⭐ View My Digital Token
       </button>
+<div
+  id="storyVoiceRoom"
+  class="story-card"
+  hidden
+>
+  <div class="mini-title">
+    ✍️ Your Story Voice
+  </div>
 
+  <h3>Share A Short Story</h3>
+
+  <p>
+    A small moment, a feeling, or something you noticed.
+    Your story will be reviewed gently before it appears publicly.
+  </p>
+
+  <label for="storyVoiceTitle">
+    Story Title
+  </label>
+
+  <input
+    id="storyVoiceTitle"
+    type="text"
+    maxlength="80"
+    placeholder="Give your story a short title"
+  >
+
+  <label for="storyVoiceBody">
+    Your Short Story
+  </label>
+
+  <textarea
+    id="storyVoiceBody"
+    maxlength="1200"
+    rows="8"
+    placeholder="Write your story here..."
+  ></textarea>
+
+  <div
+    id="storyVoiceCount"
+    class="hint"
+  >
+    0 / 1200 characters
+  </div>
+
+  <label for="storyVoiceIdentity">
+    How should your name appear?
+  </label>
+
+  <select id="storyVoiceIdentity">
+    <option value="name">
+      Show my first name
+    </option>
+
+    <option value="leaf">
+      Show my Leaf Number only
+    </option>
+
+    <option value="anonymous">
+      A Leaf from the Garden
+    </option>
+  </select>
+
+  <p class="hint">
+    Nothing will be published immediately. Iris will review it first.
+  </p>
+
+  <div class="actions">
+    <button
+      type="button"
+      id="storyVoiceSubmitButton"
+      onclick="submitStoryVoice()"
+    >
+      Send My Story To Iris
+    </button>
+
+    <button
+      type="button"
+      class="secondary"
+      onclick="closeStoryVoice()"
+    >
+      Close
+    </button>
+  </div>
+
+  <p
+    id="storyVoiceMessage"
+    class="hint"
+  ></p>
+</div>
     </div>
 
     <!-- Shown when the leaf must be recovered -->
@@ -2848,6 +2948,206 @@ async function recoverMyLeaf(){
     }
   }
 }
+  function updateStoryVoiceCount(){
+  const storyBody =
+    document.getElementById("storyVoiceBody");
+
+  const storyCount =
+    document.getElementById("storyVoiceCount");
+
+  if(!storyBody || !storyCount) return;
+
+  storyCount.textContent =
+    `${storyBody.value.length} / 1200 characters`;
+}
+
+function openStoryVoice(){
+  const member = getMyMember();
+
+  const room =
+    document.getElementById("storyVoiceRoom");
+
+  const button =
+    document.getElementById("storyVoiceUnlock");
+
+  const storyBody =
+    document.getElementById("storyVoiceBody");
+
+  const message =
+    document.getElementById("storyVoiceMessage");
+
+  if(!member || !room || !button || button.disabled){
+    return;
+  }
+
+  room.hidden = false;
+
+  if(message){
+    message.textContent = "";
+  }
+
+  if(storyBody){
+    storyBody.oninput = updateStoryVoiceCount;
+  }
+
+  updateStoryVoiceCount();
+
+  room.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+}
+
+function closeStoryVoice(){
+  const room =
+    document.getElementById("storyVoiceRoom");
+
+  if(room){
+    room.hidden = true;
+  }
+}
+  async function submitStoryVoice(){
+  const member = getMyMember();
+
+  const titleInput =
+    document.getElementById("storyVoiceTitle");
+
+  const bodyInput =
+    document.getElementById("storyVoiceBody");
+
+  const identityInput =
+    document.getElementById("storyVoiceIdentity");
+
+  const message =
+    document.getElementById("storyVoiceMessage");
+
+  const button =
+    document.getElementById("storyVoiceSubmitButton");
+
+  if(!member){
+    if(message){
+      message.textContent =
+        "Please recover your leaf before sharing a story.";
+    }
+    return;
+  }
+
+  const memberNo =
+    Number(member.memberNo || member.no || 0);
+
+  const directLeafCount = members.filter(otherMember =>
+    Number(otherMember.referrerNo || 0) === memberNo
+  ).length;
+
+  if(directLeafCount < 3){
+    if(message){
+      message.textContent =
+        "Story Voice opens when your plant grows 3 leaves.";
+    }
+    return;
+  }
+
+  const title =
+    String(titleInput?.value || "").trim();
+
+  const story =
+    String(bodyInput?.value || "").trim();
+
+  const identityChoice =
+    String(identityInput?.value || "anonymous");
+
+  if(title.length < 3){
+    if(message){
+      message.textContent =
+        "Please give your story a short title.";
+    }
+    return;
+  }
+
+  if(story.length < 20){
+    if(message){
+      message.textContent =
+        "Please write at least 20 characters.";
+    }
+    return;
+  }
+
+  if(button){
+    button.disabled = true;
+    button.textContent = "Sending to Iris...";
+  }
+
+  if(message){
+    message.textContent = "";
+  }
+
+  try{
+    const memberName =
+      member.nickname ||
+      member.name ||
+      "A Leaf";
+
+    let displayName =
+      "A Leaf from the Garden";
+
+    if(identityChoice === "name"){
+      displayName =
+        String(memberName).trim().split(/\s+/)[0];
+    }
+
+    if(identityChoice === "leaf"){
+      displayName =
+        `Leaf #${padNo(memberNo)}`;
+    }
+
+    await addDoc(
+      collection(db, "storyVoiceSubmissions"),
+      {
+        memberId: member.id || "",
+        memberNo: memberNo,
+        directLeafCount: directLeafCount,
+        title: title,
+        story: story,
+        identityChoice: identityChoice,
+        displayName: displayName,
+        status: "pending",
+        createdAt: serverTimestamp()
+      }
+    );
+
+    if(titleInput){
+      titleInput.value = "";
+    }
+
+    if(bodyInput){
+      bodyInput.value = "";
+    }
+
+    updateStoryVoiceCount();
+
+    if(message){
+      message.textContent =
+        "Iris received your story. Thank you for trusting the Garden.";
+    }
+
+  }catch(error){
+    console.error(
+      "Story Voice submission failed:",
+      error
+    );
+
+    if(message){
+      message.textContent =
+        "Your story could not be sent yet. Please try again.";
+    }
+  }finally{
+    if(button){
+      button.disabled = false;
+      button.textContent =
+        "Send My Story To Iris";
+    }
+  }
+}
 function padNo(n){
   return String(Number(n || 0)).padStart(4,"0");
 }
@@ -2988,6 +3288,31 @@ document
       !isUnlocked
     );
   });
+  const storyVoiceButton =
+  document.getElementById("storyVoiceUnlock");
+
+const storyVoiceText =
+  document.getElementById("storyVoiceUnlockText");
+
+const storyVoiceIsUnlocked =
+  directLeafCount >= 3;
+
+if(storyVoiceButton){
+  storyVoiceButton.disabled =
+    !storyVoiceIsUnlocked;
+
+  storyVoiceButton.setAttribute(
+    "aria-disabled",
+    String(!storyVoiceIsUnlocked)
+  );
+}
+
+if(storyVoiceText){
+  storyVoiceText.textContent =
+    storyVoiceIsUnlocked
+      ? "Your Story Voice is open. Share a short story."
+      : "Unlock when your plant grows 3 leaves";
+}
   document.getElementById("myLeafName").textContent = name;
 
   document.getElementById("myLeafNumber").textContent =
@@ -4553,6 +4878,9 @@ if(languageSelect){
 window.showHome = showHome;
   window.copyRecoveryKey = copyRecoveryKey;
   window.recoverMyLeaf = recoverMyLeaf;
+  window.openStoryVoice = openStoryVoice;
+window.closeStoryVoice = closeStoryVoice;
+window.submitStoryVoice = submitStoryVoice;
 window.plantLeaf = plantLeaf;
 window.inviteNewLeaf = inviteNewLeaf;
 window.sendGardenThought = sendGardenThought;
