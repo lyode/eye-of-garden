@@ -4762,15 +4762,36 @@ function renderMembers(){
   visibleMembers
     .slice(0, 40)
     .forEach((member, index) => {
-      const position =
-        gardenLeafPositions[
-          index % gardenLeafPositions.length
-        ];
+     let position = {
+...gardenLeafPositions[
+index % gardenLeafPositions.length
+]
+};
 
-      const name =
-        member.nickname ||
-        member.name ||
-        tr("Believer");
+const name =
+member.nickname ||
+member.name ||
+tr("Believer");
+
+const nameKey =
+String(name).trim().toLowerCase();
+
+if(nameKey === "pepper"){
+position = {
+...position,
+left: 17,
+top: 34
+};
+}
+
+if(nameKey === "sindy"){
+position = {
+...position,
+left: 31,
+top: 40
+};
+}
+
 
       const no = Number(
         member.memberNo ||
