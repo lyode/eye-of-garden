@@ -146,6 +146,58 @@ button:disabled{opacity:.45;cursor:not-allowed}.actions{display:flex;gap:10px;fl
         <div><label>Current status</label><div class="status" id="storyEditorStatus">New draft</div></div>
       </div>
       <div class="code-hint">Use one thought or paragraph per line. Wrap a whole line in <b>**double asterisks**</b> to make it bold. The Studio creates all HTML automatically.</div>
+<div
+  class="language-card"
+  id="storyPackageImporter"
+  style="margin-top:16px"
+>
+  <h3>📦 Import Three-Language Story Package</h3>
+
+  <div class="hint">
+    Paste one complete Eye of Garden story package here.
+    The importer will fill English, Bahasa Melayu and 简体中文 automatically.
+  </div>
+
+  <label for="storyPackageInput" style="margin-top:14px">
+    Story package
+  </label>
+
+  <textarea
+    id="storyPackageInput"
+    style="min-height:190px"
+    placeholder='Paste the complete JSON story package here...'
+  ></textarea>
+
+  <div class="actions">
+    <button
+      type="button"
+      class="soft"
+      id="fillStoryPackageButton"
+    >
+      Fill Story Studio
+    </button>
+
+```
+<button
+  type="button"
+  class="secondary"
+  id="clearStoryPackageButton"
+>
+  Clear Package
+</button>
+```
+
+  </div>
+
+  <div
+    class="status"
+    id="storyPackageStatus"
+  >
+    No story package has been imported yet.
+  </div>
+</div>
+
+      
       <div class="grid3" id="storyLanguageCards" style="margin-top:16px"></div>
       <div class="actions">
         <button class="secondary" id="previewStoryButton">Preview</button>
@@ -359,6 +411,191 @@ $("saveStoryButton").addEventListener("click",()=>saveStory("draft"));$("publish
 function renderStoryPreview(){try{const data=storyEditorData();if(!Number.isInteger(data.number)||data.number<1)throw new Error("Enter a story number first.");const lang=$("storyPreviewLanguage").value;const translation=buildStoryTranslation(lang,data.number,data.translations[lang],Number($("storySourceVersion").value||1));$("storyPreviewType").textContent=`${translation.badge} · ${languageNames[lang]}`;$("storyPreviewBody").innerHTML=translation.fullBodyHtml||"<p>No content entered yet.</p>"}catch(error){$("storyPreviewBody").textContent=error.message}}
 $("previewStoryButton").addEventListener("click",()=>{$("storyPreviewLanguage").value="en";renderStoryPreview();$("storyPreviewBackdrop").classList.add("open")});$("storyPreviewLanguage").addEventListener("change",renderStoryPreview);$("closeStoryPreviewButton").addEventListener("click",()=>$("storyPreviewBackdrop").classList.remove("open"));$("storyPreviewBackdrop").addEventListener("click",e=>{if(e.target===$("storyPreviewBackdrop"))$("storyPreviewBackdrop").classList.remove("open")});
 
+// Three-language Story Package Importer
+
+const storyPackageFieldMap = {
+  title: "storyTitle",
+  opening: "storyOpening",
+  question: "storyQuestion",
+  closing: "storyClosing",
+  story: "storyBody",
+  note: "storyNote"
+};
+
+function cleanStoryPackageText(rawText){
+  return String(rawText || "")
+    .trim()
+    .replace(/^```(?:json)?\s*/i, "")
+    .replace(/\s*```$/, "")
+    .trim();
+}
+
+function readStoryPackage(){
+  const rawText =
+    $("storyPackageInput").value;
+
+  if(!rawText.trim()){
+    throw new Error(
+      "Paste a story package before clicking Fill Story Studio."
+    );
+  }
+
+  let packageData;
+
+  try{
+    packageData = JSON.parse(
+      cleanStoryPackageText(rawText)
+    );
+  }catch(error){
+    throw new Error(
+      "The story package is not valid JSON. Please copy the complete package and try again."
+    );
+  }
+
+  const storyNumber = Number(
+    packageData.number ??
+    packageData.storyNumber
+  );
+
+  if(!Number.isInteger(storyNumber) || storyNumber < 1){
+    throw new Error(
+      "The story package must contain a valid story number."
+    );
+  }
+
+  const translations =
+    packageData.translations ||
+    packageData.languages;
+
+  if(!translations){
+    throw new Error(
+      "The story package must contain English, Bahasa Melayu and Chinese translations."
+    );
+  }
+
+  const requiredFields =
+    Object.keys(storyPackageFieldMap);
+
+  for(const lang of languages){
+    const languageData =
+      translations[lang];
+
+    if(!languageData){
+      throw new Error(
+        `The ${languageNames[lang]} translation is missing.`
+      );
+    }
+
+    for(const field of requiredFields){
+      if(
+        typeof languageData[field] !== "string" ||
+        !languageData[field].trim()
+      ){
+        throw new Error(
+          `${languageNames[lang]} is missing the ${field} field.`
+        );
+      }
+    }
+  }
+
+  return {
+    number: storyNumber,
+    translations
+  };
+}
+
+function storyStudioHasText(){
+  return languages.some(lang =>
+    Object.values(storyPackageFieldMap).some(fieldName =>
+      storyField(lang, fieldName).value.trim()
+    )
+  );
+}
+
+$("fillStoryPackageButton").addEventListener(
+  "click",
+  () => {
+    try{
+      const packageData =
+        readStoryPackage();
+
+      if(
+        storyStudioHasText() &&
+        !confirm(
+          "This will replace the text currently inside Story Studio. Continue?"
+        )
+      ){
+        return;
+      }
+
+      $("storyId").value = "";
+      $("storySourceVersion").value = "0";
+      $("storyNumber").value =
+        packageData.number;
+
+      currentStoryStatus = "draft";
+
+      for(const lang of languages){
+        const languageData =
+          packageData.translations[lang];
+
+        for(
+          const [
+            packageField,
+            studioField
+          ] of Object.entries(
+            storyPackageFieldMap
+          )
+        ){
+          storyField(
+            lang,
+            studioField
+          ).value =
+            languageData[packageField].trim();
+        }
+      }
+
+      $("storyEditorStatus").textContent =
+        "New draft";
+
+      setStatus(
+        "storyPackageStatus",
+        `Story #${String(packageData.number).padStart(3,"0")} filled successfully in all three languages.`
+      );
+
+      setStatus(
+        "storyComposeStatus",
+        `Story #${String(packageData.number).padStart(3,"0")} is ready. Preview it before saving or publishing.`
+      );
+
+      $("storyLanguageCards")
+        .scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+
+    }catch(error){
+      setStatus(
+        "storyPackageStatus",
+        error.message,
+        true
+      );
+    }
+  }
+);
+
+$("clearStoryPackageButton").addEventListener(
+  "click",
+  () => {
+    $("storyPackageInput").value = "";
+
+    setStatus(
+      "storyPackageStatus",
+      "No story package has been imported yet."
+    );
+  }
+);
+  
 // Story parsing for existing Firestore pages
 function nodeLine(p){const text=(p.textContent||"").trim();if(!text)return"";const children=[...p.children];const onlyBold=children.length===1&&children[0].tagName==="B"&&children[0].textContent.trim()===text;return onlyBold?`**${text}**`:text}
 function paragraphsToText(html,skipFirstIris=false){if(!html)return"";const parsed=new DOMParser().parseFromString(html,"text/html");let ps=[...parsed.body.querySelectorAll("p")];if(skipFirstIris&&ps.length&&/Iris|Catatan|小语/.test(ps[0].textContent))ps=ps.slice(1);return ps.map(nodeLine).filter(Boolean).join("\n")}
