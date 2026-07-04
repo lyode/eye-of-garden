@@ -1417,7 +1417,72 @@ font-size: 20px !important; {
   top: 0;
   transform: rotate(2deg) scale(0.72);
 }
-.growth-progress-line{
+
+  .living-leaf-care {
+  margin-top: 18px;
+  padding: 16px;
+  border-radius: 22px;
+  background: rgba(246, 251, 239, 0.88);
+  border: 1px solid rgba(94, 128, 83, 0.22);
+  box-shadow: 0 12px 28px rgba(43, 61, 32, 0.08);
+}
+
+.living-leaf-stage {
+  font-weight: 800;
+  color: #214b35;
+  margin-bottom: 14px;
+  animation: livingLeafBreathe 4s ease-in-out infinite;
+}
+
+.living-leaf-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.living-leaf-note {
+  margin: 0;
+  color: #5f765f;
+  font-size: 0.95rem;
+}
+
+.growth-main-leaf {
+  animation: livingLeafWave 4.5s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+.growth-small-leaves {
+  animation: livingLeafSoftGlow 5s ease-in-out infinite;
+}
+
+@keyframes livingLeafWave {
+  0%, 100% {
+    transform: rotate(-1deg) scale(1);
+  }
+  50% {
+    transform: rotate(2deg) scale(1.04);
+  }
+}
+
+@keyframes livingLeafBreathe {
+  0%, 100% {
+    opacity: 0.88;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes livingLeafSoftGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 0 rgba(111, 156, 91, 0));
+  }
+  50% {
+    filter: drop-shadow(0 0 10px rgba(111, 156, 91, 0.28));
+  }
+}
+  .growth-progress-line{
   margin: 12px 0 18px;
   padding: 12px 16px;
   border-radius: 999px;
@@ -1743,7 +1808,25 @@ font-size: 20px !important; {
     <div class="growth-main-leaf">🍃</div>
     <div class="growth-small-leaves" id="growthSmallLeaves"></div>
   </div>
+<div class="living-leaf-care" id="livingLeafCare">
+  <div class="living-leaf-stage" id="livingLeafStage">
+    🌱 Your leaf is resting quietly in the Garden.
+  </div>
 
+  <div class="living-leaf-actions">
+    <button type="button" class="soft" id="waterMyLeafButton">
+      💧 Water My Leaf
+    </button>
+
+    <button type="button" class="soft" id="lightMyLeafButton">
+      ☀️ Give Morning Light
+    </button>
+  </div>
+
+  <p class="living-leaf-note" id="livingLeafCareNote">
+    Small care is still care. Your leaf remembers.
+  </p>
+</div>
   <div class="growth-progress-line" id="growthProgressLine">
     0 / 3 leaves to unlock Story Voice
   </div>
