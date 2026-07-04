@@ -965,16 +965,20 @@ function readComingSoonPackage(){
       }
     }
 
-    return {
-      number,
-      translations: {
-        en: translations.en.trim(),
-        ms: translations.ms.trim(),
-        zh: translations.zh.trim()
-      }
-    };
-  });
-}
+   return {
+  number,
+  translations: {
+    en: {
+      title: translations.en.trim()
+    },
+    ms: {
+      title: translations.ms.trim()
+    },
+    zh: {
+      title: translations.zh.trim()
+    }
+  }
+};
 
 $("fillComingSoonPackageButton").addEventListener(
   "click",
