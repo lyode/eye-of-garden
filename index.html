@@ -1764,11 +1764,11 @@ font-size: 20px !important; {
     Keep This Somewhere Safe
   </div>
 
-  <h3>🔑 My Private Recovery Key</h3>
+ <h3>🌱 Your Leaf Has Been Planted</h3>
 
   <p>
-    This key can reopen your My Leaf room on another phone or browser.
-  </p>
+  This device will remember your leaf. To return, open My Leaf from this same device or browser.
+</p>
 
   <p>
     <b id="newRecoveryKeyText">
@@ -2024,17 +2024,16 @@ font-size: 20px !important; {
 
       <div class="story-card">
 
-        <h3>Recover My Leaf</h3>
+        <h3>🌱 My Leaf Not Found On This Device</h3>
 
         <p>
-          Use your Leaf Number and private Recovery Key.
-        </p>
-
-        <label for="myLeafRecoveryNumber">
+  This device does not remember a planted leaf yet. For now, please open My Leaf from the same device or browser used to plant it.
+</p>
+        <label hidden for="myLeafRecoveryNumber">
           Leaf Number
         </label>
 
-        <input
+        <input hidden
           id="myLeafRecoveryNumber"
           type="text"
           inputmode="numeric"
@@ -2044,11 +2043,11 @@ font-size: 20px !important; {
 
         <br><br>
 
-        <label for="myLeafRecoveryKey">
+        <label hidden for="myLeafRecoveryKey">
           Private Recovery Key
         </label>
 
-        <input
+        <input hidden
           id="myLeafRecoveryKey"
           type="text"
           placeholder="Example: GARDEN-7K4M-P2Q8"
@@ -2057,7 +2056,7 @@ font-size: 20px !important; {
 
         <br><br>
 
-        <button
+        <button hidden
           type="button"
           id="myLeafRecoverButton"
           onclick="recoverMyLeaf()"
