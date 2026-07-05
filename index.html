@@ -2006,26 +2006,49 @@ font-size: 20px !important; {
     </div>
 
     <!-- Shown when the leaf must be recovered -->
-    <div id="myLeafRecovery">
+   <!-- Shown when the leaf must be recovered -->
+<div id="myLeafRecovery">
 
   <div class="story-card">
-    <h3>🌱 My Leaf Is Not On This Device Yet</h3>
+    <h3>🌱 Find My Leaf</h3>
 
     <p>
-      This device does not remember a planted leaf yet.
-    </p>
-
-    <p>
-      For now, you can continue exploring the Garden, or plant a new leaf gently.
+      Use the phone number you planted with.
     </p>
 
     <p class="hint">
-      No login, password, or recovery key is needed at this stage.
+      Your leaf is still in the Garden. This helps this device remember it again.
     </p>
+
+    <label for="myLeafFindPhone">
+      Phone Number
+    </label>
+
+    <input
+      id="myLeafFindPhone"
+      type="tel"
+      inputmode="tel"
+      placeholder="Example: 0123456789"
+      autocomplete="tel"
+    >
+
+    <br><br>
+
+    <button
+      type="button"
+      id="myLeafFindPhoneButton"
+      onclick="findMyLeafByPhone()"
+    >
+      Find My Leaf
+    </button>
+
+    <p
+      id="myLeafFindPhoneMessage"
+      class="hint"
+    ></p>
   </div>
 
 </div>
-
     <div class="page-nav center">
       <button class="secondary" onclick="showHome()">
         ← Back to Garden
