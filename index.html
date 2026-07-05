@@ -3306,6 +3306,114 @@ function getMyMember(){
     member.phone === phone
   ) || null;
 }  
+function cleanPhoneForFind(value){
+  let phone = String(value || "").replace(/\D/g, "");
+
+  if(phone.startsWith("0060")){
+    phone = "0" + phone.slice(4);
+  }
+
+  if(phone.startsWith("60")){
+    phone = "0" + phone.slice(2);
+  }
+
+  return phone;
+}
+
+window.findMyLeafByPhone = function(){
+  const input = document.getElementById("myLeafFindPhone");
+  const message = document.getElementById("myLeafFindPhoneMessage");
+  const button = document.getElementById("myLeafFindPhoneButton");
+
+  const phone = cleanPhoneForFind(input?.value || "");
+
+  if(message){
+    message.textContent = "";
+  }
+
+  if(!phone){
+    if(message){
+      message.textContent = "Please enter the phone number you planted with.";
+    }
+    return;
+  }
+
+  if(button){
+    button.disabled = true;
+    button.textContent = "Looking for your leaf...";
+  }
+
+  if(!Array.isArray(members) || !members.length){
+    if(message){
+      message.textContent = "The Garden is still loading. Please try again in a moment.";
+    }
+
+    if(button){
+      button.disabled = false;
+      button.textContent = "Find My Leaf";
+    }
+
+    return;
+  }
+
+  const matches = members.filter(member => {
+    const savedPhone = cleanPhoneForFind(member.phone || member.phoneKey || member.phoneNumber || "");
+    return savedPhone && savedPhone === phone;
+  });
+
+  if(!matches.length){
+    if(message){
+      message.textContent = "We could not find a leaf with this phone number yet. Please check the number, or plant a new leaf gently.";
+    }
+
+    if(button){
+      button.disabled = false;
+      button.textContent = "Find My Leaf";
+    }
+
+    return;
+  }
+
+  const foundMember = matches.sort((a, b) => {
+    const aNo = Number(a.memberNo || a.no || 0);
+    const bNo = Number(b.memberNo || b.no || 0);
+    return bNo - aNo;
+  })[0];
+
+  const leafNo = Number(foundMember.memberNo || foundMember.no || 0);
+
+  if(!leafNo){
+    if(message){
+      message.textContent = "Your leaf was found, but the leaf number is missing. Please contact the Garden keeper.";
+    }
+
+    if(button){
+      button.disabled = false;
+      button.textContent = "Find My Leaf";
+    }
+
+    return;
+  }
+
+  localStorage.setItem("eog_my_leaf_no", String(leafNo));
+  localStorage.setItem("eog_stage1_last_phone", phone);
+
+  if(message){
+    message.textContent = "Your leaf has been found. Opening My Leaf...";
+  }
+
+  renderMyLeaf();
+
+  if(typeof updateToken === "function"){
+    updateToken(foundMember);
+  }
+
+  if(button){
+    button.disabled = false;
+    button.textContent = "Find My Leaf";
+  }
+};
+  
 function renderMyLeaf(){
   const rememberedBox = document.getElementById("myLeafRemembered");
   const recoveryBox = document.getElementById("myLeafRecovery");
