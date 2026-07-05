@@ -83,7 +83,7 @@ button{
   border-radius:999px;
   cursor:pointer;
   font-family:"Century Gothic", CenturyGothic, "Avenir Next", Avenir, "Microsoft YaHei", "PingFang SC", "Noto Sans SC", Arial, sans-serif;
-  font-size:16px;
+  font-size:17px;
   box-shadow:0 9px 22px rgba(40,80,50,.15);
 }
 button.secondary{
@@ -92,6 +92,31 @@ button.secondary{
   font-weight:650;
   border:1.5px solid rgba(63,116,78,.42);
   box-shadow:0 9px 22px rgba(40,80,50,.18);
+}
+  .plantLeafButton {
+  background: #2f7d4b !important;
+  color: #ffffff !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  border: none !important;
+  box-shadow: 0 9px 22px rgba(47, 125, 75, 0.22) !important;
+}
+
+.plantLeafButton:hover {
+  background: #286b41 !important;
+}
+
+.myLeafButton {
+  background: #d9a6a6 !important;
+  color: #ffffff !important;
+  font-size: 17px !important;
+  font-weight: 700 !important;
+  border: none !important;
+  box-shadow: 0 9px 22px rgba(217, 166, 166, 0.25) !important;
+}
+
+.myLeafButton:hover {
+  background: #c98f91 !important;
 }
 button:active{transform:translateY(1px)}
 .counter{
@@ -1615,8 +1640,8 @@ font-size: 20px !important; {
   </div>
 
 </div>      <div class="actions">
-        <button onclick="show('plant')">🌱 Plant Your Leaf</button>
-  <button class="secondary" onclick="show('myLeaf')">🍃 My Leaf</button>
+       <button class="plantLeafButton" onclick="show('plant')">🌱 Plant My Leaf</button>
+ <button class="secondary myLeafButton" onclick="show('myLeaf')">🍃 My Leaf</button>
         <button class="secondary" hidden onclick="show('journal')">📖 Founder Journal</button>
         <button class="secondary" onclick="show('question')">📖 Garden Story</button>
   <button class="secondary" onclick="show('tell')">👁️ Tell The Garden</button>
