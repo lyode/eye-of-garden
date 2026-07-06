@@ -1832,7 +1832,46 @@ font-size: 20px !important; {
         </div>
 
       </div>
+<div class="story-card" id="leafDayNoteCard">
+  <div class="mini-title">A QUIET DAY IN THE GARDEN</div>
 
+  <h3>🍃 A Day Like a Leaf</h3>
+
+  <p>
+    Write one small note for today.
+  </p>
+
+  <p class="hint">
+    A quiet note, not a public post.
+  </p>
+
+  <textarea
+    id="leafDayNoteText"
+    rows="4"
+    maxlength="500"
+    placeholder="What did your leaf feel today?"
+  ></textarea>
+
+  <br><br>
+
+  <button
+    type="button"
+    id="saveLeafDayNoteButton"
+    onclick="saveLeafDayNote()"
+  >
+    Save My Leaf Note
+  </button>
+
+  <p
+    id="leafDayNoteMessage"
+    class="hint"
+  ></p>
+
+  <div
+    id="leafDayNotesList"
+    class="leaf-day-notes"
+  ></div>
+</div>
 <div class="story-card" id="leafGrowthCard" hidden>
   <div class="mini-title">🌿 Growing With The Garden</div>
   <h3>My Growing Plant</h3>
