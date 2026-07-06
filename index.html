@@ -1871,21 +1871,24 @@ font-size: 20px !important; {
     Each new leaf you gently invite helps your plant grow.
   </p>
 
-  <div class="growth-plant-wrap">
-    <div class="growth-main-leaf">🍃</div>
-    <div class="growth-small-leaves" id="growthSmallLeaves"></div>
-  </div>
+  <div class="growth-plant-wrap" id="growthPlantWrap">
+  <div class="leaf-water-effect" id="leafWaterEffect"></div>
+  <div class="leaf-light-effect" id="leafLightEffect"></div>
+
+  <div class="growth-main-leaf" id="growthMainLeaf">🍃</div>
+  <div class="growth-small-leaves" id="growthSmallLeaves"></div>
+</div>
 <div class="living-leaf-care" id="livingLeafCare">
   <div class="living-leaf-stage" id="livingLeafStage">
     🌱 Your leaf is resting quietly in the Garden.
   </div>
 
   <div class="living-leaf-actions">
-    <button type="button" class="soft" id="waterMyLeafButton">
+    <button type="button" class="soft" id="waterMyLeafButton" onclick="waterMyLeaf()">
       💧 Water My Leaf
     </button>
 
-    <button type="button" class="soft" id="lightMyLeafButton">
+    <button type="button" class="soft" id="lightMyLeafButton" onclick="giveMorningLight()">
       ☀️ Give Morning Light
     </button>
   </div>
@@ -3694,7 +3697,125 @@ window.saveLeafDayNote = async function(){
     }
   }
 };
-function renderMyLeaf(){
+function getLeafCareStorageKey(member){
+  const memberNo = Number(member?.memberNo || member?.no || 0);
+  return `eog_leaf_care_${memberNo || "guest"}`;
+}
+
+function getLeafCareData(member){
+  try{
+    return JSON.parse(
+      localStorage.getItem(getLeafCareStorageKey(member)) || "{}"
+    );
+  }catch(error){
+    return {};
+  }
+}
+
+function saveLeafCareData(member, payload){
+  const current = getLeafCareData(member);
+  const nextData = {
+    ...current,
+    ...payload,
+    updatedAt: new Date().toISOString()
+  };
+
+  localStorage.setItem(
+    getLeafCareStorageKey(member),
+    JSON.stringify(nextData)
+  );
+
+  return nextData;
+}
+
+function formatLeafCareTime(value){
+  if(!value) return "";
+  const date = new Date(value);
+  if(Number.isNaN(date.getTime())) return "";
+  return date.toLocaleString();
+}
+
+function playLeafEffect(type){
+  const wrap = document.getElementById("growthPlantWrap");
+  const leaf = document.getElementById("growthMainLeaf");
+
+  if(!wrap || !leaf) return;
+
+  wrap.classList.remove("show-water", "show-light");
+  leaf.classList.remove("leaf-watered", "leaf-lighted");
+
+  void wrap.offsetWidth;
+  void leaf.offsetWidth;
+
+  if(type === "water"){
+    wrap.classList.add("show-water");
+    leaf.classList.add("leaf-watered");
+  }
+
+  if(type === "light"){
+    wrap.classList.add("show-light");
+    leaf.classList.add("leaf-lighted");
+  }
+
+  setTimeout(() => {
+    wrap.classList.remove("show-water", "show-light");
+    leaf.classList.remove("leaf-watered", "leaf-lighted");
+  }, 1700);
+}
+
+function updateLeafCareView(member){
+  const stage = document.getElementById("livingLeafStage");
+  const note = document.getElementById("livingLeafCareNote");
+
+  if(!stage || !note) return;
+
+  const care = getLeafCareData(member);
+  const timeText = formatLeafCareTime(care.updatedAt);
+
+  if(care.lastAction === "water"){
+    stage.innerHTML = "💧 Your leaf feels refreshed after a gentle watering.";
+    note.textContent = timeText
+      ? `Last cared: ${timeText}. Your leaf remembers the water.`
+      : "Your leaf remembers the water.";
+    return;
+  }
+
+  if(care.lastAction === "light"){
+    stage.innerHTML = "🌤️ Your leaf is enjoying the soft morning light.";
+    note.textContent = timeText
+      ? `Last cared: ${timeText}. Your leaf remembers the light.`
+      : "Your leaf remembers the light.";
+    return;
+  }
+
+  stage.innerHTML = "🌱 Your leaf is resting quietly in the Garden.";
+  note.textContent = "Small care is still care. Your leaf remembers.";
+}
+
+window.waterMyLeaf = function(){
+  const member = getMyMember();
+
+  if(!member){
+    return;
+  }
+
+  saveLeafCareData(member, { lastAction: "water" });
+  playLeafEffect("water");
+  updateLeafCareView(member);
+};
+
+window.giveMorningLight = function(){
+  const member = getMyMember();
+
+  if(!member){
+    return;
+  }
+
+  saveLeafCareData(member, { lastAction: "light" });
+  playLeafEffect("light");
+  updateLeafCareView(member);
+};
+  function renderMyLeaf(){
   const rememberedBox = document.getElementById("myLeafRemembered");
   const recoveryBox = document.getElementById("myLeafRecovery");
 
@@ -3722,7 +3843,8 @@ rememberedBox.hidden = false;
 recoveryBox.hidden = true;
 
 loadLeafDayNotes(member);
-
+updateLeafCareView(member);
+    
 const growthCard =
   document.getElementById("leafGrowthCard");
 const smallLeavesBox =
