@@ -2829,6 +2829,101 @@ function show(id){
   if(id==="journal") renderJournalBook();
   window.scrollTo({top:0,behavior:"smooth"});
 }
+  /* Soft Swipe Navigation V1 */
+(function(){
+  if(window.eogSoftSwipeReady) return;
+  window.eogSoftSwipeReady = true;
+
+  const swipeOrder = [
+    "home",
+    "plant",
+    "myLeaf",
+    "question",
+    "tell",
+    "irisMessages"
+  ];
+
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let touchStartTime = 0;
+  let swipeBlocked = false;
+
+  function getCurrentSwipePage(){
+    const activeSection = document.querySelector(".section.active");
+    return activeSection ? activeSection.id : "home";
+  }
+
+  function isSwipeBlocked(target){
+    return target.closest(
+      "input, textarea, select, button, a, label, .dreams, .language-wrap, .lang-wrap"
+    );
+  }
+
+  function goToSwipePage(page){
+    if(page === "home"){
+      if(typeof showHome === "function"){
+        showHome();
+      }
+      return;
+    }
+
+    if(typeof show === "function"){
+      show(page);
+    }
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  }
+
+  function moveSwipe(direction){
+    const currentPage = getCurrentSwipePage();
+    const currentIndex = swipeOrder.indexOf(currentPage);
+
+    if(currentIndex === -1) return;
+
+    const nextIndex = currentIndex + direction;
+
+    if(nextIndex < 0 || nextIndex >= swipeOrder.length) return;
+
+    goToSwipePage(swipeOrder[nextIndex]);
+  }
+
+  document.addEventListener("touchstart", function(event){
+    if(!event.touches || event.touches.length !== 1) return;
+
+    swipeBlocked = isSwipeBlocked(event.target);
+
+    touchStartX = event.touches[0].clientX;
+    touchStartY = event.touches[0].clientY;
+    touchStartTime = Date.now();
+  }, { passive: true });
+
+  document.addEventListener("touchend", function(event){
+    if(swipeBlocked) return;
+    if(!event.changedTouches || event.changedTouches.length !== 1) return;
+
+    const touchEndX = event.changedTouches[0].clientX;
+    const touchEndY = event.changedTouches[0].clientY;
+
+    const diffX = touchEndX - touchStartX;
+    const diffY = touchEndY - touchStartY;
+    const timeDiff = Date.now() - touchStartTime;
+
+    const isFastEnough = timeDiff < 900;
+    const isLongEnough = Math.abs(diffX) > 75;
+    const isHorizontal = Math.abs(diffX) > Math.abs(diffY) * 1.5;
+
+    if(!isFastEnough || !isLongEnough || !isHorizontal) return;
+
+    if(diffX < 0){
+      moveSwipe(1);
+    }else{
+      moveSwipe(-1);
+    }
+  }, { passive: true });
+})();
 
 function showHome(){
   document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
