@@ -3483,9 +3483,19 @@ window.findMyLeafByPhone = function(){
   }
 
   const matches = members.filter(member => {
-    const savedPhone = cleanPhoneForFind(member.phone || member.phoneKey || member.phoneNumber || "");
-    return savedPhone && savedPhone === phone;
-  });
+  const savedPhone = cleanPhoneForFind(member.phone || member.phoneKey || member.phoneNumber || "");
+  const savedNoZero = savedPhone.replace(/^0+/, "");
+  const phoneNoZero = phone.replace(/^0+/, "");
+
+  const sameExact = savedPhone === phone;
+  const sameWithoutZero = savedNoZero === phoneNoZero;
+  const sameLast8 =
+    savedPhone.length >= 8 &&
+    phone.length >= 8 &&
+    savedPhone.slice(-8) === phone.slice(-8);
+
+  return savedPhone && (sameExact || sameWithoutZero || sameLast8);
+});
 
   if(!matches.length){
     if(message){
