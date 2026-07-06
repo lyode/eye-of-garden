@@ -3508,7 +3508,151 @@ window.findMyLeafByPhone = function(){
     button.textContent = "Find My Leaf";
   }
 };
-  
+  function getLeafDayNoteMemberNo(member){
+  return Number(
+    member?.memberNo ||
+    member?.no ||
+    localStorage.getItem("eog_my_leaf_no") ||
+    0
+  );
+}
+
+async function loadLeafDayNotes(member){
+  const list = document.getElementById("leafDayNotesList");
+  if(!list) return;
+
+  const memberNo = getLeafDayNoteMemberNo(member);
+
+  if(!memberNo){
+    list.innerHTML = "";
+    return;
+  }
+
+  list.innerHTML = '<p class="hint">Loading your quiet notes...</p>';
+
+  try{
+    const snap = await getDocs(collection(db, "leafDayNotes"));
+    const notes = [];
+
+    snap.forEach(docSnap => {
+      const data = docSnap.data();
+      const noteMemberNo = Number(data.memberNo || 0);
+
+      if(noteMemberNo === memberNo){
+        notes.push(data);
+      }
+    });
+
+    notes.sort((a, b) => Number(b.createdAtMs || 0) - Number(a.createdAtMs || 0));
+
+    list.innerHTML = "";
+
+    if(!notes.length){
+      list.innerHTML = '<p class="hint">No private notes yet.</p>';
+      return;
+    }
+
+    notes.slice(0, 6).forEach(note => {
+      const item = document.createElement("div");
+      item.className = "story-card";
+      item.style.marginTop = "14px";
+
+      const date = document.createElement("div");
+      date.className = "mini-title";
+      date.textContent = note.dateLabel || "A quiet day";
+
+      const text = document.createElement("p");
+      text.textContent = note.note || "";
+
+      item.appendChild(date);
+      item.appendChild(text);
+      list.appendChild(item);
+    });
+
+  }catch(error){
+    console.error("Load leaf day notes failed:", error);
+    list.innerHTML = '<p class="hint">Could not load private notes yet.</p>';
+  }
+}
+
+window.saveLeafDayNote = async function(){
+  const member = getMyMember();
+  const textarea = document.getElementById("leafDayNoteText");
+  const message = document.getElementById("leafDayNoteMessage");
+  const button = document.getElementById("saveLeafDayNoteButton");
+
+  const note = String(textarea?.value || "").trim();
+  const memberNo = getLeafDayNoteMemberNo(member);
+
+  if(message){
+    message.textContent = "";
+  }
+
+  if(!member || !memberNo){
+    if(message){
+      message.textContent = "Please find your leaf first.";
+    }
+    return;
+  }
+
+  if(!note){
+    if(message){
+      message.textContent = "Write one small note first.";
+    }
+    return;
+  }
+
+  if(note.length > 500){
+    if(message){
+      message.textContent = "Please keep your note within 500 characters.";
+    }
+    return;
+  }
+
+  if(button){
+    button.disabled = true;
+    button.textContent = "Saving...";
+  }
+
+  try{
+    const now = new Date();
+
+    await addDoc(collection(db, "leafDayNotes"), {
+      memberNo: memberNo,
+      memberName: member.name || member.nickname || "",
+      note: note,
+      dateLabel: now.toLocaleDateString("en-MY", {
+        day: "numeric",
+        month: "short",
+        year: "numeric"
+      }),
+      createdAt: now.toISOString(),
+      createdAtMs: Date.now(),
+      private: true
+    });
+
+    textarea.value = "";
+
+    if(message){
+      message.textContent = "Your leaf note has been saved quietly.";
+    }
+
+    await loadLeafDayNotes(member);
+
+  }catch(error){
+    console.error("Save leaf day note failed:", error);
+
+    if(message){
+      message.textContent = "Could not save yet. Please try again.";
+    }
+
+  }finally{
+    if(button){
+      button.disabled = false;
+      button.textContent = "Save My Leaf Note";
+    }
+  }
+};
 function renderMyLeaf(){
   const rememberedBox = document.getElementById("myLeafRemembered");
   const recoveryBox = document.getElementById("myLeafRecovery");
@@ -3532,12 +3676,14 @@ function renderMyLeaf(){
     ? member.dreams.filter(Boolean)
     : [];
 
-  rememberedBox.hidden = false;
-  recoveryBox.hidden = true;
+  
+rememberedBox.hidden = false;
+recoveryBox.hidden = true;
 
-  const growthCard =
+loadLeafDayNotes(member);
+
+const growthCard =
   document.getElementById("leafGrowthCard");
-
 const smallLeavesBox =
   document.getElementById("growthSmallLeaves");
 
