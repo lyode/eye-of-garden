@@ -1853,8 +1853,86 @@ hr {
     padding-top: 0 !important;
   }
 }
+/* Mobile header auto-hide like footer */
+@media (max-width: 768px) {
+  header,
+  .header,
+  .site-header,
+  .app-header,
+  .topbar,
+  .main-header,
+  .mobile-header,
+  .brand-bar,
+  .nav-bar,
+  .nav-wrap,
+  .top-controls,
+  .toolbar {
+    transition: transform 0.28s ease, opacity 0.28s ease !important;
+    will-change: transform, opacity;
+  }
+
+  body.eog-hide-mobile-header header,
+  body.eog-hide-mobile-header .header,
+  body.eog-hide-mobile-header .site-header,
+  body.eog-hide-mobile-header .app-header,
+  body.eog-hide-mobile-header .topbar,
+  body.eog-hide-mobile-header .main-header,
+  body.eog-hide-mobile-header .mobile-header,
+  body.eog-hide-mobile-header .brand-bar,
+  body.eog-hide-mobile-header .nav-bar,
+  body.eog-hide-mobile-header .nav-wrap,
+  body.eog-hide-mobile-header .top-controls,
+  body.eog-hide-mobile-header .toolbar {
+    transform: translateY(-120%) !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+}
+  
 </style>
 </head>
+<script>
+  /* Hide mobile header when scrolling down, show when scrolling up */
+  (function () {
+    let lastScrollY = window.scrollY;
+    let ticking = false;
+
+    function updateMobileHeader() {
+      const isMobile = window.innerWidth <= 768;
+      const currentScrollY = window.scrollY;
+
+      if (!isMobile) {
+        document.body.classList.remove("eog-hide-mobile-header");
+        lastScrollY = currentScrollY;
+        ticking = false;
+        return;
+      }
+
+      if (currentScrollY > lastScrollY && currentScrollY > 40) {
+        document.body.classList.add("eog-hide-mobile-header");
+      } else {
+        document.body.classList.remove("eog-hide-mobile-header");
+      }
+
+      lastScrollY = currentScrollY;
+      ticking = false;
+    }
+
+    window.addEventListener("scroll", function () {
+      if (!ticking) {
+        window.requestAnimationFrame(updateMobileHeader);
+        ticking = true;
+      }
+    }, { passive: true });
+
+    window.addEventListener("touchstart", function () {
+      if (window.innerWidth <= 768 && window.scrollY > 40) {
+        document.body.classList.add("eog-hide-mobile-header");
+      }
+    }, { passive: true });
+  })();
+</script>
+  
 <body>
 
 <div class="language-control" data-no-translate>
@@ -6165,7 +6243,6 @@ utterance.voice = matchingVoice;
     });
   })();
 </script>
-
 
 </body>
 </html>
