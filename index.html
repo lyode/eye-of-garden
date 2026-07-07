@@ -1729,7 +1729,67 @@ nav {
 .panel,
 .seed-text {
   box-shadow: 0 18px 45px rgba(70, 70, 40, 0.06);
+}/* Flat Garden App Look — no visible header / no visible bottom */
+header,
+footer,
+nav,
+.header,
+.site-header,
+.app-header,
+.topbar,
+.main-header,
+.bottom-bar,
+.footer,
+.site-footer {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
+
+/* Remove heavy card/frame feeling */
+.panel,
+.seed-text,
+.story-card,
+.book-card,
+.spark-banner,
+.counter,
+.token-card,
+.garden-card {
+  box-shadow: none !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+}
+
+/* Make sections blend into the same background */
+.section {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Bottom page navigation becomes invisible frame */
+.page-nav,
+.book-nav,
+.actions {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Keep readable but soft */
+.panel,
+.seed-text,
+.story-card,
+.book-card,
+.spark-banner {
+  background: rgba(255, 255, 255, 0.50) !important;
+  backdrop-filter: blur(6px);
+}
+
+/* If any horizontal divider appears, soften it */
+hr {
+  border: none !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.18) !important;
+}
+  
 </style>
 </head>
 <body>
