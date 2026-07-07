@@ -1595,6 +1595,108 @@ font-size: 20px !important; {
     grid-template-columns: 1fr;
   }
 }
+  .growth-plant-wrap{
+  position: relative;
+  min-height: 180px;
+  overflow: hidden;
+}
+
+.growth-main-leaf{
+  position: relative;
+  z-index: 3;
+  transition: transform 0.45s ease, filter 0.45s ease, text-shadow 0.45s ease;
+  will-change: transform, filter;
+}
+
+.leaf-water-effect,
+.leaf-light-effect{
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 2;
+}
+
+.leaf-water-effect{
+  background:
+    radial-gradient(circle at 20% 10%, rgba(105, 190, 255, 0.95) 0 5px, transparent 6px),
+    radial-gradient(circle at 35% 24%, rgba(105, 190, 255, 0.85) 0 5px, transparent 6px),
+    radial-gradient(circle at 52% 12%, rgba(105, 190, 255, 0.95) 0 5px, transparent 6px),
+    radial-gradient(circle at 68% 26%, rgba(105, 190, 255, 0.82) 0 5px, transparent 6px),
+    radial-gradient(circle at 82% 14%, rgba(105, 190, 255, 0.9) 0 5px, transparent 6px);
+}
+
+.leaf-light-effect{
+  background:
+    radial-gradient(circle at center,
+      rgba(255, 218, 95, 0.7) 0%,
+      rgba(255, 218, 95, 0.34) 24%,
+      rgba(255, 218, 95, 0.12) 46%,
+      transparent 68%);
+}
+
+.growth-plant-wrap.show-water .leaf-water-effect{
+  animation: leafRainBurst 1.15s ease;
+}
+
+.growth-plant-wrap.show-light .leaf-light-effect{
+  animation: leafMorningGlow 1.5s ease;
+}
+
+.growth-main-leaf.leaf-watered{
+  animation: leafBounce 1.05s ease;
+  filter: drop-shadow(0 10px 18px rgba(93, 170, 220, 0.35));
+}
+
+.growth-main-leaf.leaf-lighted{
+  animation: leafWarmSway 1.5s ease;
+  filter: drop-shadow(0 10px 18px rgba(255, 203, 92, 0.35));
+  text-shadow: 0 0 22px rgba(255, 213, 102, 0.55);
+}
+
+@keyframes leafRainBurst{
+  0%{
+    opacity: 0;
+    transform: translateY(-22px);
+  }
+  20%{
+    opacity: 1;
+  }
+  100%{
+    opacity: 0;
+    transform: translateY(36px);
+  }
+}
+
+@keyframes leafMorningGlow{
+  0%{
+    opacity: 0;
+    transform: scale(0.75);
+  }
+  30%{
+    opacity: 1;
+  }
+  100%{
+    opacity: 0;
+    transform: scale(1.18);
+  }
+}
+
+@keyframes leafBounce{
+  0%{ transform: scale(1) rotate(0deg); }
+  25%{ transform: scale(1.12) rotate(-6deg); }
+  50%{ transform: scale(0.98) rotate(5deg); }
+  75%{ transform: scale(1.06) rotate(-2deg); }
+  100%{ transform: scale(1) rotate(0deg); }
+}
+
+@keyframes leafWarmSway{
+  0%{ transform: translateY(0) rotate(0deg) scale(1); }
+  20%{ transform: translateY(-3px) rotate(-6deg) scale(1.04); }
+  50%{ transform: translateY(-7px) rotate(6deg) scale(1.08); }
+  80%{ transform: translateY(-3px) rotate(-2deg) scale(1.03); }
+  100%{ transform: translateY(0) rotate(0deg) scale(1); }
+}
 </style>
 </head>
 <body>
@@ -3760,6 +3862,8 @@ function playSoftToneSequence(notes){
 }
 
 function playLeafCareSound(type){
+  return;
+  
   if(type === "water"){
     playSoftToneSequence([
       { freq: 720, delay: 0.00, duration: 0.10, volume: 0.025, type: "sine" },
