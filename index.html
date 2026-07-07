@@ -1789,7 +1789,70 @@ hr {
   border: none !important;
   border-top: 1px solid rgba(255, 255, 255, 0.18) !important;
 }
-  
+  /* Strong mobile header blend fix */
+@media (max-width: 768px) {
+  body {
+    padding-top: 0 !important;
+  }
+
+  header,
+  .header,
+  .site-header,
+  .app-header,
+  .topbar,
+  .main-header,
+  .mobile-header,
+  .brand-bar,
+  .nav-bar,
+  .nav-wrap,
+  .language-bar,
+  .top-controls,
+  .toolbar {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+  }
+
+  header::before,
+  header::after,
+  .header::before,
+  .header::after,
+  .site-header::before,
+  .site-header::after,
+  .app-header::before,
+  .app-header::after,
+  .topbar::before,
+  .topbar::after {
+    display: none !important;
+    content: none !important;
+  }
+
+  /* If header is sticky/fixed, make it behave like normal page content */
+  header,
+  .header,
+  .site-header,
+  .app-header,
+  .topbar,
+  .main-header {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+  }
+
+  /* Reduce top header spacing on phone */
+  .hero,
+  .landing-hero,
+  .brand,
+  .brand-title,
+  .app-title {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+}
 </style>
 </head>
 <body>
