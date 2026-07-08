@@ -1862,13 +1862,33 @@ hr {
 .brand-title,
 .logo-title,
 .app-title,
-.hero-title,
-h1 {
+.hero-title
+ {
   font-size: 115% !important;
   color: #1f4f34 !important;
   font-weight: 800 !important;
   text-shadow: 0 2px 8px rgba(255, 255, 255, 0.85) !important;
   letter-spacing: 0.5px !important;
+}
+  /* Restore big Plant Your Leaf hero title */
+#home h1,
+.hero h1,
+.landing-hero h1 {
+  font-size: clamp(58px, 6.8vw, 96px) !important;
+  line-height: 0.95 !important;
+  font-weight: 900 !important;
+  color: #214f35 !important;
+  letter-spacing: -1px !important;
+}
+
+/* Mobile size */
+@media (max-width: 768px) {
+  #home h1,
+  .hero h1,
+  .landing-hero h1 {
+    font-size: clamp(46px, 13vw, 66px) !important;
+    line-height: 0.95 !important;
+  }
 }
 </style>
 </head>
