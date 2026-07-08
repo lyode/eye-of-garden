@@ -5761,56 +5761,87 @@ function renderMembers(){
     return;
   }
 
- const noOverlapGardenPositions = [
-  { left: 31, top: 24, rotate: -8 },
-  { left: 43, top: 21, rotate: 5 },
-  { left: 55, top: 25, rotate: -4 },
-  { left: 67, top: 22, rotate: 7 },
+ function haltonPosition(index, base) {
+  let result = 0;
+  let fraction = 1;
+  let i = index;
 
-  { left: 25, top: 34, rotate: 6 },
-  { left: 38, top: 36, rotate: -6 },
-  { left: 51, top: 35, rotate: 4 },
-  { left: 64, top: 36, rotate: -5 },
-  { left: 76, top: 34, rotate: 6 },
+  while (i > 0) {
+    fraction = fraction / base;
+    result = result + fraction * (i % base);
+    i = Math.floor(i / base);
+  }
 
-  { left: 21, top: 46, rotate: -4 },
-  { left: 34, top: 47, rotate: 5 },
-  { left: 47, top: 46, rotate: -6 },
-  { left: 60, top: 48, rotate: 4 },
-  { left: 73, top: 47, rotate: -5 },
+  return result;
+}
 
-  { left: 18, top: 58, rotate: 5 },
-  { left: 30, top: 60, rotate: -6 },
-  { left: 42, top: 58, rotate: 4 },
-  { left: 54, top: 60, rotate: -5 },
-  { left: 66, top: 58, rotate: 5 },
-  { left: 78, top: 60, rotate: -6 },
+function buildNoOverlapGardenPositions(total = 1000) {
+  const positions = [];
 
-  { left: 22, top: 70, rotate: -5 },
-  { left: 35, top: 72, rotate: 6 },
-  { left: 48, top: 70, rotate: -4 },
-  { left: 61, top: 72, rotate: 5 },
-  { left: 74, top: 70, rotate: -6 },
+  for (let i = 1; i <= total; i++) {
+    let bestPosition = null;
+    let bestDistance = -1;
 
-  { left: 27, top: 82, rotate: 4 },
-  { left: 40, top: 84, rotate: -5 },
-  { left: 53, top: 82, rotate: 6 },
-  { left: 66, top: 84, rotate: -4 },
+    for (let attempt = 0; attempt < 24; attempt++) {
+      const seed = i + attempt * total;
 
-  { left: 16, top: 28, rotate: 6 },
-  { left: 82, top: 28, rotate: -6 },
-  { left: 14, top: 40, rotate: -5 },
-  { left: 84, top: 42, rotate: 5 },
-  { left: 13, top: 52, rotate: 4 },
-  { left: 86, top: 54, rotate: -4 },
-  { left: 15, top: 66, rotate: -6 },
-  { left: 85, top: 68, rotate: 6 },
-  { left: 20, top: 78, rotate: 5 },
-  { left: 80, top: 80, rotate: -5 },
-  { left: 50, top: 90, rotate: 3 }
+      const candidate = {
+        left: 8 + haltonPosition(seed, 2) * 84,
+        top: 14 + haltonPosition(seed, 3) * 74,
+        rotate: Math.round(-10 + haltonPosition(seed, 5) * 20)
+      };
+
+      const closestDistance = positions.reduce((closest, existing) => {
+        const distance = Math.hypot(
+          (existing.left - candidate.left) * 1.35,
+          existing.top - candidate.top
+        );
+
+        return Math.min(closest, distance);
+      }, Infinity);
+
+      if (closestDistance > bestDistance) {
+        bestDistance = closestDistance;
+        bestPosition = candidate;
+      }
+
+      if (closestDistance > 6) break;
+    }
+
+    positions.push(bestPosition);
+  }
+
+  return positions;
+}
+
+const demoGardenCount = Math.min(
+  Number(new URLSearchParams(window.location.search).get("demoGarden") || 0),
+  120
+);
+
+const demoGardenMembers = demoGardenCount > 0
+  ? Array.from({ length: demoGardenCount }, (_, index) => {
+      const demoNo = index + 1;
+
+      return {
+        nickname: `Demo Leaf ${String(demoNo).padStart(3, "0")}`,
+        name: `Demo Leaf ${String(demoNo).padStart(3, "0")}`,
+        memberNo: 9000 + demoNo,
+        no: 9000 + demoNo,
+        country: "Demo Garden",
+        city: "Testing View",
+        isDemo: true
+      };
+    })
+  : [];
+
+const gardenMembersForView = [
+  ...visibleMembers,
+  ...demoGardenMembers
 ];
 
-visibleMembers
+const noOverlapGardenPositions = buildNoOverlapGardenPositions(1000);
+gardenMembersForView
   .slice(0, noOverlapGardenPositions.length)
   .forEach((member, index) => {
     let position = {
