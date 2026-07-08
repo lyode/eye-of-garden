@@ -1729,7 +1729,9 @@ nav {
 .panel,
 .seed-text {
   box-shadow: 0 18px 45px rgba(70, 70, 40, 0.06);
-}/* Flat Garden App Look — no visible header / no visible bottom */
+} 
+
+  /* Clean Flat Garden App Look — header/footer blended into background */
 header,
 footer,
 nav,
@@ -1738,157 +1740,41 @@ nav,
 .app-header,
 .topbar,
 .main-header,
+.mobile-header,
+.brand-bar,
+.nav-bar,
+.nav-wrap,
+.top-controls,
+.toolbar,
 .bottom-bar,
 .footer,
 .site-footer {
   background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
   border: none !important;
   box-shadow: none !important;
 }
 
-/* Remove heavy card/frame feeling */
-.panel,
-.seed-text,
-.story-card,
-.book-card,
-.spark-banner,
-.counter,
-.token-card,
-.garden-card {
-  box-shadow: none !important;
-  border-color: rgba(255, 255, 255, 0.16) !important;
+/* Remove old mobile hide effect if the script still adds the class */
+body.eog-hide-mobile-header header,
+body.eog-hide-mobile-header .header,
+body.eog-hide-mobile-header .site-header,
+body.eog-hide-mobile-header .app-header,
+body.eog-hide-mobile-header .topbar,
+body.eog-hide-mobile-header .main-header,
+body.eog-hide-mobile-header .mobile-header,
+body.eog-hide-mobile-header .brand-bar,
+body.eog-hide-mobile-header .nav-bar,
+body.eog-hide-mobile-header .nav-wrap,
+body.eog-hide-mobile-header .top-controls,
+body.eog-hide-mobile-header .toolbar {
+  transform: none !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
 }
 
-/* Make sections blend into the same background */
-.section {
-  background: transparent !important;
-  box-shadow: none !important;
-}
-
-/* Bottom page navigation becomes invisible frame */
-.page-nav,
-.book-nav,
-.actions {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-}
-
-/* Keep readable but soft */
-.panel,
-.seed-text,
-.story-card,
-.book-card,
-.spark-banner {
-  background: rgba(255, 255, 255, 0.50) !important;
-  backdrop-filter: blur(6px);
-}
-
-/* If any horizontal divider appears, soften it */
-hr {
-  border: none !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.18) !important;
-}
-  /* Strong mobile header blend fix */
-@media (max-width: 768px) {
-  body {
-    padding-top: 0 !important;
-  }
-
-  header,
-  .header,
-  .site-header,
-  .app-header,
-  .topbar,
-  .main-header,
-  .mobile-header,
-  .brand-bar,
-  .nav-bar,
-  .nav-wrap,
-  .language-bar,
-  .top-controls,
-  .toolbar {
-    background: transparent !important;
-    background-color: transparent !important;
-    background-image: none !important;
-    border: none !important;
-    box-shadow: none !important;
-    backdrop-filter: none !important;
-  }
-
-  header::before,
-  header::after,
-  .header::before,
-  .header::after,
-  .site-header::before,
-  .site-header::after,
-  .app-header::before,
-  .app-header::after,
-  .topbar::before,
-  .topbar::after {
-    display: none !important;
-    content: none !important;
-  }
-
-  /* If header is sticky/fixed, make it behave like normal page content */
-  header,
-  .header,
-  .site-header,
-  .app-header,
-  .topbar,
-  .main-header {
-    position: relative !important;
-    top: auto !important;
-    left: auto !important;
-    right: auto !important;
-  }
-
-  /* Reduce top header spacing on phone */
-  .hero,
-  .landing-hero,
-  .brand,
-  .brand-title,
-  .app-title {
-    margin-top: 0 !important;
-    padding-top: 0 !important;
-  }
-}
-/* Mobile header auto-hide like footer */
-@media (max-width: 768px) {
-  header,
-  .header,
-  .site-header,
-  .app-header,
-  .topbar,
-  .main-header,
-  .mobile-header,
-  .brand-bar,
-  .nav-bar,
-  .nav-wrap,
-  .top-controls,
-  .toolbar {
-    transition: transform 0.28s ease, opacity 0.28s ease !important;
-    will-change: transform, opacity;
-  }
-
-  body.eog-hide-mobile-header header,
-  body.eog-hide-mobile-header .header,
-  body.eog-hide-mobile-header .site-header,
-  body.eog-hide-mobile-header .app-header,
-  body.eog-hide-mobile-header .topbar,
-  body.eog-hide-mobile-header .main-header,
-  body.eog-hide-mobile-header .mobile-header,
-  body.eog-hide-mobile-header .brand-bar,
-  body.eog-hide-mobile-header .nav-bar,
-  body.eog-hide-mobile-header .nav-wrap,
-  body.eog-hide-mobile-header .top-controls,
-  body.eog-hide-mobile-header .toolbar {
-    transform: translateY(-120%) !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-  }
-}
- /* Make mobile header fully transparent */
+/* Mobile header transparent, but still usable */
 @media (max-width: 768px) {
   header,
   .header,
@@ -1917,68 +1803,64 @@ hr {
     -webkit-backdrop-filter: none !important;
   }
 
-  /* Disable the previous hide effect, keep header visible but transparent */
-  body.eog-hide-mobile-header header,
-  body.eog-hide-mobile-header .header,
-  body.eog-hide-mobile-header .site-header,
-  body.eog-hide-mobile-header .app-header,
-  body.eog-hide-mobile-header .topbar,
-  body.eog-hide-mobile-header .main-header,
-  body.eog-hide-mobile-header .mobile-header,
-  body.eog-hide-mobile-header .brand-bar,
-  body.eog-hide-mobile-header .nav-bar,
-  body.eog-hide-mobile-header .nav-wrap,
-  body.eog-hide-mobile-header .top-controls,
-  body.eog-hide-mobile-header .toolbar {
-    transform: none !important;
-    opacity: 1 !important;
-    pointer-events: auto !important;
+  header::before,
+  header::after,
+  .header::before,
+  .header::after,
+  .site-header::before,
+  .site-header::after,
+  .app-header::before,
+  .app-header::after,
+  .topbar::before,
+  .topbar::after {
+    display: none !important;
+    content: none !important;
   }
-} 
+}
+
+/* Softer cards, still readable */
+.panel,
+.seed-text,
+.story-card,
+.book-card,
+.spark-banner,
+.counter,
+.token-card,
+.garden-card {
+  box-shadow: none !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+}
+
+.section,
+.page-nav,
+.book-nav,
+.actions {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.panel,
+.seed-text,
+.story-card,
+.book-card,
+.spark-banner {
+  background: rgba(255, 255, 255, 0.56) !important;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+hr {
+  border: none !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.18) !important;
+}
+  hr {
+    border: none !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.18) !important;
+  }
 </style>
 </head>
-<script>
-  /* Hide mobile header when scrolling down, show when scrolling up */
-  (function () {
-    let lastScrollY = window.scrollY;
-    let ticking = false;
 
-    function updateMobileHeader() {
-      const isMobile = window.innerWidth <= 768;
-      const currentScrollY = window.scrollY;
-
-      if (!isMobile) {
-        document.body.classList.remove("eog-hide-mobile-header");
-        lastScrollY = currentScrollY;
-        ticking = false;
-        return;
-      }
-
-      if (currentScrollY > lastScrollY && currentScrollY > 40) {
-        document.body.classList.add("eog-hide-mobile-header");
-      } else {
-        document.body.classList.remove("eog-hide-mobile-header");
-      }
-
-      lastScrollY = currentScrollY;
-      ticking = false;
-    }
-
-    window.addEventListener("scroll", function () {
-      if (!ticking) {
-        window.requestAnimationFrame(updateMobileHeader);
-        ticking = true;
-      }
-    }, { passive: true });
-
-    window.addEventListener("touchstart", function () {
-      if (window.innerWidth <= 768 && window.scrollY > 40) {
-        document.body.classList.add("eog-hide-mobile-header");
-      }
-    }, { passive: true });
-  })();
-</script>
-  
 <body>
 
 <div class="language-control" data-no-translate>
