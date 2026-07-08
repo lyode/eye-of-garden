@@ -5761,39 +5761,66 @@ function renderMembers(){
     return;
   }
 
-  visibleMembers
-    .slice(0, 40)
-    .forEach((member, index) => {
-     let position = {
-...gardenLeafPositions[
-index % gardenLeafPositions.length
-]
-};
+ const noOverlapGardenPositions = [
+  { left: 31, top: 24, rotate: -8 },
+  { left: 43, top: 21, rotate: 5 },
+  { left: 55, top: 25, rotate: -4 },
+  { left: 67, top: 22, rotate: 7 },
 
-const name =
-member.nickname ||
-member.name ||
-tr("Believer");
+  { left: 25, top: 34, rotate: 6 },
+  { left: 38, top: 36, rotate: -6 },
+  { left: 51, top: 35, rotate: 4 },
+  { left: 64, top: 36, rotate: -5 },
+  { left: 76, top: 34, rotate: 6 },
 
-const nameKey =
-String(name).trim().toLowerCase();
+  { left: 21, top: 46, rotate: -4 },
+  { left: 34, top: 47, rotate: 5 },
+  { left: 47, top: 46, rotate: -6 },
+  { left: 60, top: 48, rotate: 4 },
+  { left: 73, top: 47, rotate: -5 },
 
-if(nameKey === "pepper"){
-position = {
-...position,
-left: 17,
-top: 34
-};
-}
+  { left: 18, top: 58, rotate: 5 },
+  { left: 30, top: 60, rotate: -6 },
+  { left: 42, top: 58, rotate: 4 },
+  { left: 54, top: 60, rotate: -5 },
+  { left: 66, top: 58, rotate: 5 },
+  { left: 78, top: 60, rotate: -6 },
 
-if(nameKey === "sindy"){
-position = {
-...position,
-left: 31,
-top: 40
-};
-}
+  { left: 22, top: 70, rotate: -5 },
+  { left: 35, top: 72, rotate: 6 },
+  { left: 48, top: 70, rotate: -4 },
+  { left: 61, top: 72, rotate: 5 },
+  { left: 74, top: 70, rotate: -6 },
 
+  { left: 27, top: 82, rotate: 4 },
+  { left: 40, top: 84, rotate: -5 },
+  { left: 53, top: 82, rotate: 6 },
+  { left: 66, top: 84, rotate: -4 },
+
+  { left: 16, top: 28, rotate: 6 },
+  { left: 82, top: 28, rotate: -6 },
+  { left: 14, top: 40, rotate: -5 },
+  { left: 84, top: 42, rotate: 5 },
+  { left: 13, top: 52, rotate: 4 },
+  { left: 86, top: 54, rotate: -4 },
+  { left: 15, top: 66, rotate: -6 },
+  { left: 85, top: 68, rotate: 6 },
+  { left: 20, top: 78, rotate: 5 },
+  { left: 80, top: 80, rotate: -5 },
+  { left: 50, top: 90, rotate: 3 }
+];
+
+visibleMembers
+  .slice(0, noOverlapGardenPositions.length)
+  .forEach((member, index) => {
+    let position = {
+      ...noOverlapGardenPositions[index]
+    };
+
+    const name =
+      member.nickname ||
+      member.name ||
+      tr("Believer");
 
       const no = Number(
         member.memberNo ||
