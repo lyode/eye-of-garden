@@ -1888,7 +1888,53 @@ hr {
     pointer-events: none !important;
   }
 }
-  
+ /* Make mobile header fully transparent */
+@media (max-width: 768px) {
+  header,
+  .header,
+  .site-header,
+  .app-header,
+  .topbar,
+  .main-header,
+  .mobile-header,
+  .brand-bar,
+  .nav-bar,
+  .nav-wrap,
+  .top-controls,
+  .toolbar,
+  header .container,
+  header .wrap,
+  header .inner,
+  .header-inner,
+  .topbar-inner,
+  .nav-inner {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* Disable the previous hide effect, keep header visible but transparent */
+  body.eog-hide-mobile-header header,
+  body.eog-hide-mobile-header .header,
+  body.eog-hide-mobile-header .site-header,
+  body.eog-hide-mobile-header .app-header,
+  body.eog-hide-mobile-header .topbar,
+  body.eog-hide-mobile-header .main-header,
+  body.eog-hide-mobile-header .mobile-header,
+  body.eog-hide-mobile-header .brand-bar,
+  body.eog-hide-mobile-header .nav-bar,
+  body.eog-hide-mobile-header .nav-wrap,
+  body.eog-hide-mobile-header .top-controls,
+  body.eog-hide-mobile-header .toolbar {
+    transform: none !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+} 
 </style>
 </head>
 <script>
