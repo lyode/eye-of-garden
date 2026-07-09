@@ -5922,7 +5922,7 @@ gardenMembersForView
       const leaf = document.createElement("button");
 
       leaf.type = "button";
-      leaf.className = "garden-believer-leaf";
+      leaf.className = "garden-believer-leaf garden-member-dot";
 
       leaf.style.left = `${position.left}%`;
       leaf.style.top = `${position.top}%`;
@@ -5959,9 +5959,9 @@ gardenMembersForView
       arrow.textContent = "›";
       arrow.setAttribute("aria-hidden", "true");
 
-      leaf.appendChild(nameText);
-      leaf.appendChild(arrow);
-
+      leaf.setAttribute("title", `${name} · Leaf ${no || ""}`);
+leaf.setAttribute("aria-label", `${name} Leaf ${no || ""}`);
+    
       leaf.addEventListener("click", () => {
         openGardenBeliever(member, leaf);
       });
