@@ -1897,6 +1897,66 @@ hr {
   letter-spacing: 4px !important;
   color: #214f35 !important;
 }
+  /* Earth Garden V1 — show members as glowing dots, not overlapping names */
+.garden-believer-leaf {
+  width: 22px !important;
+  height: 22px !important;
+  min-width: 22px !important;
+  min-height: 22px !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 999px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  color: transparent !important;
+  overflow: visible !important;
+  transform: translate(-50%, -50%) rotate(var(--leaf-rotation, 0deg)) !important;
+}
+
+/* Small glowing member dot */
+.garden-believer-leaf::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+  background: #8cff7a;
+  box-shadow:
+    0 0 6px rgba(140, 255, 122, 0.95),
+    0 0 14px rgba(140, 255, 122, 0.65),
+    0 0 24px rgba(255, 213, 92, 0.28);
+}
+
+/* Some dots become warm golden lights */
+.garden-believer-leaf:nth-of-type(3n)::before {
+  background: #ffd75f;
+  box-shadow:
+    0 0 6px rgba(255, 215, 95, 0.95),
+    0 0 16px rgba(255, 215, 95, 0.65),
+    0 0 26px rgba(140, 255, 122, 0.22);
+}
+
+/* Hide old member names and arrow on the garden image */
+.garden-believer-leaf-name,
+.garden-believer-leaf-arrow {
+  display: none !important;
+}
+
+/* Dot hover / tap feeling */
+.garden-believer-leaf:hover::before,
+.garden-believer-leaf:focus-visible::before {
+  width: 13px;
+  height: 13px;
+  box-shadow:
+    0 0 8px rgba(255, 255, 255, 0.95),
+    0 0 20px rgba(140, 255, 122, 0.95),
+    0 0 34px rgba(255, 215, 95, 0.65);
+}
 </style>
 </head>
 
