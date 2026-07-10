@@ -288,32 +288,75 @@ button:disabled{opacity:.45;cursor:not-allowed}.actions{display:flex;gap:10px;fl
   </div>
 
 </div>
-     <div class="grid" style="margin-top:16px">
+       <div id="journalLanguageCards" style="display:none"></div>
+<div class="founder-blog-editor" style="margin-top:18px">
 
   <div>
-    <label for="journalEntryType">Entry type</label>
-    <select id="journalEntryType">
-      <option value="founderJournal">Founder Journal</option>
-      <option value="founderMemory">Founder Memory</option>
-      <option value="founderLesson">Founder Lesson</option>
-      <option value="gardenMilestone">Garden Milestone</option>
-      <option value="personalReflection">Personal Reflection</option>
-      <option value="draftIdea">Draft Idea</option>
-    </select>
+    <label for="founderSimpleTitle">
+      Story title — optional
+    </label>
+    <input
+      id="founderSimpleTitle"
+      type="text"
+      placeholder="Leave empty and Iris can suggest a title"
+    >
   </div>
 
-  <div>
-    <label for="journalPrivacyStatus">Privacy status</label>
-    <select id="journalPrivacyStatus">
-      <option value="privateDraft" selected>Private Draft</option>
-      <option value="readyForReview">Ready for Review</option>
-      <option value="approvedPrivate">Approved — Still Private</option>
-      <option value="archived">Archived</option>
-    </select>
+  <div class="grid" style="margin-top:14px">
+    <div>
+      <label for="founderStoryDate">Story date</label>
+      <input id="founderStoryDate" type="date">
+    </div>
+
+    <div>
+      <label for="founderStoryTime">Story time</label>
+      <input id="founderStoryTime" type="time">
+    </div>
+  </div>
+
+  <div style="margin-top:14px">
+    <label for="founderSimpleBody">
+      Tell your story, experience or thought
+    </label>
+
+    <textarea
+      id="founderSimpleBody"
+      rows="16"
+      placeholder="Write naturally. Do not worry about layout, paragraphs or translation..."
+    ></textarea>
+  </div>
+
+  <div style="margin-top:14px">
+    <label for="founderMediaFiles">
+      Add photos or media
+    </label>
+
+    <input
+      id="founderMediaFiles"
+      type="file"
+      accept="image/*,video/*,audio/*"
+      multiple
+    >
+
+    <div class="hint">
+      Add one or several files. The Garden will later arrange them into a suitable story layout.
+    </div>
+
+    <div id="founderMediaPreview" style="margin-top:12px"></div>
+  </div>
+
+  <div class="actions" style="margin-top:16px">
+    <button type="button" class="secondary" id="shapeFounderStoryButton">
+      ✨ Shape My Story
+    </button>
+
+    <button type="button" class="soft" id="tryFounderLayoutButton">
+      🎨 Try Another Layout
+    </button>
   </div>
 
 </div>
-      <div class="grid3" id="journalLanguageCards" style="margin-top:16px"></div>
+      
       <div style="margin-top:16px">
   <label for="journalPrivateNote">
     🔒 Private Founder Note — Never Public
@@ -942,9 +985,203 @@ document
 function journalField(lang,key){return $(key+langSuffix[lang])}
 function journalLanguageCard(lang){const names={en:{title:"Journal title",body:"Journal writing"},ms:{title:"Tajuk jurnal",body:"Penulisan jurnal"},zh:{title:"日记标题",body:"日记内容"}}[lang];const suffix=langSuffix[lang];return `<div class="language-card"><h3>${languageNames[lang]}</h3><label for="journalTitle${suffix}">${names.title}</label><input id="journalTitle${suffix}"><label for="journalBody${suffix}">${names.body}</label><textarea class="story-area" id="journalBody${suffix}" placeholder="Write one paragraph per line..."></textarea></div>`}
 $("journalLanguageCards").innerHTML=languages.map(journalLanguageCard).join("");
-function completeJournalTranslation(data){return !!(data.title&&data.body)}
+// Simple Founder Blogger editor
+function founderLocalDateTime(){
+  const now = new Date();
+
+  const pad = value =>
+    String(value).padStart(2, "0");
+
+  return {
+    date:
+      `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`,
+
+    time:
+      `${pad(now.getHours())}:${pad(now.getMinutes())}`
+  };
+}
+
+function syncSimpleFounderToEnglish(){
+  const simpleTitle =
+    $("founderSimpleTitle")?.value.trim() || "";
+
+  const simpleBody =
+    $("founderSimpleBody")?.value.trim() || "";
+
+  const englishTitle =
+    journalField("en", "journalTitle");
+
+  const englishBody =
+    journalField("en", "journalBody");
+
+  if(englishTitle){
+    englishTitle.value = simpleTitle;
+  }
+
+  if(englishBody){
+    englishBody.value = simpleBody;
+  }
+}
+
+function fillSimpleFounderDateTime(){
+  const current =
+    founderLocalDateTime();
+
+  if($("founderStoryDate") && !$("founderStoryDate").value){
+    $("founderStoryDate").value = current.date;
+  }
+
+  if($("founderStoryTime") && !$("founderStoryTime").value){
+    $("founderStoryTime").value = current.time;
+  }
+}
+
+$("founderSimpleTitle")?.addEventListener(
+  "input",
+  syncSimpleFounderToEnglish
+);
+
+$("founderSimpleBody")?.addEventListener(
+  "input",
+  syncSimpleFounderToEnglish
+);
+
+fillSimpleFounderDateTime();
+  
+let selectedFounderMediaFiles = [];
+
+function renderFounderMediaPreview(){
+  const preview =
+    $("founderMediaPreview");
+
+  if(!preview){
+    return;
+  }
+
+  preview.innerHTML = "";
+
+  if(!selectedFounderMediaFiles.length){
+    preview.innerHTML =
+      '<div class="hint">No media selected yet.</div>';
+
+    return;
+  }
+
+  selectedFounderMediaFiles.forEach((file, index) => {
+    const item =
+      document.createElement("div");
+
+    item.className = "item-card";
+    item.style.marginBottom = "10px";
+
+    const fileUrl =
+      URL.createObjectURL(file);
+
+    let mediaHtml = "";
+
+    if(file.type.startsWith("image/")){
+      mediaHtml = `
+        <img
+          src="${fileUrl}"
+          alt="Selected Founder media"
+          style="
+            width:100%;
+            max-height:260px;
+            object-fit:cover;
+            border-radius:14px;
+            margin-bottom:10px;
+          "
+        >
+      `;
+    }else if(file.type.startsWith("video/")){
+      mediaHtml = `
+        <video
+          src="${fileUrl}"
+          controls
+          style="
+            width:100%;
+            max-height:280px;
+            border-radius:14px;
+            margin-bottom:10px;
+          "
+        ></video>
+      `;
+    }else if(file.type.startsWith("audio/")){
+      mediaHtml = `
+        <audio
+          src="${fileUrl}"
+          controls
+          style="width:100%;margin-bottom:10px"
+        ></audio>
+      `;
+    }
+
+    item.innerHTML = `
+      ${mediaHtml}
+
+      <div>
+        <strong>${escapeHtml(file.name)}</strong>
+      </div>
+
+      <div class="hint">
+        ${(file.size / 1024 / 1024).toFixed(2)} MB
+      </div>
+
+      <button
+        type="button"
+        class="secondary"
+        data-remove-founder-media="${index}"
+        style="margin-top:8px"
+      >
+        Remove
+      </button>
+    `;
+
+    preview.appendChild(item);
+  });
+
+  preview
+    .querySelectorAll("[data-remove-founder-media]")
+    .forEach(button => {
+      button.addEventListener("click", () => {
+        const index =
+          Number(button.dataset.removeFounderMedia);
+
+        selectedFounderMediaFiles.splice(index, 1);
+
+        renderFounderMediaPreview();
+      });
+    });
+}
+
+$("founderMediaFiles")?.addEventListener(
+  "change",
+  event => {
+    selectedFounderMediaFiles = [
+      ...event.target.files
+    ];
+
+    renderFounderMediaPreview();
+  }
+);
+  
+  function completeJournalTranslation(data){return !!(data.title&&data.body)}
+  
 
   function journalEditorData(){
+      syncSimpleFounderToEnglish();
+
+  const storyDate =
+    $("founderStoryDate")?.value || "";
+
+  const storyTime =
+    $("founderStoryTime")?.value || "";
+
+  const storyDateTime =
+    storyDate && storyTime
+      ? `${storyDate}T${storyTime}:00+08:00`
+      : "";
+    
   const number = Number($("journalNumber").value);
 
   const translations = {};
@@ -959,8 +1196,11 @@ function completeJournalTranslation(data){return !!(data.title&&data.body)}
   return {
     number,
     translations,
-
+    storyDate,
+    storyTime,
+    storyDateTime,
     entryType:
+      
       $("journalEntryType")?.value || "founderJournal",
 
     privacyStatus:
@@ -996,7 +1236,24 @@ function completeJournalTranslation(data){return !!(data.title&&data.body)}
   $("journalEntryType").value = "founderJournal";
   $("journalPrivacyStatus").value = "privateDraft";
   $("journalPrivateNote").value = "";
+if($("founderSimpleTitle")){
+  $("founderSimpleTitle").value = "";
+}
 
+if($("founderSimpleBody")){
+  $("founderSimpleBody").value = "";
+}
+
+if($("founderStoryDate")){
+  $("founderStoryDate").value = "";
+}
+
+if($("founderStoryTime")){
+  $("founderStoryTime").value = "";
+}
+
+fillSimpleFounderDateTime();
+    
   $("journalEditorStatus").textContent = "New private draft";
 
   setStatus(
@@ -1012,7 +1269,15 @@ async function saveJournal(statusWanted){try{setStatus("journalComposeStatus",st
   number: data.number,
   type: "journal",
   status: finalStatus,
+storyDate:
+  data.storyDate || "",
 
+storyTime:
+  data.storyTime || "",
+
+storyDateTime:
+  data.storyDateTime || "",
+  
   entryType:
     data.entryType || "founderJournal",
 
@@ -1085,6 +1350,21 @@ $("journalPreviewBackdrop").addEventListener("click",e=>{if(e.target===$("journa
 
     $("journalPrivateNote").value =
       item.privateFounderNote || "";
+if($("founderStoryDate")){
+  $("founderStoryDate").value =
+    item.storyDate || "";
+}
+
+if($("founderStoryTime")){
+  $("founderStoryTime").value =
+    item.storyTime || "";
+}
+    
+    $("founderStoryDate").value =
+  item.storyDate || "";
+
+$("founderStoryTime").value =
+  item.storyTime || "";
 
     for(const lang of languages){
       const translation =
@@ -1103,6 +1383,13 @@ $("journalPreviewBackdrop").addEventListener("click",e=>{if(e.target===$("journa
         paragraphsToText(translation.fullBodyHtml) ??
         "";
     }
+$("founderSimpleTitle").value =
+  journalField("en", "journalTitle").value || "";
+
+$("founderSimpleBody").value =
+  journalField("en", "journalBody").value || "";
+
+fillSimpleFounderDateTime();
 
     $("journalEditorStatus").textContent =
       currentJournalStatus === "published"
