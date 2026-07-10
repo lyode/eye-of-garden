@@ -1218,10 +1218,10 @@ $("founderMediaFiles")?.addEventListener(
   function resetJournalEditor(){
   const suggested =
     Math.max(
-      5,
-      ...journalRecords.map(item => Number(item.number) || 0)
-    ) + 1;
-
+0,
+...journalRecords.map(item => Number(item.number) || 0)
+) + 1;
+    
   $("journalId").value = "";
   $("journalSourceVersion").value = "0";
   $("journalNumber").value = suggested;
