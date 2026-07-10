@@ -1004,7 +1004,7 @@ function completeJournalTranslation(data){return !!(data.title&&data.body)}
     `Ready for private Founder entry #${String(suggested).padStart(3,"0")}.`
   );
 }
-    suggested=Math.max(5,...journalRecords.map(x=>Number(x.number)||0))+1;$("journalId").value="";$("journalSourceVersion").value="0";$("journalNumber").value=suggested;currentJournalStatus="draft";for(const lang of languages){journalField(lang,"journalTitle").value="";journalField(lang,"journalBody").value=""}$("journalEditorStatus").textContent="New draft";setStatus("journalComposeStatus",`Ready for Founder Journal #${String(suggested).padStart(3,"0")}.`)}
+  
 $("newJournalButton").addEventListener("click",resetJournalEditor);
 function validateJournalBase(data){if(!Number.isInteger(data.number)||data.number<1)throw new Error("Enter a valid journal number.");if(!completeJournalTranslation(data.translations.en))throw new Error("Complete the English journal title and writing before saving.")}
 function validateAllJournalLanguages(data){validateJournalBase(data);for(const lang of languages){if(!completeJournalTranslation(data.translations[lang]))throw new Error(`Complete the ${languageNames[lang]} journal title and writing before publishing.`)}}
