@@ -99,7 +99,7 @@ button:disabled{opacity:.45;cursor:not-allowed}.actions{display:flex;gap:10px;fl
       <button class="tab" data-tab="story">📝 Story Studio</button>
       <button class="tab" data-tab="stories">📚 Manage Stories</button>
       <button class="tab" data-tab="storyVoice">✍️ Story Voice Review</button>
-      <button class="tab" data-tab="journal">📖 Journal Studio</button>
+      <button class="tab" data-tab="journal">✍️ Founder Writing Studio</button>
       <button class="tab" data-tab="journals">🗂️ Manage Journals</button>
       <button class="tab" data-tab="coming">🔒 Coming Soon</button>
       <button class="tab" data-tab="backup">💾 Backup</button>
@@ -248,7 +248,14 @@ button:disabled{opacity:.45;cursor:not-allowed}.actions{display:flex;gap:10px;fl
 </section>
 
     <section id="tab-journal" class="panel tab-panel hidden">
-      <div class="topline"><div><h2>📖 Founder Journal Studio</h2><div class="hint">Write the founder's journey, prepare all three languages, preview it, save privately, and publish from this one Control Room.</div></div><button class="secondary" id="newJournalButton">New journal</button></div>
+      <div class="topline">
+  <div>
+    <h2>✍️ Founder Writing Studio</h2>
+    <div class="hint">
+      A private place for the founder to write, organise, translate and preserve the Garden’s journey. Nothing here becomes public unless you deliberately approve it later.
+    </div>
+  </div>
+</div>    
       <input type="hidden" id="journalId">
       <input type="hidden" id="journalSourceVersion" value="0">
       <div class="grid" style="margin-top:16px">
@@ -256,13 +263,86 @@ button:disabled{opacity:.45;cursor:not-allowed}.actions{display:flex;gap:10px;fl
         <div><label>Current status</label><div class="status" id="journalEditorStatus">New draft</div></div>
       </div>
       <div class="code-hint">Write one thought or paragraph per line. Wrap a whole line in <b>**double asterisks**</b> to make it bold. The Studio creates the journal page automatically.</div>
+     <div class="grid" style="margin-top:16px">
+
+  <div>
+    <label for="journalEntryType">Entry type</label>
+    <select id="journalEntryType">
+      <option value="founderJournal">Founder Journal</option>
+      <option value="founderMemory">Founder Memory</option>
+      <option value="founderLesson">Founder Lesson</option>
+      <option value="gardenMilestone">Garden Milestone</option>
+      <option value="personalReflection">Personal Reflection</option>
+      <option value="draftIdea">Draft Idea</option>
+    </select>
+  </div>
+
+  <div>
+    <label for="journalPrivacyStatus">Privacy status</label>
+    <select id="journalPrivacyStatus">
+      <option value="privateDraft" selected>Private Draft</option>
+      <option value="readyForReview">Ready for Review</option>
+      <option value="approvedPrivate">Approved — Still Private</option>
+      <option value="archived">Archived</option>
+    </select>
+  </div>
+
+</div>
+     <div class="grid" style="margin-top:16px">
+
+  <div>
+    <label for="journalEntryType">Entry type</label>
+    <select id="journalEntryType">
+      <option value="founderJournal">Founder Journal</option>
+      <option value="founderMemory">Founder Memory</option>
+      <option value="founderLesson">Founder Lesson</option>
+      <option value="gardenMilestone">Garden Milestone</option>
+      <option value="personalReflection">Personal Reflection</option>
+      <option value="draftIdea">Draft Idea</option>
+    </select>
+  </div>
+
+  <div>
+    <label for="journalPrivacyStatus">Privacy status</label>
+    <select id="journalPrivacyStatus">
+      <option value="privateDraft" selected>Private Draft</option>
+      <option value="readyForReview">Ready for Review</option>
+      <option value="approvedPrivate">Approved — Still Private</option>
+      <option value="archived">Archived</option>
+    </select>
+  </div>
+
+</div>
       <div class="grid3" id="journalLanguageCards" style="margin-top:16px"></div>
+      <div style="margin-top:16px">
+  <label for="journalPrivateNote">
+    🔒 Private Founder Note — Never Public
+  </label>
+
+  <textarea
+    id="journalPrivateNote"
+    rows="5"
+    placeholder="Private reminders, background details, sensitive names, future ideas or editing instructions..."
+  ></textarea>
+
+  <div class="hint">
+    This note stays inside the Iris Control Room and must never appear on the public Garden page.
+  </div>
+</div>
       <div class="actions">
         <button class="secondary" id="previewJournalButton">Preview</button>
-        <button class="soft" id="saveJournalButton">Save safely</button>
-        <button id="publishJournalButton">Publish Journal</button>
+        <button class="soft" id="saveJournalButton">💾 Save Private Draft</button>
+        <button
+  type="button"
+  id="publishJournalButton"
+  hidden
+>
+  Publish Journal
+</button>
       </div>
-      <div class="status" id="journalComposeStatus">Ready for a new Founder Journal.</div>
+      <div class="status" id="journalComposeStatus">
+  Ready for a new private Founder entry.
+</div>
     </section>
 
     <section id="tab-journals" class="panel tab-panel hidden">
@@ -863,13 +943,104 @@ function journalField(lang,key){return $(key+langSuffix[lang])}
 function journalLanguageCard(lang){const names={en:{title:"Journal title",body:"Journal writing"},ms:{title:"Tajuk jurnal",body:"Penulisan jurnal"},zh:{title:"日记标题",body:"日记内容"}}[lang];const suffix=langSuffix[lang];return `<div class="language-card"><h3>${languageNames[lang]}</h3><label for="journalTitle${suffix}">${names.title}</label><input id="journalTitle${suffix}"><label for="journalBody${suffix}">${names.body}</label><textarea class="story-area" id="journalBody${suffix}" placeholder="Write one paragraph per line..."></textarea></div>`}
 $("journalLanguageCards").innerHTML=languages.map(journalLanguageCard).join("");
 function completeJournalTranslation(data){return !!(data.title&&data.body)}
-function journalEditorData(){const number=Number($("journalNumber").value);const translations={};for(const lang of languages){translations[lang]={title:journalField(lang,"journalTitle").value.trim(),body:journalField(lang,"journalBody").value.trim()}}return{number,translations}}
-function buildJournalTranslation(lang,number,editor,sourceVersion){const label=journalLabels[lang];const n=String(number).padStart(3,"0");const heading=`<h3>${label.heading} #${n} — ${escapeHtml(editor.title)}</h3>`;return{language:lang,badge:`${label.badge} #${n}`,title:editor.title,fullBodyHtml:`${heading}\n\n${paragraphsHtml(editor.body)}`.trim(),sourceVersion,editor}}
-function resetJournalEditor(){const suggested=Math.max(5,...journalRecords.map(x=>Number(x.number)||0))+1;$("journalId").value="";$("journalSourceVersion").value="0";$("journalNumber").value=suggested;currentJournalStatus="draft";for(const lang of languages){journalField(lang,"journalTitle").value="";journalField(lang,"journalBody").value=""}$("journalEditorStatus").textContent="New draft";setStatus("journalComposeStatus",`Ready for Founder Journal #${String(suggested).padStart(3,"0")}.`)}
+
+  function journalEditorData(){
+  const number = Number($("journalNumber").value);
+
+  const translations = {};
+
+  for(const lang of languages){
+    translations[lang] = {
+      title: journalField(lang, "journalTitle").value.trim(),
+      body: journalField(lang, "journalBody").value.trim()
+    };
+  }
+
+  return {
+    number,
+    translations,
+
+    entryType:
+      $("journalEntryType")?.value || "founderJournal",
+
+    privacyStatus:
+      $("journalPrivacyStatus")?.value || "privateDraft",
+
+    privateFounderNote:
+      $("journalPrivateNote")?.value.trim() || "",
+
+    publicVisible: false
+  };
+}
+
+  function buildJournalTranslation(lang,number,editor,sourceVersion){const label=journalLabels[lang];const n=String(number).padStart(3,"0");const heading=`<h3>${label.heading} #${n} — ${escapeHtml(editor.title)}</h3>`;return{language:lang,badge:`${label.badge} #${n}`,title:editor.title,fullBodyHtml:`${heading}\n\n${paragraphsHtml(editor.body)}`.trim(),sourceVersion,editor}}
+
+  function resetJournalEditor(){
+  const suggested =
+    Math.max(
+      5,
+      ...journalRecords.map(item => Number(item.number) || 0)
+    ) + 1;
+
+  $("journalId").value = "";
+  $("journalSourceVersion").value = "0";
+  $("journalNumber").value = suggested;
+
+  currentJournalStatus = "draft";
+
+  for(const lang of languages){
+    journalField(lang, "journalTitle").value = "";
+    journalField(lang, "journalBody").value = "";
+  }
+
+  $("journalEntryType").value = "founderJournal";
+  $("journalPrivacyStatus").value = "privateDraft";
+  $("journalPrivateNote").value = "";
+
+  $("journalEditorStatus").textContent = "New private draft";
+
+  setStatus(
+    "journalComposeStatus",
+    `Ready for private Founder entry #${String(suggested).padStart(3,"0")}.`
+  );
+}
+    suggested=Math.max(5,...journalRecords.map(x=>Number(x.number)||0))+1;$("journalId").value="";$("journalSourceVersion").value="0";$("journalNumber").value=suggested;currentJournalStatus="draft";for(const lang of languages){journalField(lang,"journalTitle").value="";journalField(lang,"journalBody").value=""}$("journalEditorStatus").textContent="New draft";setStatus("journalComposeStatus",`Ready for Founder Journal #${String(suggested).padStart(3,"0")}.`)}
 $("newJournalButton").addEventListener("click",resetJournalEditor);
 function validateJournalBase(data){if(!Number.isInteger(data.number)||data.number<1)throw new Error("Enter a valid journal number.");if(!completeJournalTranslation(data.translations.en))throw new Error("Complete the English journal title and writing before saving.")}
 function validateAllJournalLanguages(data){validateJournalBase(data);for(const lang of languages){if(!completeJournalTranslation(data.translations[lang]))throw new Error(`Complete the ${languageNames[lang]} journal title and writing before publishing.`)}}
-async function saveJournal(statusWanted){try{setStatus("journalComposeStatus",statusWanted==="published"?"Publishing journal…":"Saving journal…");const data=journalEditorData();if(statusWanted==="published"){validateAllJournalLanguages(data);ensureNoJournalGap([data.number])}else validateJournalBase(data);const id=`journal-${String(data.number).padStart(4,"0")}`;const existing=await getDoc(doc(db,"content",id));const existingData=existing.exists()?existing.data():null;if(existingData&&$("journalId").value!==id&&$("journalId").value)throw new Error("The journal number does not match the journal being edited.");if(existingData&&!$("journalId").value&&existingData.status)throw new Error(`Founder Journal #${String(data.number).padStart(3,"0")} already exists. Open it from Manage Journals instead.`);const currentVersion=Number($("journalSourceVersion").value||existingData?.sourceVersion||0);const sourceVersion=currentVersion+1;const currentPublished=currentJournalStatus==="published";const finalStatus=statusWanted==="published"?"published":currentPublished?"published":"draft";if(finalStatus==="published")validateAllJournalLanguages(data);const availableLanguages=languages.filter(lang=>completeJournalTranslation(data.translations[lang]));const nowIso=new Date().toISOString();const batch=writeBatch(db);const parentPayload={number:data.number,type:"journal",status:finalStatus,sourceLanguage:"en",sourceVersion,availableLanguages,title:data.translations.en.title,updatedAt:serverTimestamp(),updatedDate:nowIso,updatedBy:currentAdmin.email};if(!existingData){parentPayload.createdAt=serverTimestamp();parentPayload.createdDate=nowIso;parentPayload.createdBy=currentAdmin.email}if(finalStatus==="published"){parentPayload.publishedAt=serverTimestamp();parentPayload.publishedDate=nowIso;parentPayload.publishedBy=currentAdmin.email}batch.set(doc(db,"content",id),parentPayload,{merge:true});for(const lang of languages){const translation=buildJournalTranslation(lang,data.number,data.translations[lang],sourceVersion);translation.updatedAt=serverTimestamp();translation.updatedDate=nowIso;translation.updatedBy=currentAdmin.email;batch.set(doc(db,"content",id,"translations",lang),translation,{merge:true})}await batch.commit();$("journalId").value=id;$("journalSourceVersion").value=String(sourceVersion);currentJournalStatus=finalStatus;$("journalEditorStatus").textContent=finalStatus==="published"?"Published":"Draft";setStatus("journalComposeStatus",finalStatus==="published"?`Published successfully. Founder Journal #${String(data.number).padStart(3,"0")} is now available to the live Garden automatically.`:`Saved safely as a draft. Journal ID: ${id}`);await loadJournals()}catch(error){setStatus("journalComposeStatus",error.message,true)}}
+async function saveJournal(statusWanted){try{setStatus("journalComposeStatus",statusWanted==="published"?"Publishing journal…":"Saving journal…");const data=journalEditorData();if(statusWanted==="published"){validateAllJournalLanguages(data);ensureNoJournalGap([data.number])}else validateJournalBase(data);const id=`journal-${String(data.number).padStart(4,"0")}`;const existing=await getDoc(doc(db,"content",id));const existingData=existing.exists()?existing.data():null;if(existingData&&$("journalId").value!==id&&$("journalId").value)throw new Error("The journal number does not match the journal being edited.");if(existingData&&!$("journalId").value&&existingData.status)throw new Error(`Founder Journal #${String(data.number).padStart(3,"0")} already exists. Open it from Manage Journals instead.`);const currentVersion=Number($("journalSourceVersion").value||existingData?.sourceVersion||0);const sourceVersion=currentVersion+1;const currentPublished=currentJournalStatus==="published";const finalStatus=statusWanted==="published"?"published":currentPublished?"published":"draft";if(finalStatus==="published")validateAllJournalLanguages(data);const availableLanguages=languages.filter(lang=>completeJournalTranslation(data.translations[lang]));const nowIso=new Date().toISOString();const batch=writeBatch(db);const parentPayload = {
+  number: data.number,
+  type: "journal",
+  status: finalStatus,
+
+  entryType:
+    data.entryType || "founderJournal",
+
+  privacyStatus:
+    data.privacyStatus || "privateDraft",
+
+  privateFounderNote:
+    data.privateFounderNote || "",
+
+  publicVisible: false,
+
+  sourceLanguage: "en",
+  sourceVersion,
+  availableLanguages,
+
+  title:
+    data.translations.en.title,
+
+  updatedAt:
+    serverTimestamp(),
+
+  updatedDate:
+    nowIso,
+
+  updatedBy:
+    currentAdmin.email
+};
+;if(!existingData){parentPayload.createdAt=serverTimestamp();parentPayload.createdDate=nowIso;parentPayload.createdBy=currentAdmin.email}if(finalStatus==="published"){parentPayload.publishedAt=serverTimestamp();parentPayload.publishedDate=nowIso;parentPayload.publishedBy=currentAdmin.email}batch.set(doc(db,"content",id),parentPayload,{merge:true});for(const lang of languages){const translation=buildJournalTranslation(lang,data.number,data.translations[lang],sourceVersion);translation.updatedAt=serverTimestamp();translation.updatedDate=nowIso;translation.updatedBy=currentAdmin.email;batch.set(doc(db,"content",id,"translations",lang),translation,{merge:true})}await batch.commit();$("journalId").value=id;$("journalSourceVersion").value=String(sourceVersion);currentJournalStatus=finalStatus;$("journalEditorStatus").textContent=finalStatus==="published"?"Published":"Draft";setStatus("journalComposeStatus",finalStatus==="published"?`Published successfully. Founder Journal #${String(data.number).padStart(3,"0")} is now available to the live Garden automatically.`:`Saved safely as a draft. Journal ID: ${id}`);await loadJournals()}catch(error){setStatus("journalComposeStatus",error.message,true)}}
 $("saveJournalButton").addEventListener("click",()=>saveJournal("draft"));
 $("publishJournalButton").addEventListener("click",()=>saveJournal("published"));
 function renderJournalPreview(){const data=journalEditorData(),lang=$("journalPreviewLanguage").value,t=data.translations[lang],n=String(data.number||0).padStart(3,"0");$("journalPreviewType").textContent=`${journalLabels[lang].badge} #${n}`;$("journalPreviewBody").innerHTML=buildJournalTranslation(lang,data.number||0,t,1).fullBodyHtml}
@@ -877,8 +1048,88 @@ $("previewJournalButton").addEventListener("click",()=>{$("journalPreviewLanguag
 $("journalPreviewLanguage").addEventListener("change",renderJournalPreview);
 $("closeJournalPreviewButton").addEventListener("click",()=>$("journalPreviewBackdrop").classList.remove("open"));
 $("journalPreviewBackdrop").addEventListener("click",e=>{if(e.target===$("journalPreviewBackdrop"))$("journalPreviewBackdrop").classList.remove("open")});
-async function loadJournalForEdit(item){try{setStatus("journalComposeStatus",`Loading ${item.id}…`);const translations={};for(const lang of languages){const snap=await getDoc(doc(db,"content",item.id,"translations",lang));translations[lang]=snap.exists()?snap.data():{}}$("journalId").value=item.id;$("journalSourceVersion").value=String(item.sourceVersion||0);$("journalNumber").value=item.number;currentJournalStatus=item.status||"draft";for(const lang of languages){const t=translations[lang]||{};const editor=t.editor||{};journalField(lang,"journalTitle").value=t.title||editor.title||"";journalField(lang,"journalBody").value=editor.body??paragraphsToText(t.fullBodyHtml)??""}$("journalEditorStatus").textContent=currentJournalStatus==="published"?"Published":"Draft";setStatus("journalComposeStatus",`Editing ${item.id}. Preview before saving or publishing.`);switchTab("journal");window.scrollTo({top:0,behavior:"smooth"})}catch(error){setStatus("journalsStatus",error.message,true)}}
 
+  async function loadJournalForEdit(item){
+  try{
+    setStatus(
+      "journalComposeStatus",
+      `Loading ${item.id}...`
+    );
+
+    const translations = {};
+
+    for(const lang of languages){
+      const snap = await getDoc(
+        doc(db, "content", item.id, "translations", lang)
+      );
+
+      translations[lang] = snap.exists()
+        ? snap.data()
+        : {};
+    }
+
+    $("journalId").value = item.id;
+    $("journalSourceVersion").value =
+      String(item.sourceVersion || 0);
+
+    $("journalNumber").value = item.number;
+
+    currentJournalStatus =
+      item.status || "draft";
+
+    $("journalEntryType").value =
+      item.entryType || "founderJournal";
+
+    $("journalPrivacyStatus").value =
+      item.privacyStatus || "privateDraft";
+
+    $("journalPrivateNote").value =
+      item.privateFounderNote || "";
+
+    for(const lang of languages){
+      const translation =
+        translations[lang] || {};
+
+      const editor =
+        translation.editor || {};
+
+      journalField(lang, "journalTitle").value =
+        translation.title ||
+        editor.title ||
+        "";
+
+      journalField(lang, "journalBody").value =
+        editor.body ??
+        paragraphsToText(translation.fullBodyHtml) ??
+        "";
+    }
+
+    $("journalEditorStatus").textContent =
+      currentJournalStatus === "published"
+        ? "Published"
+        : "Private Draft";
+
+    setStatus(
+      "journalComposeStatus",
+      `Editing ${item.id}. Preview before saving or publishing.`
+    );
+
+    switchTab("journal");
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+
+  }catch(error){
+    setStatus(
+      "journalsStatus",
+      error.message,
+      true
+    );
+  }
+} 
+    
 // Manage Founder Journals
 async function loadJournals(){if(!currentAdmin)return;setStatus("journalsStatus","Loading Founder Journals…");try{const snap=await getDocs(collection(db,"content"));journalRecords=snap.docs.map(d=>({id:d.id,...d.data()})).filter(x=>x.type==="journal").sort((a,b)=>(Number(a.number)||0)-(Number(b.number)||0));renderJournals();const published=journalRecords.filter(x=>x.status==="published").length;const missingLegacy=[1,2,3,4,5].filter(number=>!journalRecords.some(x=>Number(x.number)===number)).length;setStatus("journalsStatus",`${journalRecords.length} Firestore journals · ${published} published · ${journalRecords.length-published} draft or unpublished.${missingLegacy?` ${missingLegacy} existing journal pages are still embedded and may be imported.`:" Existing Journals #001–#005 are now manageable here."}`);if(!$("journalId").value)resetJournalEditor()}catch(error){setStatus("journalsStatus",error.message,true)}}
 function renderJournals(){const box=$("journalList");box.innerHTML="";if(!journalRecords.length){box.innerHTML='<div class="item-card">No Firestore Founder Journals yet. Import the existing five journals or create Journal #006.</div>';return}for(const item of journalRecords){const card=document.createElement("article");card.className="item-card story-row";const check=document.createElement("input");check.type="checkbox";check.className="journal-select";check.dataset.id=item.id;check.disabled=item.status==="published";const main=document.createElement("div");const badge=document.createElement("span");badge.className=`badge ${item.status||"draft"}`;badge.textContent=item.status||"draft";const title=document.createElement("h3");title.textContent=`#${String(item.number||0).padStart(3,"0")} ${item.title||"Untitled journal"}`;const meta=document.createElement("div");meta.className="item-meta";meta.textContent=`Version ${item.sourceVersion||0} · Languages: ${(item.availableLanguages||[]).join(", ")||"none"} · ${dateText(item)}`;main.append(badge,title,meta);const actions=document.createElement("div");actions.className="actions";const edit=document.createElement("button");edit.className="secondary";edit.textContent="Edit";edit.onclick=()=>loadJournalForEdit(item);const state=document.createElement("button");state.textContent=item.status==="published"?"Unpublish":"Publish";state.onclick=()=>item.status==="published"?unpublishJournal(item):publishStoredJournal(item);actions.append(edit,state);card.append(check,main,actions);box.appendChild(card)}}
