@@ -498,8 +498,9 @@ let currentAdmin=null,currentMessageStatus="draft",currentMessageActive=false,in
 let storyRecords=[],currentStoryStatus="draft",comingSoonItems=[];
 let journalRecords=[],currentJournalStatus="draft";
 let journalTranslationDirty={en:false,ms:false,zh:false};
-let founderLastEdited={title:"simple",body:"simple"};
-let founderEnglishManuallyEdited={title:false,body:false};
+let englishTitleManuallyLocked=false;
+let englishBodyManuallyLocked=false;
+let isFounderSyncInProgress=false;
 const $=id=>document.getElementById(id);
 const languages=["en","ms","zh"];
 const langSuffix={en:"En",ms:"Ms",zh:"Zh"};
@@ -1037,6 +1038,24 @@ function markJournalTranslationDirty(lang){
   journalTranslationDirty[lang] = true;
 }
 
+function resetEnglishFounderManualLocks(){
+  englishTitleManuallyLocked = false;
+  englishBodyManuallyLocked = false;
+  isFounderSyncInProgress = false;
+}
+
+function lockEnglishFounderField(field,event){
+  if(isFounderSyncInProgress || !event?.isTrusted){
+    return;
+  }
+
+  if(field === "title"){
+    englishTitleManuallyLocked = true;
+  }else if(field === "body"){
+    englishBodyManuallyLocked = true;
+  }
+}
+
 function syncSimpleFounderToEnglish(field){
   const fields = field ? [field] : ["title", "body"];
   const fieldConfig = {
@@ -1052,12 +1071,14 @@ function syncSimpleFounderToEnglish(field){
 
   for(const key of fields){
     const config = fieldConfig[key];
+    const isManuallyLocked = key === "title"
+      ? englishTitleManuallyLocked
+      : englishBodyManuallyLocked;
 
     if(
       !config?.simple ||
       !config.english ||
-      founderEnglishManuallyEdited[key] ||
-      founderLastEdited[key] !== "simple"
+      isManuallyLocked
     ){
       continue;
     }
@@ -1065,7 +1086,13 @@ function syncSimpleFounderToEnglish(field){
     const simpleValue = config.simple.value;
 
     if(simpleValue.trim()){
-      config.english.value = simpleValue;
+      isFounderSyncInProgress = true;
+
+      try{
+        config.english.value = simpleValue;
+      }finally{
+        isFounderSyncInProgress = false;
+      }
     }
   }
 }
@@ -1084,26 +1111,23 @@ function fillSimpleFounderDateTime(){
 }
 
 $("founderSimpleTitle")?.addEventListener("input", () => {
-  founderLastEdited.title = "simple";
   markJournalTranslationDirty("en");
   syncSimpleFounderToEnglish("title");
 });
 
 $("founderSimpleBody")?.addEventListener("input", () => {
-  founderLastEdited.body = "simple";
   markJournalTranslationDirty("en");
   syncSimpleFounderToEnglish("body");
 });
 
 for(const lang of languages){
   for(const key of ["journalTitle", "journalBody"]){
-    journalField(lang, key).addEventListener("input", () => {
+    journalField(lang, key).addEventListener("input", event => {
       markJournalTranslationDirty(lang);
 
       if(lang === "en"){
         const founderField = key === "journalTitle" ? "title" : "body";
-        founderLastEdited[founderField] = "english";
-        founderEnglishManuallyEdited[founderField] = true;
+        lockEnglishFounderField(founderField, event);
       }
     });
   }
@@ -1307,8 +1331,7 @@ function resetJournalEditor(){
 
   currentJournalStatus = "draft";
   journalTranslationDirty = {en:false,ms:false,zh:false};
-  founderLastEdited = {title:"simple",body:"simple"};
-  founderEnglishManuallyEdited = {title:false,body:false};
+  resetEnglishFounderManualLocks();
 
   for(const lang of languages){
     journalField(lang, "journalTitle").value = "";
@@ -1593,8 +1616,7 @@ async function loadJournalForEdit(item){
       journalField("en", "journalBody").value || "";
 
     journalTranslationDirty = {en:false,ms:false,zh:false};
-    founderLastEdited = {title:"english",body:"english"};
-    founderEnglishManuallyEdited = {title:false,body:false};
+    resetEnglishFounderManualLocks();
     fillSimpleFounderDateTime();
 
     $("journalEditorStatus").textContent =
