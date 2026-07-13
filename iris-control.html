@@ -177,7 +177,6 @@ button:disabled{opacity:.45;cursor:not-allowed}.actions{display:flex;gap:10px;fl
       Fill Story Studio
     </button>
 
-```
 <button
   type="button"
   class="secondary"
@@ -185,7 +184,6 @@ button:disabled{opacity:.45;cursor:not-allowed}.actions{display:flex;gap:10px;fl
 >
   Clear Package
 </button>
-```
 
   </div>
 
@@ -254,7 +252,9 @@ button:disabled{opacity:.45;cursor:not-allowed}.actions{display:flex;gap:10px;fl
     <div class="hint">
       A private place for the founder to write, organise, translate and preserve the Garden’s journey. Nothing here becomes public unless you deliberately approve it later.
     </div>
+    <div class="hint">Publishing is completed through Manage Journals.</div>
   </div>
+  <button type="button" class="secondary" id="newJournalButton">New Journal</button>
 </div>    
       <input type="hidden" id="journalId">
       <input type="hidden" id="journalSourceVersion" value="0">
@@ -339,19 +339,19 @@ button:disabled{opacity:.45;cursor:not-allowed}.actions{display:flex;gap:10px;fl
     >
 
     <div class="hint">
-      Add one or several files. The Garden will later arrange them into a suitable story layout.
+      Preview only — selected media will not be saved.
     </div>
 
     <div id="founderMediaPreview" style="margin-top:12px"></div>
   </div>
 
   <div class="actions" style="margin-top:16px">
-    <button type="button" class="secondary" id="shapeFounderStoryButton">
-      ✨ Shape My Story
+    <button type="button" class="secondary" id="shapeFounderStoryButton" disabled>
+      ✨ Shape My Story — Coming Soon
     </button>
 
-    <button type="button" class="soft" id="tryFounderLayoutButton">
-      🎨 Try Another Layout
+    <button type="button" class="soft" id="tryFounderLayoutButton" disabled>
+      🎨 Try Another Layout — Coming Soon
     </button>
   </div>
 
@@ -481,6 +481,7 @@ button:disabled{opacity:.45;cursor:not-allowed}.actions{display:flex;gap:10px;fl
 <div class="preview-backdrop" id="journalPreviewBackdrop">
   <div class="preview-card">
     <div class="topline"><div class="preview-type" id="journalPreviewType"></div><select id="journalPreviewLanguage" style="width:auto"><option value="en">English</option><option value="ms">Bahasa Melayu</option><option value="zh">简体中文</option></select></div>
+    <div class="status" id="journalPreviewSummary"></div>
     <div class="preview-body" id="journalPreviewBody"></div>
     <div class="actions"><button class="secondary" id="closeJournalPreviewButton">Close preview</button></div>
   </div>
@@ -496,6 +497,8 @@ const app=initializeApp(firebaseConfig);const auth=getAuth(app);const db=getFire
 let currentAdmin=null,currentMessageStatus="draft",currentMessageActive=false,inboxMessages=[],broadcastMessages=[];
 let storyRecords=[],currentStoryStatus="draft",comingSoonItems=[];
 let journalRecords=[],currentJournalStatus="draft";
+let journalTranslationDirty={en:false,ms:false,zh:false};
+let founderLastEdited={title:"simple",body:"simple"};
 const $=id=>document.getElementById(id);
 const languages=["en","ms","zh"];
 const langSuffix={en:"En",ms:"Ms",zh:"Zh"};
@@ -533,9 +536,38 @@ function switchTab(name){document.querySelectorAll(".tab").forEach(b=>b.classLis
 document.querySelectorAll(".tab").forEach(button=>button.addEventListener("click",()=>switchTab(button.dataset.tab)));
 
 async function confirmAdmin(user){const admin=await getDoc(doc(db,"admins",user.uid));if(!admin.exists()||admin.data().active===false)throw new Error("This account is not an active Garden administrator.");currentAdmin=user;$("loginPanel").classList.add("hidden");$("adminApp").classList.remove("hidden");$("adminIdentity").textContent=`Administrator confirmed: ${user.email}`;await Promise.all([loadInbox(),loadMessages(),loadStories(),loadJournals(),loadComingSoon()])}
-$("signInButton").addEventListener("click",async()=>{setStatus("loginStatus","Signing in…");try{const credential=await signInWithEmailAndPassword(auth,$("adminEmail").value.trim(),$("adminPassword").value);await confirmAdmin(credential.user);setStatus("loginStatus","Administrator confirmed.")}catch(error){setStatus("loginStatus",error.message,true)}});
+$("signInButton").addEventListener("click", async () => {
+  setStatus("loginStatus", "Signing in…");
+
+  try{
+    await signInWithEmailAndPassword(
+      auth,
+      $("adminEmail").value.trim(),
+      $("adminPassword").value
+    );
+
+    setStatus("loginStatus", "Signed in. Loading the Control Room…");
+  }catch(error){
+    setStatus("loginStatus", error.message, true);
+  }
+});
 $("signOutButton").addEventListener("click",()=>signOut(auth));
-onAuthStateChanged(auth,async user=>{if(!user){currentAdmin=null;$("adminApp").classList.add("hidden");$("loginPanel").classList.remove("hidden");return}try{await confirmAdmin(user)}catch(error){setStatus("loginStatus",error.message,true);await signOut(auth)}});
+onAuthStateChanged(auth, async user => {
+  if(!user){
+    currentAdmin = null;
+    $("adminApp").classList.add("hidden");
+    $("loginPanel").classList.remove("hidden");
+    return;
+  }
+
+  try{
+    await confirmAdmin(user);
+    setStatus("loginStatus", "Administrator confirmed.");
+  }catch(error){
+    setStatus("loginStatus", error.message, true);
+    await signOut(auth);
+  }
+});
 
 // Garden Inbox
 async function loadInbox(){if(!currentAdmin)return;setStatus("inboxStatus","Loading Garden messages…");try{const snap=await getDocs(collection(db,"gardenThoughts"));inboxMessages=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>timeValue(b)-timeValue(a));renderInbox();const unread=inboxMessages.filter(x=>!x.read).length;setStatus("inboxStatus",`${inboxMessages.length} messages · ${unread} not yet marked as noticed.`)}catch(error){setStatus("inboxStatus",error.message,true)}}
@@ -1000,41 +1032,40 @@ function founderLocalDateTime(){
       `${pad(now.getHours())}:${pad(now.getMinutes())}`
   };
 }
-function syncSimpleFounderToEnglish(){
-  const simpleTitle =
-    $("founderSimpleTitle")?.value.trim() || "";
-
-  const simpleBody =
-    $("founderSimpleBody")?.value.trim() || "";
-
-  // Do not erase the English language card
-  // when the simple editor is empty.
-  if(!simpleTitle && !simpleBody){
-    return;
-  }
-
-  const englishTitle =
-    journalField("en", "journalTitle");
-
-  const englishBody =
-    journalField("en", "journalBody");
-
-if(
-  englishTitle &&
-  simpleTitle &&
-  !englishTitle.value.trim()
-){
-  englishTitle.value = simpleTitle;
+function markJournalTranslationDirty(lang){
+  journalTranslationDirty[lang] = true;
 }
 
-if(
-  englishBody &&
-  simpleBody &&
-  !englishBody.value.trim()
-){
-  englishBody.value = simpleBody;
-} 
+function syncSimpleFounderToEnglish(field){
+  const fields = field ? [field] : ["title", "body"];
+  const fieldConfig = {
+    title: {
+      simple: $("founderSimpleTitle"),
+      english: journalField("en", "journalTitle")
+    },
+    body: {
+      simple: $("founderSimpleBody"),
+      english: journalField("en", "journalBody")
+    }
+  };
 
+  for(const key of fields){
+    const config = fieldConfig[key];
+
+    if(
+      !config?.simple ||
+      !config.english ||
+      founderLastEdited[key] !== "simple"
+    ){
+      continue;
+    }
+
+    const simpleValue = config.simple.value;
+
+    if(simpleValue.trim()){
+      config.english.value = simpleValue;
+    }
+  }
 }
 
 function fillSimpleFounderDateTime(){
@@ -1050,19 +1081,54 @@ function fillSimpleFounderDateTime(){
   }
 }
 
-$("founderSimpleTitle")?.addEventListener(
-  "input",
-  syncSimpleFounderToEnglish
-);
+$("founderSimpleTitle")?.addEventListener("input", () => {
+  founderLastEdited.title = "simple";
+  markJournalTranslationDirty("en");
+  syncSimpleFounderToEnglish("title");
+});
 
-$("founderSimpleBody")?.addEventListener(
-  "input",
-  syncSimpleFounderToEnglish
-);
+$("founderSimpleBody")?.addEventListener("input", () => {
+  founderLastEdited.body = "simple";
+  markJournalTranslationDirty("en");
+  syncSimpleFounderToEnglish("body");
+});
+
+for(const lang of languages){
+  for(const key of ["journalTitle", "journalBody"]){
+    journalField(lang, key).addEventListener("input", () => {
+      markJournalTranslationDirty(lang);
+
+      if(lang === "en"){
+        founderLastEdited[key === "journalTitle" ? "title" : "body"] =
+          "english";
+      }
+    });
+  }
+}
 
 fillSimpleFounderDateTime();
   
 let selectedFounderMediaFiles = [];
+let founderMediaObjectUrls = [];
+
+function revokeFounderMediaObjectUrls(){
+  for(const url of founderMediaObjectUrls){
+    URL.revokeObjectURL(url);
+  }
+
+  founderMediaObjectUrls = [];
+}
+
+function clearFounderMedia(){
+  revokeFounderMediaObjectUrls();
+  selectedFounderMediaFiles = [];
+
+  if($("founderMediaFiles")){
+    $("founderMediaFiles").value = "";
+  }
+
+  renderFounderMediaPreview();
+}
 
 function renderFounderMediaPreview(){
   const preview =
@@ -1072,6 +1138,7 @@ function renderFounderMediaPreview(){
     return;
   }
 
+  revokeFounderMediaObjectUrls();
   preview.innerHTML = "";
 
   if(!selectedFounderMediaFiles.length){
@@ -1090,6 +1157,8 @@ function renderFounderMediaPreview(){
 
     const fileUrl =
       URL.createObjectURL(file);
+
+    founderMediaObjectUrls.push(fileUrl);
 
     let mediaHtml = "";
 
@@ -1171,6 +1240,8 @@ function renderFounderMediaPreview(){
 $("founderMediaFiles")?.addEventListener(
   "change",
   event => {
+    revokeFounderMediaObjectUrls();
+
     selectedFounderMediaFiles = [
       ...event.target.files
     ];
@@ -1182,9 +1253,7 @@ $("founderMediaFiles")?.addEventListener(
   function completeJournalTranslation(data){return !!(data.title&&data.body)}
   
 
-  function journalEditorData(){
-      syncSimpleFounderToEnglish();
-
+function journalEditorData(){
   const storyDate =
     $("founderStoryDate")?.value || "";
 
@@ -1213,34 +1282,29 @@ $("founderMediaFiles")?.addEventListener(
     storyDate,
     storyTime,
     storyDateTime,
-    entryType:
-      
-      $("journalEntryType")?.value || "founderJournal",
-
-    privacyStatus:
-      $("journalPrivacyStatus")?.value || "privateDraft",
-
-    privateFounderNote:
-      $("journalPrivateNote")?.value.trim() || "",
-
+    entryType: $("journalEntryType")?.value || "founderJournal",
+    privacyStatus: $("journalPrivacyStatus")?.value || "privateDraft",
+    privateFounderNote: $("journalPrivateNote")?.value.trim() || "",
     publicVisible: false
   };
 }
 
   function buildJournalTranslation(lang,number,editor,sourceVersion){const label=journalLabels[lang];const n=String(number).padStart(3,"0");const heading=`<h3>${label.heading} #${n} — ${escapeHtml(editor.title)}</h3>`;return{language:lang,badge:`${label.badge} #${n}`,title:editor.title,fullBodyHtml:`${heading}\n\n${paragraphsHtml(editor.body)}`.trim(),sourceVersion,editor}}
 
-  function resetJournalEditor(){
-  const suggested =
-    Math.max(
-0,
-...journalRecords.map(item => Number(item.number) || 0)
-) + 1;
-    
+function resetJournalEditor(){
+  const suggested = Math.max(
+    0,
+    ...journalRecords.map(item => Number(item.number) || 0)
+  ) + 1;
+
   $("journalId").value = "";
   $("journalSourceVersion").value = "0";
+  $("journalNumber").disabled = false;
   $("journalNumber").value = suggested;
 
   currentJournalStatus = "draft";
+  journalTranslationDirty = {en:false,ms:false,zh:false};
+  founderLastEdited = {title:"simple",body:"simple"};
 
   for(const lang of languages){
     journalField(lang, "journalTitle").value = "";
@@ -1250,24 +1314,13 @@ $("founderMediaFiles")?.addEventListener(
   $("journalEntryType").value = "founderJournal";
   $("journalPrivacyStatus").value = "privateDraft";
   $("journalPrivateNote").value = "";
-if($("founderSimpleTitle")){
   $("founderSimpleTitle").value = "";
-}
-
-if($("founderSimpleBody")){
   $("founderSimpleBody").value = "";
-}
-
-if($("founderStoryDate")){
   $("founderStoryDate").value = "";
-}
-
-if($("founderStoryTime")){
   $("founderStoryTime").value = "";
-}
 
-fillSimpleFounderDateTime();
-    
+  clearFounderMedia();
+  fillSimpleFounderDateTime();
   $("journalEditorStatus").textContent = "New private draft";
 
   setStatus(
@@ -1278,57 +1331,199 @@ fillSimpleFounderDateTime();
   $("newJournalButton")?.addEventListener("click", resetJournalEditor);
 function validateJournalBase(data){if(!Number.isInteger(data.number)||data.number<1)throw new Error("Enter a valid journal number.");if(!completeJournalTranslation(data.translations.en))throw new Error("Complete the English journal title and writing before saving.")}
 function validateAllJournalLanguages(data){validateJournalBase(data);for(const lang of languages){if(!completeJournalTranslation(data.translations[lang]))throw new Error(`Complete the ${languageNames[lang]} journal title and writing before publishing.`)}}
-async function saveJournal(statusWanted){try{setStatus("journalComposeStatus",statusWanted==="published"?"Publishing journal…":"Saving journal…");const data=journalEditorData();if(statusWanted==="published"){validateAllJournalLanguages(data);ensureNoJournalGap([data.number])}else validateJournalBase(data);const id=`journal-${String(data.number).padStart(4,"0")}`;const existing=await getDoc(doc(db,"content",id));const existingData=existing.exists()?existing.data():null;if(existingData&&$("journalId").value!==id&&$("journalId").value)throw new Error("The journal number does not match the journal being edited.");if(existingData&&!$("journalId").value&&existingData.status)throw new Error(`Founder Journal #${String(data.number).padStart(3,"0")} already exists. Open it from Manage Journals instead.`);const currentVersion=Number($("journalSourceVersion").value||existingData?.sourceVersion||0);const sourceVersion=currentVersion+1;const currentPublished=currentJournalStatus==="published";const finalStatus=statusWanted==="published"?"published":currentPublished?"published":"draft";if(finalStatus==="published")validateAllJournalLanguages(data);const availableLanguages=languages.filter(lang=>completeJournalTranslation(data.translations[lang]));const nowIso=new Date().toISOString();const batch=writeBatch(db);const parentPayload = {
-  number: data.number,
-  type: "journal",
-  status: finalStatus,
-storyDate:
-  data.storyDate || "",
+async function saveJournal(statusWanted){
+  try{
+    const intendedStatus = statusWanted === "published" ? "published" : "draft";
+    setStatus(
+      "journalComposeStatus",
+      intendedStatus === "published" ? "Publishing journal…" : "Saving private draft…"
+    );
 
-storyTime:
-  data.storyTime || "",
+    const data = journalEditorData();
 
-storyDateTime:
-  data.storyDateTime || "",
-  
-  entryType:
-    data.entryType || "founderJournal",
+    if(intendedStatus === "published"){
+      validateAllJournalLanguages(data);
+      ensureNoJournalGap([data.number]);
+    }else{
+      validateJournalBase(data);
+    }
 
-  privacyStatus:
-    data.privacyStatus || "privateDraft",
+    const id = `journal-${String(data.number).padStart(4,"0")}`;
+    const editingId = $("journalId").value.trim();
 
-  privateFounderNote:
-    data.privateFounderNote || "",
+    if(editingId && editingId !== id){
+      throw new Error(
+        "The journal number is locked to the journal currently being edited."
+      );
+    }
 
-  publicVisible: false,
+    const existing = await getDoc(doc(db, "content", id));
+    const existingData = existing.exists() ? existing.data() : null;
 
-  sourceLanguage: "en",
-  sourceVersion,
-  availableLanguages,
+    if(editingId && !existingData){
+      throw new Error("The journal being edited no longer exists. Refresh and try again.");
+    }
 
-  title:
-    data.translations.en.title,
+    if(!editingId && existingData){
+      throw new Error(
+        `Founder Journal #${String(data.number).padStart(3,"0")} already exists. Open it from Manage Journals instead.`
+      );
+    }
 
-  updatedAt:
-    serverTimestamp(),
+    const currentVersion = Number(
+      $("journalSourceVersion").value || existingData?.sourceVersion || 0
+    );
+    const sourceVersion =
+      existingData && intendedStatus === "draft"
+        ? currentVersion
+        : currentVersion + 1;
+    const finalStatus = intendedStatus;
+    const isCreate = !editingId;
+    const languagesToWrite = languages.filter(lang =>
+      completeJournalTranslation(data.translations[lang]) &&
+      (isCreate || journalTranslationDirty[lang])
+    );
+    const availableLanguages = existingData
+      ? [...new Set([
+          ...(existingData.availableLanguages || []),
+          ...languagesToWrite
+        ])]
+      : languages.filter(lang =>
+          completeJournalTranslation(data.translations[lang])
+        );
+    const nowIso = new Date().toISOString();
+    const batch = writeBatch(db);
+    const parentPayload = {
+      number: data.number,
+      type: "journal",
+      status: finalStatus,
+      storyDate: data.storyDate || "",
+      storyTime: data.storyTime || "",
+      storyDateTime: data.storyDateTime || "",
+      entryType: data.entryType || "founderJournal",
+      privacyStatus: data.privacyStatus || "privateDraft",
+      privateFounderNote: data.privateFounderNote || "",
+      publicVisible: false,
+      sourceLanguage: "en",
+      sourceVersion,
+      availableLanguages,
+      title: data.translations.en.title,
+      updatedAt: serverTimestamp(),
+      updatedDate: nowIso,
+      updatedBy: currentAdmin.email
+    };
 
-  updatedDate:
-    nowIso,
+    if(!existingData){
+      parentPayload.createdAt = serverTimestamp();
+      parentPayload.createdDate = nowIso;
+      parentPayload.createdBy = currentAdmin.email;
+    }
 
-  updatedBy:
-    currentAdmin.email
-};
-;if(!existingData){parentPayload.createdAt=serverTimestamp();parentPayload.createdDate=nowIso;parentPayload.createdBy=currentAdmin.email}if(finalStatus==="published"){parentPayload.publishedAt=serverTimestamp();parentPayload.publishedDate=nowIso;parentPayload.publishedBy=currentAdmin.email}batch.set(doc(db,"content",id),parentPayload,{merge:true});for(const lang of languages){const translation=buildJournalTranslation(lang,data.number,data.translations[lang],sourceVersion);translation.updatedAt=serverTimestamp();translation.updatedDate=nowIso;translation.updatedBy=currentAdmin.email;batch.set(doc(db,"content",id,"translations",lang),translation,{merge:true})}await batch.commit();$("journalId").value=id;$("journalSourceVersion").value=String(sourceVersion);currentJournalStatus=finalStatus;$("journalEditorStatus").textContent=finalStatus==="published"?"Published":"Draft";setStatus("journalComposeStatus",finalStatus==="published"?`Published successfully. Founder Journal #${String(data.number).padStart(3,"0")} is now available to the live Garden automatically.`:`Saved safely as a draft. Journal ID: ${id}`);await loadJournals()}catch(error){setStatus("journalComposeStatus",error.message,true)}}
+    if(finalStatus === "published"){
+      parentPayload.publishedAt = serverTimestamp();
+      parentPayload.publishedDate = nowIso;
+      parentPayload.publishedBy = currentAdmin.email;
+    }
+
+    batch.set(doc(db, "content", id), parentPayload, {merge:true});
+
+    for(const lang of languagesToWrite){
+      const translation = buildJournalTranslation(
+        lang,
+        data.number,
+        data.translations[lang],
+        sourceVersion
+      );
+      translation.updatedAt = serverTimestamp();
+      translation.updatedDate = nowIso;
+      translation.updatedBy = currentAdmin.email;
+      batch.set(
+        doc(db, "content", id, "translations", lang),
+        translation,
+        {merge:true}
+      );
+    }
+
+    await batch.commit();
+    $("journalId").value = id;
+    $("journalNumber").disabled = true;
+    $("journalSourceVersion").value = String(sourceVersion);
+    currentJournalStatus = finalStatus;
+
+    for(const lang of languagesToWrite){
+      journalTranslationDirty[lang] = false;
+    }
+
+    $("journalEditorStatus").textContent =
+      finalStatus === "published" ? "Published" : "Private Draft";
+
+    setStatus(
+      "journalComposeStatus",
+      finalStatus === "published"
+        ? `Published successfully. Founder Journal #${String(data.number).padStart(3,"0")} is now available to the live Garden automatically.`
+        : `Journal #${String(data.number).padStart(3,"0")} was saved as a private draft.`
+    );
+
+    await loadJournals();
+  }catch(error){
+    setStatus("journalComposeStatus", error.message, true);
+  }
+}
 $("saveJournalButton").addEventListener("click",()=>saveJournal("draft"));
 $("publishJournalButton").addEventListener("click",()=>saveJournal("published"));
-function renderJournalPreview(){const data=journalEditorData(),lang=$("journalPreviewLanguage").value,t=data.translations[lang],n=String(data.number||0).padStart(3,"0");$("journalPreviewType").textContent=`${journalLabels[lang].badge} #${n}`;$("journalPreviewBody").innerHTML=buildJournalTranslation(lang,data.number||0,t,1).fullBodyHtml}
+function renderJournalPreview(){
+  const data = journalEditorData();
+  const lang = $("journalPreviewLanguage").value;
+  const translation = data.translations[lang];
+  const number = String(data.number || 0).padStart(3, "0");
+  const isEditing = Boolean($("journalId").value);
+  const completeness = Object.fromEntries(
+    languages.map(code => [
+      code,
+      completeJournalTranslation(data.translations[code])
+    ])
+  );
+  const hasIncompleteTranslation = languages.some(code => !completeness[code]);
+  const summary = [
+    `${isEditing ? "Editing Journal" : "New Journal"} #${number}`,
+    `Current saved status: ${isEditing ? currentJournalStatus : "not saved"}`,
+    "Intended action: Draft",
+    `English translation: ${completeness.en ? "Complete" : "Incomplete"}`,
+    `Bahasa Melayu translation: ${completeness.ms ? "Complete" : "Incomplete"}`,
+    `Simplified Chinese translation: ${completeness.zh ? "Complete" : "Incomplete"}`,
+    "Warning: selected media is preview-only and will not be saved."
+  ];
+
+  if(hasIncompleteTranslation){
+    summary.push("Warning: one or more translations are incomplete.");
+  }
+
+  $("journalPreviewType").textContent =
+    `${journalLabels[lang].badge} #${number}`;
+  $("journalPreviewSummary").textContent = summary.join("\n");
+  $("journalPreviewBody").innerHTML = buildJournalTranslation(
+    lang,
+    data.number || 0,
+    translation,
+    1
+  ).fullBodyHtml;
+}
 $("previewJournalButton").addEventListener("click",()=>{$("journalPreviewLanguage").value="en";renderJournalPreview();$("journalPreviewBackdrop").classList.add("open")});
 $("journalPreviewLanguage").addEventListener("change",renderJournalPreview);
 $("closeJournalPreviewButton").addEventListener("click",()=>$("journalPreviewBackdrop").classList.remove("open"));
 $("journalPreviewBackdrop").addEventListener("click",e=>{if(e.target===$("journalPreviewBackdrop"))$("journalPreviewBackdrop").classList.remove("open")});
 
-  async function loadJournalForEdit(item){
+async function loadJournalForEdit(item){
   try{
+    const expectedId = `journal-${String(item.number).padStart(4, "0")}`;
+
+    if(item.id !== expectedId){
+      throw new Error(
+        "This journal document ID does not match its journal number."
+      );
+    }
+
+    clearFounderMedia();
     setStatus(
       "journalComposeStatus",
       `Loading ${item.id}...`
@@ -1351,6 +1546,7 @@ $("journalPreviewBackdrop").addEventListener("click",e=>{if(e.target===$("journa
       String(item.sourceVersion || 0);
 
     $("journalNumber").value = item.number;
+    $("journalNumber").disabled = true;
 
     currentJournalStatus =
       item.status || "draft";
@@ -1363,21 +1559,11 @@ $("journalPreviewBackdrop").addEventListener("click",e=>{if(e.target===$("journa
 
     $("journalPrivateNote").value =
       item.privateFounderNote || "";
-if($("founderStoryDate")){
-  $("founderStoryDate").value =
-    item.storyDate || "";
-}
-
-if($("founderStoryTime")){
-  $("founderStoryTime").value =
-    item.storyTime || "";
-}
-    
     $("founderStoryDate").value =
-  item.storyDate || "";
+      item.storyDate || "";
 
-$("founderStoryTime").value =
-  item.storyTime || "";
+    $("founderStoryTime").value =
+      item.storyTime || "";
 
     for(const lang of languages){
       const translation =
@@ -1396,13 +1582,15 @@ $("founderStoryTime").value =
         paragraphsToText(translation.fullBodyHtml) ??
         "";
     }
-$("founderSimpleTitle").value =
-  journalField("en", "journalTitle").value || "";
+    $("founderSimpleTitle").value =
+      journalField("en", "journalTitle").value || "";
 
-$("founderSimpleBody").value =
-  journalField("en", "journalBody").value || "";
+    $("founderSimpleBody").value =
+      journalField("en", "journalBody").value || "";
 
-fillSimpleFounderDateTime();
+    journalTranslationDirty = {en:false,ms:false,zh:false};
+    founderLastEdited = {title:"english",body:"english"};
+    fillSimpleFounderDateTime();
 
     $("journalEditorStatus").textContent =
       currentJournalStatus === "published"
@@ -1411,7 +1599,7 @@ fillSimpleFounderDateTime();
 
     setStatus(
       "journalComposeStatus",
-      `Editing ${item.id}. Preview before saving or publishing.`
+      `Editing ${item.id}. Save here as a private draft; publish through Manage Journals.`
     );
 
     switchTab("journal");
