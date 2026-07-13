@@ -1019,13 +1019,23 @@ function syncSimpleFounderToEnglish(){
   const englishBody =
     journalField("en", "journalBody");
 
-  if(englishTitle && simpleTitle){
-    englishTitle.value = simpleTitle;
-  }
+if(
+  englishTitle &&
+  simpleTitle &&
+  !englishTitle.value.trim()
+){
+  englishTitle.value = simpleTitle;
+}
 
-  if(englishBody && simpleBody){
-    englishBody.value = simpleBody;
-  }
+if(
+  englishBody &&
+  simpleBody &&
+  !englishBody.value.trim()
+){
+  englishBody.value = simpleBody;
+} 
+
+}
 }
 
 function fillSimpleFounderDateTime(){
