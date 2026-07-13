@@ -499,6 +499,7 @@ let storyRecords=[],currentStoryStatus="draft",comingSoonItems=[];
 let journalRecords=[],currentJournalStatus="draft";
 let journalTranslationDirty={en:false,ms:false,zh:false};
 let founderLastEdited={title:"simple",body:"simple"};
+let founderEnglishManuallyEdited={title:false,body:false};
 const $=id=>document.getElementById(id);
 const languages=["en","ms","zh"];
 const langSuffix={en:"En",ms:"Ms",zh:"Zh"};
@@ -1055,6 +1056,7 @@ function syncSimpleFounderToEnglish(field){
     if(
       !config?.simple ||
       !config.english ||
+      founderEnglishManuallyEdited[key] ||
       founderLastEdited[key] !== "simple"
     ){
       continue;
@@ -1099,8 +1101,9 @@ for(const lang of languages){
       markJournalTranslationDirty(lang);
 
       if(lang === "en"){
-        founderLastEdited[key === "journalTitle" ? "title" : "body"] =
-          "english";
+        const founderField = key === "journalTitle" ? "title" : "body";
+        founderLastEdited[founderField] = "english";
+        founderEnglishManuallyEdited[founderField] = true;
       }
     });
   }
@@ -1305,6 +1308,7 @@ function resetJournalEditor(){
   currentJournalStatus = "draft";
   journalTranslationDirty = {en:false,ms:false,zh:false};
   founderLastEdited = {title:"simple",body:"simple"};
+  founderEnglishManuallyEdited = {title:false,body:false};
 
   for(const lang of languages){
     journalField(lang, "journalTitle").value = "";
@@ -1590,6 +1594,7 @@ async function loadJournalForEdit(item){
 
     journalTranslationDirty = {en:false,ms:false,zh:false};
     founderLastEdited = {title:"english",body:"english"};
+    founderEnglishManuallyEdited = {title:false,body:false};
     fillSimpleFounderDateTime();
 
     $("journalEditorStatus").textContent =
