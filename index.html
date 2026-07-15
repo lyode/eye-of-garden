@@ -6378,6 +6378,620 @@ utterance.voice = matchingVoice;
       synth.cancel();
     });
   })();
+/* =========================================================
+   EYE OF GARDEN — LIVING GARDEN V1
+   Own-leaf glow + quiet movement + Garden growth message
+========================================================= */
+
+(function setupLivingGardenV1(){
+
+  if(document.getElementById("livingGardenV1Style")){
+    return;
+  }
+
+  const style = document.createElement("style");
+
+  style.id = "livingGardenV1Style";
+
+  style.textContent = `
+
+    /* Living Garden message */
+
+    #garden .garden-alive-note{
+      display:flex;
+      align-items:center;
+      gap:14px;
+
+      width:min(760px, 100%);
+      margin:0 auto 16px;
+      padding:14px 18px;
+
+      border:1px solid rgba(74, 112, 65, 0.22);
+      border-radius:22px;
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(255, 253, 235, 0.94),
+          rgba(224, 239, 205, 0.91)
+        );
+
+      color:#315338;
+
+      box-shadow:
+        0 12px 28px rgba(45, 72, 37, 0.10);
+
+      animation:
+        eogGardenNoteArrive 0.7s ease both;
+    }
+
+    #garden .garden-alive-note.has-my-leaf{
+      border-color:rgba(190, 151, 48, 0.38);
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(255, 253, 231, 0.96),
+          rgba(228, 242, 208, 0.94)
+        );
+    }
+
+    #garden .garden-alive-note-icon{
+      display:grid;
+      flex:0 0 44px;
+      place-items:center;
+
+      width:44px;
+      height:44px;
+
+      border-radius:50%;
+
+      background:rgba(255, 255, 255, 0.70);
+
+      font-size:25px;
+
+      box-shadow:
+        0 6px 16px rgba(55, 85, 42, 0.12);
+    }
+
+    #garden .garden-alive-note strong{
+      display:block;
+      margin-bottom:3px;
+
+      color:#23492f;
+      font-size:15px;
+      line-height:1.4;
+    }
+
+    #garden .garden-alive-note small{
+      display:block;
+
+      color:#5b705b;
+      font-size:12px;
+      line-height:1.45;
+    }
+
+    /* Quiet movement across all Garden lights */
+
+    #garden .garden-believer-leaf::before{
+      animation:
+        eogGardenLightBreathe
+        var(--garden-wave-duration, 5.5s)
+        ease-in-out
+        infinite;
+
+      animation-delay:
+        var(--garden-wave-delay, 0s);
+    }
+
+    /* The member's own leaf */
+
+    #garden .garden-believer-leaf.is-my-leaf::before{
+      width:12px !important;
+      height:12px !important;
+
+      background:#fff2a4 !important;
+
+      box-shadow:
+        0 0 8px rgba(255, 255, 255, 1),
+        0 0 20px rgba(255, 239, 137, 1),
+        0 0 38px rgba(140, 255, 122, 0.85),
+        0 0 55px rgba(255, 213, 92, 0.48) !important;
+
+      animation:
+        eogMyLeafGlow 1.55s ease-in-out 3,
+        eogGardenLightBreathe 5.5s ease-in-out 4.65s infinite !important;
+    }
+
+    #garden .garden-believer-leaf.is-my-leaf::after{
+      content:"";
+
+      position:absolute;
+      left:50%;
+      top:50%;
+
+      width:28px;
+      height:28px;
+
+      border:1px solid rgba(255, 242, 164, 0.88);
+      border-radius:50%;
+
+      pointer-events:none;
+
+      transform:
+        translate(-50%, -50%)
+        scale(0.55);
+
+      opacity:0;
+
+      animation:
+        eogMyLeafRing 1.55s ease-out 3;
+    }
+
+    @keyframes eogGardenLightBreathe{
+      0%, 100%{
+        transform:
+          translate(-50%, -50%)
+          scale(0.86);
+
+        opacity:0.70;
+      }
+
+      50%{
+        transform:
+          translate(-50%, -50%)
+          scale(1.18);
+
+        opacity:1;
+      }
+    }
+
+    @keyframes eogMyLeafGlow{
+      0%, 100%{
+        transform:
+          translate(-50%, -50%)
+          scale(0.90);
+      }
+
+      50%{
+        transform:
+          translate(-50%, -50%)
+          scale(1.45);
+      }
+    }
+
+    @keyframes eogMyLeafRing{
+      0%{
+        opacity:0;
+        transform:
+          translate(-50%, -50%)
+          scale(0.45);
+      }
+
+      25%{
+        opacity:0.85;
+      }
+
+      100%{
+        opacity:0;
+        transform:
+          translate(-50%, -50%)
+          scale(1.65);
+      }
+    }
+
+    @keyframes eogGardenNoteArrive{
+      from{
+        opacity:0;
+        transform:translateY(7px);
+      }
+
+      to{
+        opacity:1;
+        transform:translateY(0);
+      }
+    }
+
+    @media(max-width:520px){
+
+      #garden .garden-alive-note{
+        gap:11px;
+        padding:12px 14px;
+        border-radius:18px;
+      }
+
+      #garden .garden-alive-note-icon{
+        flex-basis:39px;
+        width:39px;
+        height:39px;
+        font-size:22px;
+      }
+
+      #garden .garden-alive-note strong{
+        font-size:14px;
+      }
+
+      #garden .garden-alive-note small{
+        font-size:11px;
+      }
+    }
+
+    @media(prefers-reduced-motion:reduce){
+
+      #garden .garden-believer-leaf::before,
+      #garden .garden-believer-leaf::after,
+      #garden .garden-alive-note{
+        animation:none !important;
+      }
+    }
+  `;
+
+  document.head.appendChild(style);
+
+
+  const gardenLivingCopy = {
+
+    en: {
+      recent(count){
+        return count === 1
+          ? "1 new leaf joined the Garden during the last 7 days."
+          : count + " new leaves joined the Garden during the last 7 days.";
+      },
+
+      total(count){
+        return count
+          ? "The Garden now holds " +
+            count +
+            (count === 1 ? " leaf." : " leaves.")
+          : "The Garden is quietly preparing a place for its first leaf.";
+      },
+
+      mine:
+        "Your leaf is glowing gently. Tap its light to open it.",
+
+      visitor:
+        "Tap any light to meet the leaf behind it."
+    },
+
+    ms: {
+      recent(count){
+        return count +
+          " daun baharu menyertai Taman dalam tempoh 7 hari yang lalu.";
+      },
+
+      total(count){
+        return count
+          ? "Taman kini mempunyai " + count + " daun."
+          : "Taman sedang menyediakan tempat untuk daun pertamanya.";
+      },
+
+      mine:
+        "Daun anda sedang bercahaya dengan lembut. Sentuh cahayanya untuk membukanya.",
+
+      visitor:
+        "Sentuh mana-mana cahaya untuk mengenali daun di sebaliknya."
+    },
+
+    zh: {
+      recent(count){
+        return "过去 7 天，Garden 新长出了 " +
+          count +
+          " 片叶子。";
+      },
+
+      total(count){
+        return count
+          ? "Garden 现在共有 " + count + " 片叶子。"
+          : "Garden 正静静地为第一片叶子准备位置。";
+      },
+
+      mine:
+        "您的叶子正轻轻发光。点一下它的光，就能打开。",
+
+      visitor:
+        "点一下任何光点，就能看见它背后的叶子。"
+    }
+  };
+
+
+  function gardenMemberTime(member){
+
+    const value =
+      member?.createdAt ||
+      member?.joinedAt ||
+      member?.plantedAt ||
+      member?.timestamp ||
+      member?.created;
+
+    if(!value){
+      return 0;
+    }
+
+    if(typeof value.toMillis === "function"){
+      return value.toMillis();
+    }
+
+    if(Number.isFinite(Number(value.seconds))){
+      return Number(value.seconds) * 1000;
+    }
+
+    const parsedTime =
+      new Date(value).getTime();
+
+    return Number.isFinite(parsedTime)
+      ? parsedTime
+      : 0;
+  }
+
+
+  function ensureGardenAliveNote(){
+
+    let note =
+      document.getElementById("gardenAliveNote");
+
+    if(note){
+      return note;
+    }
+
+    const headingRow =
+      document.querySelector(
+        "#garden .garden-heading-row"
+      );
+
+    if(!headingRow){
+      return null;
+    }
+
+    note =
+      document.createElement("div");
+
+    note.id = "gardenAliveNote";
+    note.className = "garden-alive-note";
+    note.setAttribute("aria-live", "polite");
+
+    note.innerHTML = `
+      <span
+        class="garden-alive-note-icon"
+        aria-hidden="true"
+      >
+        🌱
+      </span>
+
+      <div>
+        <strong id="gardenGrowthText">
+          The Garden is quietly growing.
+        </strong>
+
+        <small id="gardenMyLeafText">
+          Tap any light to meet the leaf behind it.
+        </small>
+      </div>
+    `;
+
+    headingRow.insertAdjacentElement(
+      "afterend",
+      note
+    );
+
+    return note;
+  }
+
+
+  function updateGardenAliveNote(){
+
+    const note =
+      ensureGardenAliveNote();
+
+    if(!note){
+      return;
+    }
+
+    const copy =
+      gardenLivingCopy[currentLang] ||
+      gardenLivingCopy.en;
+
+    const totalMembers =
+      Array.isArray(members)
+        ? members.length
+        : 0;
+
+    const sevenDaysAgo =
+      Date.now() -
+      (7 * 24 * 60 * 60 * 1000);
+
+    const recentMembers =
+      Array.isArray(members)
+        ? members.filter(member =>
+            gardenMemberTime(member) >= sevenDaysAgo
+          ).length
+        : 0;
+
+    const myLeafNumber =
+      Number(
+        localStorage.getItem("eog_my_leaf_no") ||
+        0
+      );
+
+    const ownsLeaf =
+      Boolean(
+        myLeafNumber &&
+        Array.isArray(members) &&
+        members.some(member =>
+          Number(
+            member.memberNo ||
+            member.no ||
+            0
+          ) === myLeafNumber
+        )
+      );
+
+    const growthText =
+      document.getElementById(
+        "gardenGrowthText"
+      );
+
+    const personalText =
+      document.getElementById(
+        "gardenMyLeafText"
+      );
+
+    if(growthText){
+      growthText.textContent =
+        recentMembers > 0
+          ? copy.recent(recentMembers)
+          : copy.total(totalMembers);
+    }
+
+    if(personalText){
+      personalText.textContent =
+        ownsLeaf
+          ? copy.mine
+          : copy.visitor;
+    }
+
+    note.classList.toggle(
+      "has-my-leaf",
+      ownsLeaf
+    );
+  }
+
+
+  function enhanceGardenLights(){
+
+    const gardenMembers =
+      document.getElementById("members");
+
+    if(!gardenMembers){
+      return;
+    }
+
+    const myLeafNumber =
+      Number(
+        localStorage.getItem("eog_my_leaf_no") ||
+        0
+      );
+
+    const lights =
+      gardenMembers.querySelectorAll(
+        ".garden-believer-leaf"
+      );
+
+    lights.forEach((light, index) => {
+
+      light.style.setProperty(
+        "--garden-wave-delay",
+        ((index % 14) * 0.14) + "s"
+      );
+
+      light.style.setProperty(
+        "--garden-wave-duration",
+        (5.1 + ((index % 5) * 0.32)) + "s"
+      );
+
+      const searchableLabel = [
+        light.getAttribute("aria-label"),
+        light.getAttribute("title")
+      ]
+        .filter(Boolean)
+        .join(" ");
+
+      const leafNumberMatch =
+        searchableLabel.match(
+          /Leaf\\s*#?\\s*(\\d+)/i
+        );
+
+      const leafNumber =
+        leafNumberMatch
+          ? Number(leafNumberMatch[1])
+          : 0;
+
+      const isMyLeaf =
+        Boolean(
+          myLeafNumber &&
+          leafNumber === myLeafNumber
+        );
+
+      light.classList.toggle(
+        "is-my-leaf",
+        isMyLeaf
+      );
+
+      if(isMyLeaf){
+        light.setAttribute(
+          "aria-label",
+          "Your Leaf. " + searchableLabel
+        );
+      }
+    });
+
+    updateGardenAliveNote();
+  }
+
+
+  function beginLivingGarden(){
+
+    ensureGardenAliveNote();
+
+    const gardenMembers =
+      document.getElementById("members");
+
+    if(
+      gardenMembers &&
+      !gardenMembers.dataset.livingGardenObserved
+    ){
+
+      const observer =
+        new MutationObserver(() => {
+
+          requestAnimationFrame(
+            enhanceGardenLights
+          );
+
+        });
+
+      observer.observe(
+        gardenMembers,
+        {
+          childList:true
+        }
+      );
+
+      gardenMembers.dataset.livingGardenObserved =
+        "true";
+    }
+
+    enhanceGardenLights();
+
+    setTimeout(
+      enhanceGardenLights,
+      500
+    );
+
+    setTimeout(
+      enhanceGardenLights,
+      1400
+    );
+  }
+
+
+  if(document.readyState === "loading"){
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      beginLivingGarden,
+      {
+        once:true
+      }
+    );
+
+  }else{
+
+    beginLivingGarden();
+
+  }
+
+})();
+  
 </script>
 
 </body>
