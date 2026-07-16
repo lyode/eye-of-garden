@@ -7314,7 +7314,187 @@ utterance.voice = matchingVoice;
   document.head.appendChild(style);
 
 })();
-  
+  /* =========================================================
+   EYE OF GARDEN — REAL EARTH GARDEN V3
+========================================================= */
+
+(function applyRealEarthGardenV3(){
+
+  if(document.getElementById("realEarthGardenV3Style")){
+    return;
+  }
+
+  const style = document.createElement("style");
+
+  style.id = "realEarthGardenV3Style";
+
+  style.textContent = `
+
+    /* Real Earth photograph */
+    #garden .garden-scene{
+      position: relative !important;
+
+      width: min(100%, 920px) !important;
+      min-height: 0 !important;
+      aspect-ratio: 3 / 2 !important;
+
+      margin: 0 auto !important;
+      padding: 0 !important;
+      overflow: hidden !important;
+
+      border-radius: 30px !important;
+
+      background:
+        #020712
+        url("earth-real.jpg")
+        center center / cover
+        no-repeat !important;
+
+      box-shadow:
+        0 26px 65px rgba(3, 10, 22, 0.42) !important;
+    }
+
+    /* Completely remove the artificial CSS Earth */
+    #garden .garden-scene::before,
+    #garden .garden-scene::after{
+      display: none !important;
+      content: none !important;
+      background: none !important;
+      animation: none !important;
+    }
+
+    /* Allow all member lights to appear over the photograph */
+    #garden #members{
+      position: absolute !important;
+      inset: 0 !important;
+
+      width: 100% !important;
+      height: 100% !important;
+
+      z-index: 5 !important;
+
+      background: transparent !important;
+      box-shadow: none !important;
+
+      clip-path: none !important;
+      -webkit-clip-path: none !important;
+    }
+
+    /* Member light button */
+    #garden #members .garden-believer-leaf{
+      width: 24px !important;
+      height: 24px !important;
+      min-width: 24px !important;
+      min-height: 24px !important;
+
+      padding: 0 !important;
+      border: 0 !important;
+      border-radius: 50% !important;
+
+      background: transparent !important;
+      box-shadow: none !important;
+
+      overflow: visible !important;
+
+      transform:
+        translate(-50%, -50%) !important;
+    }
+
+    /* Green Garden lights */
+    #garden #members .garden-believer-leaf::before{
+      display: block !important;
+      content: "" !important;
+
+      position: absolute !important;
+      left: 50% !important;
+      top: 50% !important;
+
+      width: 8px !important;
+      height: 8px !important;
+
+      border-radius: 50% !important;
+
+      background: #91ff7d !important;
+
+      box-shadow:
+        0 0 5px rgba(255,255,255,0.95),
+        0 0 12px rgba(145,255,125,0.95),
+        0 0 24px rgba(145,255,125,0.72),
+        0 0 34px rgba(255,215,92,0.24) !important;
+    }
+
+    /* Some warm golden lights */
+    #garden #members
+    .garden-believer-leaf:nth-of-type(3n)::before{
+      background: #ffd967 !important;
+
+      box-shadow:
+        0 0 5px rgba(255,255,255,0.95),
+        0 0 13px rgba(255,217,103,0.95),
+        0 0 26px rgba(255,217,103,0.68),
+        0 0 36px rgba(145,255,125,0.20) !important;
+    }
+
+    /* Your own leaf */
+    #garden #members
+    .garden-believer-leaf.is-my-leaf::before{
+      width: 14px !important;
+      height: 14px !important;
+
+      background: #fff4a8 !important;
+
+      box-shadow:
+        0 0 8px rgba(255,255,255,1),
+        0 0 20px rgba(255,244,168,1),
+        0 0 38px rgba(145,255,125,0.88),
+        0 0 56px rgba(255,217,103,0.60) !important;
+    }
+
+    /* Selected or touched light */
+    #garden #members
+    .garden-believer-leaf:hover::before,
+    #garden #members
+    .garden-believer-leaf:focus-visible::before,
+    #garden #members
+    .garden-believer-leaf.is-selected::before{
+      width: 13px !important;
+      height: 13px !important;
+
+      box-shadow:
+        0 0 8px rgba(255,255,255,1),
+        0 0 21px rgba(145,255,125,1),
+        0 0 38px rgba(255,217,103,0.70) !important;
+    }
+
+    /* Do not show names across the Earth photograph */
+    #garden .garden-believer-leaf-name,
+    #garden .garden-believer-leaf-arrow{
+      display: none !important;
+    }
+
+    @media(max-width:640px){
+
+      #garden .garden-scene{
+        width: 100% !important;
+        min-height: 0 !important;
+        aspect-ratio: 3 / 2 !important;
+        border-radius: 22px !important;
+      }
+
+      #garden #members
+      .garden-believer-leaf{
+        width: 21px !important;
+        height: 21px !important;
+        min-width: 21px !important;
+        min-height: 21px !important;
+      }
+    }
+
+  `;
+
+  document.head.appendChild(style);
+
+})();
 </script>
 
 </body>
