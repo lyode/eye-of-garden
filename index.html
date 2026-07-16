@@ -7290,6 +7290,30 @@ utterance.voice = matchingVoice;
   document.head.appendChild(style);
 
 })();
+/* EARTH GARDEN V2 — VISIBILITY FIX */
+
+(function fixEarthGardenVisibility(){
+
+  const style = document.createElement("style");
+
+  style.textContent = `
+
+    #garden .garden-scene::before,
+    #garden .garden-scene::after{
+      display: block !important;
+      content: "" !important;
+    }
+
+    #garden #members .garden-believer-leaf::before{
+      display: block !important;
+      content: "" !important;
+    }
+
+  `;
+
+  document.head.appendChild(style);
+
+})();
   
 </script>
 
