@@ -7561,6 +7561,369 @@ no-repeat !important;
   document.head.appendChild(style);
 
 })();
+/* =========================================================
+   FINAL EARTH STAR SHAPE FIX
+   Removes all old circles and rings
+========================================================= */
+
+(function applyFinalEarthStarShapeFix(){
+
+  const style = document.createElement("style");
+
+  style.textContent = `
+
+    /* Main member star — no circle */
+    #garden #members .garden-believer-leaf::before{
+      display:block !important;
+      content:"" !important;
+
+      position:absolute !important;
+      left:50% !important;
+      top:50% !important;
+
+      width:10px !important;
+      height:10px !important;
+
+      border:0 !important;
+      border-radius:0 !important;
+
+      background:#fff8d0 !important;
+
+      clip-path:polygon(
+        50% 0%,
+        61% 38%,
+        100% 50%,
+        61% 62%,
+        50% 100%,
+        39% 62%,
+        0% 50%,
+        39% 38%
+      ) !important;
+
+      -webkit-clip-path:polygon(
+        50% 0%,
+        61% 38%,
+        100% 50%,
+        61% 62%,
+        50% 100%,
+        39% 62%,
+        0% 50%,
+        39% 38%
+      ) !important;
+
+      transform:translate(-50%, -50%) !important;
+
+      box-shadow:
+        0 0 4px rgba(255,255,255,1),
+        0 0 10px rgba(255,236,165,0.95),
+        0 0 20px rgba(255,205,92,0.52) !important;
+
+      animation:none !important;
+    }
+
+    /* Larger thin sparkle — removes the old circular ring */
+    #garden #members .garden-believer-leaf::after{
+      display:block !important;
+      content:"" !important;
+
+      position:absolute !important;
+      left:50% !important;
+      top:50% !important;
+
+      width:18px !important;
+      height:18px !important;
+
+      border:0 !important;
+      border-radius:0 !important;
+
+      background:rgba(255,255,255,0.82) !important;
+
+      clip-path:polygon(
+        50% 0%,
+        56% 43%,
+        100% 50%,
+        56% 57%,
+        50% 100%,
+        44% 57%,
+        0% 50%,
+        44% 43%
+      ) !important;
+
+      -webkit-clip-path:polygon(
+        50% 0%,
+        56% 43%,
+        100% 50%,
+        56% 57%,
+        50% 100%,
+        44% 57%,
+        0% 50%,
+        44% 43%
+      ) !important;
+
+      transform:translate(-50%, -50%) !important;
+
+      opacity:0.58 !important;
+      pointer-events:none !important;
+
+      box-shadow:none !important;
+      filter:drop-shadow(
+        0 0 4px rgba(255,224,135,0.75)
+      ) !important;
+
+      animation:none !important;
+    }
+
+    /* Warm-gold stars */
+    #garden #members
+    .garden-believer-leaf:nth-of-type(3n)::before{
+      background:#ffd975 !important;
+
+      box-shadow:
+        0 0 4px rgba(255,255,255,1),
+        0 0 11px rgba(255,222,128,0.95),
+        0 0 21px rgba(255,190,75,0.50) !important;
+    }
+
+    /* Soft Garden-green stars */
+    #garden #members
+    .garden-believer-leaf:nth-of-type(4n)::before{
+      background:#caffc4 !important;
+
+      box-shadow:
+        0 0 4px rgba(255,255,255,1),
+        0 0 10px rgba(190,255,184,0.88),
+        0 0 19px rgba(103,255,151,0.42) !important;
+    }
+
+    /* Your own leaf — stronger guiding star */
+    #garden #members
+    .garden-believer-leaf.is-my-leaf::before{
+      width:14px !important;
+      height:14px !important;
+
+      border:0 !important;
+      border-radius:0 !important;
+
+      background:#fff3a8 !important;
+
+      box-shadow:
+        0 0 5px rgba(255,255,255,1),
+        0 0 14px rgba(255,243,168,1),
+        0 0 28px rgba(255,215,100,0.78),
+        0 0 42px rgba(142,255,176,0.38) !important;
+
+      animation:eogRealStarTwinkle
+        2.8s ease-in-out infinite !important;
+    }
+
+    #garden #members
+    .garden-believer-leaf.is-my-leaf::after{
+      width:25px !important;
+      height:25px !important;
+
+      border:0 !important;
+      border-radius:0 !important;
+
+      opacity:0.88 !important;
+
+      animation:eogRealStarTwinkle
+        2.8s ease-in-out infinite !important;
+    }
+
+    /* Tapped star */
+    #garden #members
+    .garden-believer-leaf:hover::before,
+    #garden #members
+    .garden-believer-leaf:focus-visible::before,
+    #garden #members
+    .garden-believer-leaf.is-selected::before{
+      width:14px !important;
+      height:14px !important;
+    }
+
+    #garden #members
+    .garden-believer-leaf:hover::after,
+    #garden #members
+    .garden-believer-leaf:focus-visible::after,
+    #garden #members
+    .garden-believer-leaf.is-selected::after{
+      width:24px !important;
+      height:24px !important;
+      opacity:0.92 !important;
+    }
+
+    @keyframes eogRealStarTwinkle{
+      0%,100%{
+        opacity:0.78;
+        filter:brightness(0.95);
+      }
+
+      50%{
+        opacity:1;
+        filter:brightness(1.3);
+      }
+    }
+
+  `;
+
+  document.head.appendChild(style);
+
+})();
+
+  /* =========================================================
+   EARTH IMMERSIVE SCROLL MODE
+   Black page while Earth is in view + 10% taller on mobile
+========================================================= */
+
+(function setupEarthImmersiveScrollMode(){
+
+  if(document.getElementById("earthImmersiveScrollStyle")){
+    return;
+  }
+
+  const style = document.createElement("style");
+
+  style.id = "earthImmersiveScrollStyle";
+
+  style.textContent = `
+
+    /* Gentle change between the normal Garden and dark Earth */
+    html,
+    body,
+    #garden{
+      transition:
+        background-color 0.65s ease,
+        color 0.65s ease !important;
+    }
+
+    /* Turn the surrounding page completely black */
+    html.eog-earth-focus,
+    body.eog-earth-focus{
+      background-color:#000000 !important;
+      background-image:none !important;
+    }
+
+    body.eog-earth-focus #garden{
+      background-color:#000000 !important;
+      background-image:none !important;
+    }
+
+    body.eog-earth-focus #garden .garden-page{
+      background:transparent !important;
+    }
+
+    /*
+      Desktop/tablet:
+      approximately 10% taller than the previous 1 / 1.92 ratio
+    */
+    #garden .garden-scene{
+      aspect-ratio:1 / 2.11 !important;
+    }
+
+    /* Long mobile Earth experience */
+    @media(max-width:640px){
+
+      #garden .garden-scene{
+        width:100vw !important;
+        max-width:none !important;
+
+        height:110svh !important;
+        min-height:110svh !important;
+
+        aspect-ratio:auto !important;
+
+        margin-left:50% !important;
+        transform:translateX(-50%) !important;
+
+        border:none !important;
+        border-radius:0 !important;
+        box-shadow:none !important;
+
+        background-color:#000000 !important;
+        background-size:cover !important;
+        background-position:center center !important;
+        background-repeat:no-repeat !important;
+      }
+    }
+
+    @media(prefers-reduced-motion:reduce){
+
+      html,
+      body,
+      #garden{
+        transition:none !important;
+      }
+    }
+
+  `;
+
+  document.head.appendChild(style);
+
+
+  const earthScene =
+    document.getElementById("gardenScene");
+
+  if(!earthScene){
+    return;
+  }
+
+
+  function setEarthFocus(isActive){
+
+    document.documentElement.classList.toggle(
+      "eog-earth-focus",
+      isActive
+    );
+
+    document.body.classList.toggle(
+      "eog-earth-focus",
+      isActive
+    );
+
+  }
+
+
+  if("IntersectionObserver" in window){
+
+    const earthObserver =
+      new IntersectionObserver(
+
+        entries => {
+
+          const earthEntry = entries[0];
+
+          setEarthFocus(
+            Boolean(
+              earthEntry &&
+              earthEntry.isIntersecting
+            )
+          );
+
+        },
+
+        {
+          /*
+            The page becomes dark when the Earth reaches
+            the central section of the phone screen.
+          */
+          root:null,
+          rootMargin:"-18% 0px -18% 0px",
+          threshold:0.01
+        }
+
+      );
+
+    earthObserver.observe(earthScene);
+
+  }else{
+
+    /* Safe fallback for older browsers */
+    setEarthFocus(true);
+
+  }
+
+})();
+  
 </script>
 
 </body>
