@@ -7957,6 +7957,175 @@ no-repeat !important;
 
 })();
   
+/* =========================================================
+   REAL EARTH ORBITAL MOTION
+   Very slow photographic drift for a view-from-space feeling
+========================================================= */
+
+(function setupRealEarthOrbitalMotion(){
+
+  if(document.getElementById("realEarthMotionStyle")){
+    return;
+  }
+
+  const style = document.createElement("style");
+  style.id = "realEarthMotionStyle";
+
+  style.textContent = `
+
+    #garden .garden-scene{
+      isolation:isolate !important;
+      background:#000000 !important;
+    }
+
+    /* The real photograph moves as one distant planet. */
+    #garden .garden-scene::before{
+      display:block !important;
+      content:"" !important;
+
+      position:absolute !important;
+      inset:-3.5% !important;
+      z-index:1 !important;
+
+      pointer-events:none !important;
+
+      background:
+        #000000
+        url("earth-real.jpg")
+        center center / cover
+        no-repeat !important;
+
+      transform-origin:center center !important;
+      will-change:transform, filter;
+
+      filter:
+        brightness(0.94)
+        contrast(1.06)
+        saturate(0.98);
+
+      animation:
+        eogRealEarthOrbitalDrift
+        90s
+        cubic-bezier(0.42, 0, 0.58, 1)
+        infinite
+        alternate !important;
+
+      animation-play-state:paused !important;
+    }
+
+    #garden .garden-scene.eog-earth-motion-active::before{
+      animation-play-state:running !important;
+    }
+
+    /* Subtle lens falloff keeps the scene photographic, not illustrated. */
+    #garden .garden-scene::after{
+      display:block !important;
+      content:"" !important;
+
+      position:absolute !important;
+      inset:0 !important;
+      z-index:4 !important;
+
+      pointer-events:none !important;
+
+      background:
+        radial-gradient(
+          ellipse at 50% 50%,
+          transparent 54%,
+          rgba(0,0,0,0.12) 76%,
+          rgba(0,0,0,0.48) 100%
+        ),
+        linear-gradient(
+          120deg,
+          rgba(60,125,175,0.06),
+          transparent 38%,
+          rgba(0,0,0,0.10)
+        ) !important;
+
+      animation:none !important;
+    }
+
+    @keyframes eogRealEarthOrbitalDrift{
+      0%{
+        transform:
+          translate3d(-0.8%, -0.45%, 0)
+          scale(1.025);
+
+        filter:
+          brightness(0.93)
+          contrast(1.06)
+          saturate(0.97);
+      }
+
+      50%{
+        transform:
+          translate3d(0.25%, 0.55%, 0)
+          scale(1.045);
+
+        filter:
+          brightness(0.99)
+          contrast(1.055)
+          saturate(1);
+      }
+
+      100%{
+        transform:
+          translate3d(0.85%, -0.15%, 0)
+          scale(1.03);
+
+        filter:
+          brightness(0.95)
+          contrast(1.065)
+          saturate(0.99);
+      }
+    }
+
+    @media(prefers-reduced-motion:reduce){
+      #garden .garden-scene::before,
+      #garden .garden-scene.eog-earth-motion-active::before{
+        animation:none !important;
+        transform:scale(1.03) !important;
+      }
+    }
+
+  `;
+
+  document.head.appendChild(style);
+
+  const earthScene = document.getElementById("gardenScene");
+
+  if(!earthScene){
+    return;
+  }
+
+  function setRealEarthMotion(active){
+    earthScene.classList.toggle(
+      "eog-earth-motion-active",
+      active
+    );
+  }
+
+  if("IntersectionObserver" in window){
+    const motionObserver = new IntersectionObserver(
+      entries => {
+        const entry = entries[0];
+        setRealEarthMotion(
+          Boolean(entry && entry.isIntersecting)
+        );
+      },
+      {
+        root:null,
+        rootMargin:"12% 0px 12% 0px",
+        threshold:0.01
+      }
+    );
+
+    motionObserver.observe(earthScene);
+  }else{
+    setRealEarthMotion(true);
+  }
+
+})();
 </script>
 
 </body>
