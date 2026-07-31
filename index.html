@@ -8415,6 +8415,35 @@ no-repeat !important;
   document.head.appendChild(style);
 
 })();
+/* Keep the diffraction cross faint despite older star overrides. */
+(function correctVelvetStarHalo(){
+  if(document.getElementById("velvetStarHaloCorrectionStyle")){
+    return;
+  }
+
+  const style = document.createElement("style");
+  style.id = "velvetStarHaloCorrectionStyle";
+  style.textContent = `
+    #garden #members .garden-believer-leaf::after{
+      opacity:0.12 !important;
+      animation:none !important;
+    }
+
+    #garden #members .garden-believer-leaf.is-my-leaf::after{
+      opacity:0.20 !important;
+      animation:none !important;
+    }
+
+    #garden #members .garden-believer-leaf:hover::after,
+    #garden #members .garden-believer-leaf:focus-visible::after,
+    #garden #members .garden-believer-leaf.is-selected::after{
+      opacity:0.24 !important;
+      animation:none !important;
+    }
+  `;
+
+  document.head.appendChild(style);
+})();
 </script>
 
 </body>
