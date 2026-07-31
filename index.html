@@ -2392,6 +2392,40 @@ body.eog-home-flat #home .share-nudge{
     font-size:10px !important;
   }
 }
+
+/* EOG LANDING TITLE SCALE */
+/* Eye of Garden: 10% larger, preserving the thin weight. */
+#home .kicker{
+  font-size:158.4% !important;
+}
+
+/* Plant Your Leaf: approximately 30% larger and more tightly composed. */
+#home h1{
+  font-size:clamp(75px,8.84vw,125px) !important;
+  line-height:.84 !important;
+  letter-spacing:-.06em !important;
+  margin-top:8px !important;
+  margin-bottom:6px !important;
+}
+
+@media(max-width:560px){
+  #home h1{
+    font-size:clamp(57px,15.6vw,75px) !important;
+    line-height:.86 !important;
+    margin-top:6px !important;
+    margin-bottom:4px !important;
+  }
+
+  #home .garden-evolution{
+    margin-top:5px !important;
+  }
+}
+
+@media(max-width:370px){
+  #home h1{
+    font-size:clamp(54px,15vw,68px) !important;
+  }
+}
 </style>
 </head>
 
