@@ -8,7 +8,7 @@
 
 <link rel="apple-touch-icon" href="icon-192.png">
 
-<meta name="theme-color" content="#8DBA3D">
+<meta name="theme-color" content="#f7f1e5">
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Eye of Garden — Stage 1</title>
@@ -2161,25 +2161,88 @@ button[onclick="showHome()"]:hover {
   }
 }
 
-/* EOG LANDING TYPOGRAPHY REFINEMENT */
-/* The embedded language bars replace the old floating selector. */
+/* EOG FLAT LANDING REFINEMENT */
+/* Use a compact floating selector and keep the larger Story selector. */
 .language-control{
+  display:flex !important;
+  top:8px !important;
+  right:8px !important;
+  gap:4px !important;
+  padding:4px 6px !important;
+  background:rgba(247,241,229,.90) !important;
+  border:1px solid rgba(39,68,51,.12) !important;
+  box-shadow:0 4px 14px rgba(39,68,51,.07) !important;
+  backdrop-filter:blur(8px) !important;
+}
+
+.language-control span{
+  font-size:14px !important;
+}
+
+.language-control select{
+  min-width:96px !important;
+  padding:6px 23px 6px 7px !important;
+  background:transparent !important;
+  border:0 !important;
+  font-size:12px !important;
+  box-shadow:none !important;
+}
+
+#home .landing-language-bar{
   display:none !important;
 }
 
-/* A quieter, more elegant Eye of Garden wordmark. */
-#home .kicker{
-  font-weight:500 !important;
+/* Restore the softer original hero-title pattern. */
+#home h1{
+  font-family:"Century Gothic", CenturyGothic, "Avenir Next", Avenir, "Microsoft YaHei", "PingFang SC", "Noto Sans SC", Arial, sans-serif !important;
+  font-weight:700 !important;
+  letter-spacing:-.04em !important;
 }
 
-/* Lighten the landing question without changing its translations. */
+/* Larger and another step lighter. */
+#home .kicker{
+  font-size:144% !important;
+  font-weight:450 !important;
+}
+
 #home .evolution-question{
   font-weight:560 !important;
+}
+
+/* One uninterrupted landing-page canvas. */
+html{
+  background:#f7f1e5;
+}
+
+body.eog-home-flat{
+  background:#f7f1e5 !important;
+  background-image:none !important;
+}
+
+body.eog-home-flat .wrap,
+body.eog-home-flat #home,
+body.eog-home-flat .footer{
+  background:transparent !important;
+  background-image:none !important;
+  box-shadow:none !important;
+}
+
+@media(max-width:560px){
+  .language-control{
+    top:6px !important;
+    right:6px !important;
+    padding:3px 5px !important;
+  }
+
+  .language-control select{
+    min-width:88px !important;
+    font-size:11px !important;
+  }
 }
 </style>
 </head>
 
-<body>
+<body class="eog-home-flat">
 
 <div class="language-control" data-no-translate>
   <span aria-hidden="true">🌐</span>
@@ -3455,6 +3518,7 @@ let selected = [];
 let members = [];
 
 function show(id){
+  document.body.classList.remove("eog-home-flat");
   document.querySelector(".hero").style.display = "none";
   document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
   document.getElementById(id).classList.add("active");
@@ -3567,6 +3631,7 @@ function show(id){
 })();
 
 function showHome(){
+  document.body.classList.add("eog-home-flat");
   document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
   document.querySelector(".hero").style.display = "grid";
   updateCount();
