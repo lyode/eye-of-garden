@@ -2055,6 +2055,111 @@ button[onclick="showHome()"]:hover {
   transform: translateY(-1px);
 }
   
+/* Embedded language choice for the landing and Story pages */
+.embedded-language-bar{
+  width:fit-content;
+  max-width:100%;
+  margin:14px 0 10px;
+  padding:10px 12px;
+
+  border:1px solid rgba(63,116,78,.20);
+  border-radius:20px;
+
+  background:rgba(255,250,240,.78);
+  box-shadow:0 8px 22px rgba(40,80,50,.08);
+  backdrop-filter:blur(10px);
+}
+
+.embedded-language-prompt{
+  display:block;
+  margin:0 0 7px;
+
+  color:#667565;
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.02em;
+}
+
+.embedded-language-options{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  flex-wrap:wrap;
+}
+
+.embedded-language-button{
+  min-height:36px;
+  padding:7px 12px;
+
+  border:1px solid rgba(63,116,78,.24);
+  border-radius:999px;
+
+  background:rgba(255,255,255,.72);
+  color:#315537;
+
+  font-size:13px;
+  font-weight:700;
+  box-shadow:none;
+
+  transition:
+    background-color .2s ease,
+    color .2s ease,
+    border-color .2s ease,
+    transform .2s ease;
+}
+
+.embedded-language-button:hover{
+  transform:translateY(-1px);
+  border-color:rgba(63,116,78,.48);
+}
+
+.embedded-language-button.is-active,
+.embedded-language-button[aria-pressed="true"]{
+  background:#315d3d;
+  color:#ffffff;
+  border-color:#315d3d;
+}
+
+#question .story-language-bar{
+  position:sticky;
+  top:10px;
+  z-index:60;
+
+  width:min(620px,100%);
+  margin:16px auto 18px;
+
+  text-align:center;
+  background:rgba(255,250,240,.94);
+}
+
+#question .story-language-bar .embedded-language-options{
+  justify-content:center;
+}
+
+@media(max-width:560px){
+  .embedded-language-bar{
+    width:100%;
+    padding:9px;
+    border-radius:17px;
+  }
+
+  .embedded-language-options{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:6px;
+  }
+
+  .embedded-language-button{
+    width:100%;
+    min-width:0;
+    padding:7px 5px;
+    font-size:12px;
+  }
+
+  #question .story-language-bar{
+    top:6px;
+  }
+}
 </style>
 </head>
 
@@ -2073,7 +2178,14 @@ button[onclick="showHome()"]:hover {
   <section id="home" class="hero">
     <div>
       <small class="kicker">Eye of Garden</small>
-      <h1>Plant<br>Your Leaf</h1>
+      <div class="embedded-language-bar landing-language-bar" data-no-translate role="group" aria-label="Choose your language">
+        <span class="embedded-language-prompt">Choose your language &middot; Pilih bahasa &middot; &#x9009;&#x62E9;&#x8BED;&#x8A00;</span>
+        <div class="embedded-language-options">
+          <button type="button" class="embedded-language-button" data-eog-language="en" aria-pressed="false">English</button>
+          <button type="button" class="embedded-language-button" data-eog-language="ms" aria-pressed="false">Bahasa Melayu</button>
+          <button type="button" class="embedded-language-button" data-eog-language="zh" aria-pressed="false">&#x7B80;&#x4F53;&#x4E2D;&#x6587;</button>
+        </div>
+      </div>      <h1>Plant<br>Your Leaf</h1>
       <div class="garden-evolution">
         <div class="evolution-question" id="landingHeroQuestion">
           Can small actions grow into something greater?
@@ -2743,6 +2855,14 @@ button[onclick="showHome()"]:hover {
         <button onclick="nextQuestionStory()">Next →</button>
       </div>
     </div>
+    <div class="embedded-language-bar story-language-bar" data-no-translate role="group" aria-label="Choose story language">
+      <span class="embedded-language-prompt">Choose your language &middot; Pilih bahasa &middot; &#x9009;&#x62E9;&#x8BED;&#x8A00;</span>
+      <div class="embedded-language-options">
+        <button type="button" class="embedded-language-button" data-eog-language="en" aria-pressed="false">English</button>
+        <button type="button" class="embedded-language-button" data-eog-language="ms" aria-pressed="false">Bahasa Melayu</button>
+        <button type="button" class="embedded-language-button" data-eog-language="zh" aria-pressed="false">&#x7B80;&#x4F53;&#x4E2D;&#x6587;</button>
+      </div>
+    </div>
     <div class="story-library">
 
 <h3>📚 Story Library</h3>
@@ -3051,12 +3171,39 @@ function getJournalEntry(index){
   return journalTranslations[currentLang]?.[index] || journalEntries[index];
 }
 
+function syncEmbeddedLanguageBars(){
+  document.querySelectorAll("[data-eog-language]").forEach(button => {
+    const isActive = button.dataset.eogLanguage === currentLang;
+    button.classList.toggle("is-active", isActive);
+    button.setAttribute(
+      "aria-pressed",
+      isActive ? "true" : "false"
+    );
+  });
+}
+
+function setupEmbeddedLanguageBars(){
+  document.querySelectorAll("[data-eog-language]").forEach(button => {
+    if(button.dataset.languageBound === "true"){
+      return;
+    }
+
+    button.addEventListener("click", () => {
+      setLanguage(button.dataset.eogLanguage);
+    });
+
+    button.dataset.languageBound = "true";
+  });
+}
+
 function setLanguage(lang, save=true){
   currentLang = ["en","ms","zh"].includes(lang) ? lang : "en";
   if(save) localStorage.setItem("eog_language", currentLang);
 
   const selector = document.getElementById("languageSelect");
   if(selector) selector.value = currentLang;
+
+  syncEmbeddedLanguageBars();
 
   initDreams();
   renderQuestionStoryBook();
@@ -6089,6 +6236,7 @@ function escapeHtml(text){
 }
 
 captureInviteCode();
+setupEmbeddedLanguageBars();
 setLanguage(currentLang, false);
 setupBookSwipes();
 loadMembers();
