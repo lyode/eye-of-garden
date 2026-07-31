@@ -8444,6 +8444,257 @@ no-repeat !important;
 
   document.head.appendChild(style);
 })();
+/* =========================================================
+   RARE RANDOM SPACE TWINKLES
+   One or two quiet stars blink occasionally, never as a wave
+========================================================= */
+
+(function setupRareRandomSpaceTwinkles(){
+
+  if(document.getElementById("rareSpaceTwinkleStyle")){
+    return;
+  }
+
+  const style = document.createElement("style");
+  style.id = "rareSpaceTwinkleStyle";
+
+  style.textContent = `
+    #garden #members .eog-rare-glint{
+      position:absolute;
+      left:50%;
+      top:50%;
+      z-index:3;
+
+      width:12px;
+      height:12px;
+
+      border:0;
+      border-radius:0;
+
+      pointer-events:none;
+
+      background:rgba(255,250,226,0.72);
+
+      clip-path:polygon(
+        50% 0%,
+        55% 45%,
+        100% 50%,
+        55% 55%,
+        50% 100%,
+        45% 55%,
+        0% 50%,
+        45% 45%
+      );
+
+      -webkit-clip-path:polygon(
+        50% 0%,
+        55% 45%,
+        100% 50%,
+        55% 55%,
+        50% 100%,
+        45% 55%,
+        0% 50%,
+        45% 45%
+      );
+
+      filter:drop-shadow(0 0 3px rgba(239,220,165,0.28));
+
+      opacity:0;
+      transform:translate(-50%, -50%) scale(0.72);
+
+      animation:
+        eogRareSpaceGlint
+        1.65s
+        ease-in-out
+        1
+        both;
+    }
+
+    @keyframes eogRareSpaceGlint{
+      0%, 22%{
+        opacity:0;
+        transform:translate(-50%, -50%) scale(0.72);
+      }
+
+      46%{
+        opacity:0.16;
+      }
+
+      55%{
+        opacity:0.42;
+        transform:translate(-50%, -50%) scale(1.05);
+      }
+
+      66%{
+        opacity:0.13;
+      }
+
+      100%{
+        opacity:0;
+        transform:translate(-50%, -50%) scale(0.82);
+      }
+    }
+
+    @media(prefers-reduced-motion:reduce){
+      #garden #members .eog-rare-glint{
+        display:none !important;
+        animation:none !important;
+      }
+    }
+  `;
+
+  document.head.appendChild(style);
+
+  const scene = document.getElementById("gardenScene");
+  const members = document.getElementById("members");
+
+  if(!scene || !members){
+    return;
+  }
+
+  const reducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  );
+
+  let twinkleTimer = 0;
+  let twinklesActive = false;
+  let previousStars = new Set();
+
+  function clearTwinkleTimer(){
+    if(twinkleTimer){
+      window.clearTimeout(twinkleTimer);
+      twinkleTimer = 0;
+    }
+  }
+
+  function removeAllGlints(){
+    members.querySelectorAll(".eog-rare-glint").forEach(
+      glint => glint.remove()
+    );
+  }
+
+  function scheduleNextTwinkle(firstRun = false){
+    clearTwinkleTimer();
+
+    if(!twinklesActive || reducedMotion.matches){
+      return;
+    }
+
+    const delay = firstRun
+      ? 1400 + (Math.random() * 1800)
+      : 4200 + (Math.random() * 5200);
+
+    twinkleTimer = window.setTimeout(
+      runRareTwinkle,
+      delay
+    );
+  }
+
+  function addGlint(star){
+    const glint = document.createElement("span");
+    glint.className = "eog-rare-glint";
+    glint.setAttribute("aria-hidden", "true");
+
+    glint.addEventListener(
+      "animationend",
+      () => glint.remove(),
+      { once:true }
+    );
+
+    star.appendChild(glint);
+  }
+
+  function runRareTwinkle(){
+    if(!twinklesActive || reducedMotion.matches){
+      return;
+    }
+
+    const availableStars = Array.from(
+      members.querySelectorAll(
+        ".garden-believer-leaf:not(.is-my-leaf)"
+      )
+    ).filter(star => !previousStars.has(star));
+
+    if(!availableStars.length){
+      previousStars.clear();
+      scheduleNextTwinkle();
+      return;
+    }
+
+    const numberToTwinkle =
+      availableStars.length >= 24 && Math.random() < 0.28
+        ? 2
+        : 1;
+
+    const chosenStars = [];
+
+    while(
+      chosenStars.length < numberToTwinkle &&
+      availableStars.length
+    ){
+      const randomIndex = Math.floor(
+        Math.random() * availableStars.length
+      );
+
+      chosenStars.push(
+        availableStars.splice(randomIndex, 1)[0]
+      );
+    }
+
+    previousStars = new Set(chosenStars);
+    chosenStars.forEach(addGlint);
+
+    scheduleNextTwinkle();
+  }
+
+  function syncTwinkleActivity(){
+    const shouldRun =
+      scene.classList.contains("eog-earth-motion-active") &&
+      !document.hidden &&
+      !reducedMotion.matches;
+
+    if(shouldRun === twinklesActive){
+      return;
+    }
+
+    twinklesActive = shouldRun;
+
+    if(twinklesActive){
+      scheduleNextTwinkle(true);
+    }else{
+      clearTwinkleTimer();
+      removeAllGlints();
+    }
+  }
+
+  const sceneClassObserver = new MutationObserver(
+    syncTwinkleActivity
+  );
+
+  sceneClassObserver.observe(
+    scene,
+    {
+      attributes:true,
+      attributeFilter:["class"]
+    }
+  );
+
+  document.addEventListener(
+    "visibilitychange",
+    syncTwinkleActivity
+  );
+
+  if(typeof reducedMotion.addEventListener === "function"){
+    reducedMotion.addEventListener(
+      "change",
+      syncTwinkleActivity
+    );
+  }
+
+  members.dataset.rareTwinkles = "ready";
+  syncTwinkleActivity();
+
+})();
 </script>
 
 </body>
