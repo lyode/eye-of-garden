@@ -4953,6 +4953,19 @@ function updateLeafCareView(member){
 
   const care = getLeafCareData(member);
   const timeText = formatLeafCareTime(care.updatedAt);
+  const livingLeaf = document.getElementById("growthMainLeaf");
+
+  if(livingLeaf){
+    livingLeaf.classList.toggle(
+      "is-water-fresh",
+      care.lastAction === "water"
+    );
+
+    livingLeaf.classList.toggle(
+      "is-sun-happy",
+      care.lastAction === "light"
+    );
+  }
 
   if(care.lastAction === "water"){
     stage.innerHTML = "💧 Your leaf feels refreshed after a gentle watering.";
@@ -10867,6 +10880,123 @@ no-repeat !important;
 
     @media(prefers-reduced-motion:reduce){
       #myLeaf .growth-main-leaf{
+        animation:none !important;
+      }
+    }
+  `;
+
+  document.head.appendChild(style);
+
+})();
+/* =========================================================
+   MY LEAF - CLOVER CARE REACTIONS V1
+   Water makes it fresh; sunlight makes it lift and open
+========================================================= */
+
+(function applyCloverCareReactionsV1(){
+
+  if(document.getElementById("cloverCareReactionsV1Style")){
+    return;
+  }
+
+  const style = document.createElement("style");
+  style.id = "cloverCareReactionsV1Style";
+
+  style.textContent = `
+    #myLeaf .growth-main-leaf.leaf-watered{
+      animation:cloverDrinkAndPlump 1.7s cubic-bezier(.22,.76,.26,1) !important;
+      filter:
+        drop-shadow(0 17px 16px rgba(58,139,190,0.34))
+        brightness(1.06)
+        saturate(1.18) !important;
+    }
+
+    #myLeaf .growth-main-leaf.is-water-fresh:not(.leaf-watered):not(.leaf-lighted){
+      animation:cloverFreshRest 6.4s ease-in-out infinite !important;
+      filter:
+        drop-shadow(0 17px 14px rgba(35,90,45,0.25))
+        brightness(1.025)
+        saturate(1.07) !important;
+    }
+
+    #myLeaf .growth-main-leaf.leaf-lighted{
+      animation:cloverWakeToSun 1.7s cubic-bezier(.2,.72,.26,1) !important;
+      filter:
+        drop-shadow(-8px -6px 18px rgba(255,207,91,0.52))
+        drop-shadow(0 18px 15px rgba(50,91,40,0.20))
+        brightness(1.14)
+        saturate(1.10) !important;
+      text-shadow:none !important;
+    }
+
+    #myLeaf .growth-main-leaf.is-sun-happy:not(.leaf-watered):not(.leaf-lighted){
+      animation:cloverSunnyRest 7.2s ease-in-out infinite !important;
+      filter:
+        drop-shadow(-5px -4px 13px rgba(255,207,91,0.28))
+        drop-shadow(0 17px 14px rgba(40,79,35,0.20))
+        brightness(1.055)
+        saturate(1.025) !important;
+    }
+
+    @keyframes cloverDrinkAndPlump{
+      0%{
+        transform:translateY(1px) rotate(-1deg) scale(1);
+      }
+      28%{
+        transform:translateY(5px) rotate(1deg) scaleX(1.025) scaleY(0.985);
+      }
+      60%{
+        transform:translateY(-3px) rotate(-1deg) scaleX(1.095) scaleY(1.035);
+      }
+      82%{
+        transform:translateY(-2px) rotate(0.5deg) scaleX(1.075) scaleY(1.025);
+      }
+      100%{
+        transform:translateY(0) rotate(0deg) scaleX(1.055) scaleY(1.018);
+      }
+    }
+
+    @keyframes cloverFreshRest{
+      0%,100%{
+        transform:translateY(0) rotate(-0.8deg) scaleX(1.045) scaleY(1.012);
+      }
+      50%{
+        transform:translateY(-4px) rotate(0.9deg) scaleX(1.065) scaleY(1.025);
+      }
+    }
+
+    @keyframes cloverWakeToSun{
+      0%{
+        transform:translateY(1px) rotate(-1deg) scale(1);
+      }
+      35%{
+        transform:translateY(-9px) rotate(-4deg) scaleX(1.035) scaleY(1.045);
+      }
+      68%{
+        transform:translateY(-13px) rotate(3deg) scaleX(1.075) scaleY(1.07);
+      }
+      84%{
+        transform:translateY(-9px) rotate(-1deg) scaleX(1.06) scaleY(1.055);
+      }
+      100%{
+        transform:translateY(-6px) rotate(0deg) scaleX(1.045) scaleY(1.04);
+      }
+    }
+
+    @keyframes cloverSunnyRest{
+      0%,100%{
+        transform:translateY(-5px) rotate(-1.4deg) scaleX(1.035) scaleY(1.03);
+      }
+      50%{
+        transform:translateY(-10px) rotate(1.8deg) scaleX(1.055) scaleY(1.05);
+      }
+    }
+
+    @media(prefers-reduced-motion:reduce){
+      #myLeaf .growth-main-leaf.leaf-watered,
+      #myLeaf .growth-main-leaf.leaf-lighted,
+      #myLeaf .growth-main-leaf.is-water-fresh,
+      #myLeaf .growth-main-leaf.is-sun-happy{
         animation:none !important;
       }
     }
