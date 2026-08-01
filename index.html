@@ -12335,6 +12335,130 @@ no-repeat !important;
   `;
   document.head.appendChild(style);
 })();
+/* =========================================================
+   MY LEAF CARE STRIP V3
+   Ultra-thin history inside the leaf scene
+========================================================= */
+(function applyMyLeafCareStripV3(){
+  if(document.getElementById("myLeafCareStripV3Style")) return;
+
+  const style = document.createElement("style");
+  style.id = "myLeafCareStripV3Style";
+  style.textContent = `
+    #myLeaf .growth-plant-wrap{
+      padding-bottom:32px !important;
+    }
+    #myLeaf #growthMainLeaf{
+      top:-8px;
+    }
+    #myLeaf .leaf-journey-panel{
+      position:absolute !important;
+      left:7px !important;
+      right:7px !important;
+      bottom:5px !important;
+      z-index:11 !important;
+      display:grid !important;
+      grid-template-columns:auto minmax(0,1fr) !important;
+      align-items:center !important;
+      gap:6px !important;
+      margin:0 !important;
+      padding:3px 5px !important;
+      min-height:25px !important;
+      border-radius:10px !important;
+      border:1px solid rgba(72,115,70,.13) !important;
+      background:rgba(244,249,238,.58) !important;
+      -webkit-backdrop-filter:blur(5px);
+      backdrop-filter:blur(5px);
+      box-shadow:none !important;
+      opacity:.72 !important;
+      pointer-events:none !important;
+    }
+    #myLeaf .leaf-journey-top{
+      display:block !important;
+      min-width:74px !important;
+      margin:0 !important;
+      line-height:1.05 !important;
+    }
+    #myLeaf .leaf-journey-title{
+      font-size:9px !important;
+      font-weight:700 !important;
+      white-space:nowrap;
+    }
+    #myLeaf .leaf-journey-stage{
+      margin-top:2px !important;
+      font-size:7.5px !important;
+      line-height:1 !important;
+      text-align:left !important;
+      white-space:nowrap;
+    }
+    #myLeaf .leaf-journey-week{
+      min-width:0 !important;
+      gap:1px !important;
+    }
+    #myLeaf .leaf-journey-day{
+      min-height:20px !important;
+      padding:2px 0 !important;
+      border-radius:6px !important;
+      background:rgba(220,233,210,.52) !important;
+    }
+    #myLeaf .leaf-journey-day-name{
+      margin:0 0 1px !important;
+      font-size:7px !important;
+      line-height:1 !important;
+    }
+    #myLeaf .leaf-journey-marks{
+      gap:1px !important;
+      min-height:4px !important;
+    }
+    #myLeaf .leaf-journey-mark{
+      width:4px !important;
+      height:4px !important;
+    }
+    #myLeaf .leaf-journey-progress,
+    #myLeaf .leaf-journey-message{
+      display:none !important;
+    }
+    #growthPlantWrap .leaf-care-effect-layer{
+      inset:-6px 0 29px !important;
+      overflow:visible !important;
+    }
+    #growthPlantWrap .leaf-care-particle,
+    #growthPlantWrap .leaf-care-visitor{
+      top:31% !important;
+    }
+    @media(max-width:430px){
+      #myLeaf .growth-plant-wrap{padding-bottom:30px !important;}
+      #myLeaf .leaf-journey-panel{
+        left:4px !important;
+        right:4px !important;
+        bottom:4px !important;
+        gap:4px !important;
+        padding:3px 4px !important;
+      }
+      #myLeaf .leaf-journey-top{min-width:66px !important;}
+      #myLeaf .leaf-journey-title{font-size:8px !important;}
+      #myLeaf .leaf-journey-stage{font-size:7px !important;}
+    }
+  `;
+  document.head.appendChild(style);
+
+  const wrap = document.getElementById("growthPlantWrap");
+  const panel = document.getElementById("leafJourneyPanel");
+  if(wrap && panel && panel.parentElement !== wrap){
+    wrap.appendChild(panel);
+  }
+
+  document.querySelectorAll("#livingLeafCare button").forEach(button => {
+    if(button.dataset.leafFocusReady) return;
+    button.dataset.leafFocusReady = "true";
+    button.addEventListener("click",() => {
+      document.getElementById("growthPlantWrap")?.scrollIntoView({
+        behavior:"smooth",
+        block:"center"
+      });
+    },true);
+  });
+})();
 </script>
 
 </body>
