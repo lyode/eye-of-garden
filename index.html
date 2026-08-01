@@ -9198,24 +9198,39 @@ no-repeat !important;
     @keyframes eogRareSpaceGlint{
       0%, 22%{
         opacity:0;
+        filter:
+          brightness(0.75)
+          drop-shadow(0 0 3px rgba(239,220,165,0.28));
         transform:translate(-50%, -50%) scale(0.72);
       }
 
       46%{
-        opacity:0.28;
+        opacity:0.34;
+        filter:
+          brightness(1)
+          drop-shadow(0 0 4px rgba(239,220,165,0.42));
       }
 
       55%{
-        opacity:0.80;
-        transform:translate(-50%, -50%) scale(1.05);
+        opacity:1;
+        filter:
+          brightness(1.5)
+          drop-shadow(0 0 6px rgba(255,232,166,0.68));
+        transform:translate(-50%, -50%) scale(1.08);
       }
 
       66%{
-        opacity:0.24;
+        opacity:0.30;
+        filter:
+          brightness(1.05)
+          drop-shadow(0 0 4px rgba(239,220,165,0.40));
       }
 
       100%{
         opacity:0;
+        filter:
+          brightness(0.80)
+          drop-shadow(0 0 3px rgba(239,220,165,0.28));
         transform:translate(-50%, -50%) scale(0.82);
       }
     }
