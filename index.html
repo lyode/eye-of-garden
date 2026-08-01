@@ -4149,6 +4149,11 @@ async function loadMembers(){
     renderSparkLeafMembers();
     renderDreamStats();
     updateToken();
+
+    /* Refresh My Leaf after the asynchronous member list is ready. */
+    if(document.getElementById("myLeaf")?.classList.contains("active")){
+      renderMyLeaf();
+    }
   }catch(err){
     console.error("Load members failed:", err);
     document.getElementById("count").textContent = "!";
@@ -5046,12 +5051,37 @@ updateLeafCareView(member);
 rememberedBox.hidden = false;
 recoveryBox.hidden = true;
 
-loadLeafDayNotes(member);
-updateLeafCareView(member);
-window.updateMyLeafGrowthJourney?.(member);
-    
-const growthCard =
-  document.getElementById("leafGrowthCard");
+/* Render the member identity before optional journey effects. */
+document.getElementById("myLeafName").textContent = name;
+document.getElementById("myLeafNumber").textContent = `Leaf #${padNo(no)}`;
+document.getElementById("myLeafTitle").textContent = tr(title);
+document.getElementById("myLeafPlace").textContent = `ðŸ“ ${place}`;
+
+const earlyDreamsBox = document.getElementById("myLeafDreams");
+if(earlyDreamsBox){
+  earlyDreamsBox.innerHTML = "";
+  if(dreams.length){
+    dreams.forEach(dream => {
+      const item = document.createElement("div");
+      item.className = "dream-row";
+      item.textContent = tr(dream);
+      earlyDreamsBox.appendChild(item);
+    });
+  }else{
+    earlyDreamsBox.textContent = "No dreams saved yet.";
+  }
+}
+
+const growthCard = document.getElementById("leafGrowthCard");
+if(growthCard){
+  growthCard.hidden = false;
+}
+
+/* A decorative effect must never prevent My Leaf from appearing. */
+try{ loadLeafDayNotes(member); }catch(error){ console.warn("My Leaf notes:", error); }
+try{ updateLeafCareView(member); }catch(error){ console.warn("My Leaf care:", error); }
+try{ window.updateMyLeafGrowthJourney?.(member); }catch(error){ console.warn("My Leaf journey:", error); }
+
 const smallLeavesBox =
   document.getElementById("growthSmallLeaves");
 
@@ -11566,6 +11596,12 @@ no-repeat !important;
 
   style.textContent = `
     .language-control.language-page-hidden{
+      display:none !important;
+    }
+
+    #myLeafRemembered[hidden],
+    #myLeafRecovery[hidden],
+    #leafGrowthCard[hidden]{
       display:none !important;
     }
 
