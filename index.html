@@ -9259,7 +9259,7 @@ no-repeat !important;
       content:"";
       position:absolute;
       left:50%;
-      top:50%;
+      top:36%;
       pointer-events:none;
     }
 
@@ -11787,7 +11787,7 @@ no-repeat !important;
     #growthPlantWrap .leaf-care-visitor{
       position:absolute;
       left:50%;
-      top:50%;
+      top:36%;
       pointer-events:none;
     }
     #growthPlantWrap.care-breeze .growth-main-leaf{
@@ -12004,7 +12004,11 @@ no-repeat !important;
   }
   function clearTemporaryEffect(wrap){
     if(!wrap) return;
-    ["care-breeze","care-wipe","care-song","care-kind","care-feed"].forEach(name => wrap.classList.remove(name));
+    ["care-breeze","care-wipe","care-song","care-kind","care-feed","care-visitor"].forEach(name => wrap.classList.remove(name));
+    const leaf = document.getElementById("growthMainLeaf");
+    if(leaf){
+      ["leaf-react-air","leaf-react-wipe","leaf-react-song","leaf-react-kind","leaf-react-feed","leaf-react-visitor"].forEach(name => leaf.classList.remove(name));
+    }
     const layer = document.getElementById("leafCareEffectLayer");
     if(layer) layer.textContent = "";
   }
@@ -12022,27 +12026,33 @@ no-repeat !important;
       layer.appendChild(particle);
     });
   }
-  function playMelody(){
+  async function playMelody(){
     try{
       const AudioContext = window.AudioContext || window.webkitAudioContext;
       if(!AudioContext) return;
       const audio = new AudioContext();
-      const notes = [523.25,659.25,783.99,659.25,587.33];
+      if(audio.state === "suspended") await audio.resume();
+      const notes = [659.25,783.99,987.77,783.99,1046.50,880.00];
       notes.forEach((frequency,index) => {
-        const oscillator = audio.createOscillator();
-        const gain = audio.createGain();
-        const start = audio.currentTime + index * .24;
-        oscillator.type = "sine";
-        oscillator.frequency.setValueAtTime(frequency,start);
-        gain.gain.setValueAtTime(.0001,start);
-        gain.gain.exponentialRampToValueAtTime(.028,start + .035);
-        gain.gain.exponentialRampToValueAtTime(.0001,start + .28);
-        oscillator.connect(gain);
-        gain.connect(audio.destination);
-        oscillator.start(start);
-        oscillator.stop(start + .31);
+        const start = audio.currentTime + index * .27;
+        [
+          {type:"sine",ratio:1,volume:.046},
+          {type:"triangle",ratio:2,volume:.012}
+        ].forEach(voice => {
+          const oscillator = audio.createOscillator();
+          const gain = audio.createGain();
+          oscillator.type = voice.type;
+          oscillator.frequency.setValueAtTime(frequency * voice.ratio,start);
+          gain.gain.setValueAtTime(.0001,start);
+          gain.gain.exponentialRampToValueAtTime(voice.volume,start + .028);
+          gain.gain.exponentialRampToValueAtTime(.0001,start + .38);
+          oscillator.connect(gain);
+          gain.connect(audio.destination);
+          oscillator.start(start);
+          oscillator.stop(start + .42);
+        });
       });
-      setTimeout(() => audio.close(),1800);
+      setTimeout(() => audio.close(),2400);
     }catch(error){/* Sound remains optional. */}
   }
   function showEffect(type){
@@ -12050,7 +12060,18 @@ no-repeat !important;
     const wrap = ui?.wrap;
     if(!wrap) return;
     clearTemporaryEffect(wrap);
+    const leaf = document.getElementById("growthMainLeaf");
+    const reactionClass = {
+      air:"leaf-react-air",
+      wipe:"leaf-react-wipe",
+      song:"leaf-react-song",
+      kind:"leaf-react-kind",
+      feed:"leaf-react-feed",
+      visitor:"leaf-react-visitor"
+    }[type];
+    if(reactionClass) leaf?.classList.add(reactionClass);
     void wrap.offsetWidth;
+    void leaf?.offsetWidth;
 
     if(type === "air"){
       wrap.classList.add("care-breeze");
@@ -12067,6 +12088,7 @@ no-repeat !important;
     }else if(type === "feed"){
       wrap.classList.add("care-feed","is-naturally-fed");
     }else if(type === "visitor"){
+      wrap.classList.add("care-visitor");
       const layer = document.getElementById("leafCareEffectLayer");
       const visitors = ["\u{1F98B}","\u{1F41E}","\u{1F41D}","\u{1F525}"];
       if(layer){
@@ -12161,6 +12183,157 @@ no-repeat !important;
     const member = currentMember();
     if(member) window.updateMyLeafPlayActions(member);
   },1400);
+})();
+/* =========================================================
+   MY LEAF CARE REACTIONS V2
+   Compact care history and clear reactions on the real leaf
+========================================================= */
+(function applyMyLeafCareReactionsV2(){
+  if(document.getElementById("myLeafCareReactionsV2Style")) return;
+  const style = document.createElement("style");
+  style.id = "myLeafCareReactionsV2Style";
+  style.textContent = `
+    #myLeaf .leaf-journey-panel{
+      margin:7px 0 10px !important;
+      padding:8px 9px !important;
+      border-radius:16px !important;
+      background:rgba(244,249,238,.68) !important;
+      box-shadow:none !important;
+      opacity:.84;
+    }
+    #myLeaf .leaf-journey-top{
+      align-items:center !important;
+      margin-bottom:5px !important;
+      gap:7px !important;
+    }
+    #myLeaf .leaf-journey-title{
+      font-size:12px !important;
+      font-weight:700 !important;
+    }
+    #myLeaf .leaf-journey-stage{
+      font-size:10.5px !important;
+    }
+    #myLeaf .leaf-journey-week{gap:2px !important;}
+    #myLeaf .leaf-journey-day{
+      padding:3px 1px !important;
+      border-radius:8px !important;
+    }
+    #myLeaf .leaf-journey-day-name{
+      margin-bottom:2px !important;
+      font-size:9px !important;
+    }
+    #myLeaf .leaf-journey-marks{gap:2px !important;min-height:5px !important;}
+    #myLeaf .leaf-journey-mark{width:5px !important;height:5px !important;}
+    #myLeaf .leaf-journey-progress,
+    #myLeaf .leaf-journey-message{
+      margin:5px 0 0 !important;
+      font-size:10.5px !important;
+      line-height:1.25 !important;
+    }
+
+    #growthPlantWrap .leaf-care-particle,
+    #growthPlantWrap .leaf-care-visitor{top:34% !important;}
+    #growthPlantWrap.care-wipe .leaf-care-effect-layer::after{
+      left:31% !important;
+      top:7% !important;
+      width:18% !important;
+      height:72% !important;
+      filter:blur(1px) drop-shadow(0 0 6px rgba(255,255,255,.9)) !important;
+    }
+    #myLeaf #growthMainLeaf.leaf-react-air{
+      animation:leafReactAirV2 2.25s cubic-bezier(.2,.8,.2,1) !important;
+      transform-origin:50% 88% !important;
+    }
+    #myLeaf #growthMainLeaf.leaf-react-wipe{
+      animation:leafReactWipeV2 2.05s ease-in-out !important;
+    }
+    #myLeaf #growthMainLeaf.leaf-react-song{
+      animation:leafReactSongV2 3.1s ease-in-out !important;
+      transform-origin:50% 88% !important;
+    }
+    #myLeaf #growthMainLeaf.leaf-react-kind{
+      animation:leafReactKindV2 2.5s ease-in-out !important;
+    }
+    #myLeaf #growthMainLeaf.leaf-react-feed{
+      animation:leafReactFeedV2 2.7s cubic-bezier(.2,.75,.25,1) !important;
+    }
+    #myLeaf #growthMainLeaf.leaf-react-visitor{
+      animation:leafReactVisitorV2 4.8s ease-in-out !important;
+      transform-origin:50% 88% !important;
+    }
+    @keyframes leafReactAirV2{
+      0%,100%{transform:translateY(0) rotate(0) scale(1)}
+      18%{transform:translateY(-4px) rotate(-11deg) scale(1.04)}
+      38%{transform:translateY(-8px) rotate(10deg) scale(1.08)}
+      58%{transform:translateY(-6px) rotate(-7deg) scale(1.06)}
+      78%{transform:translateY(-3px) rotate(4deg) scale(1.03)}
+    }
+    @keyframes leafReactWipeV2{
+      0%,100%{transform:scale(1);filter:brightness(1) saturate(1)}
+      28%{transform:rotate(-4deg) scale(1.035);filter:brightness(1.08) saturate(1.05)}
+      58%{transform:rotate(4deg) scale(1.09);filter:brightness(1.35) saturate(1.2) drop-shadow(0 0 20px rgba(255,255,255,.8))}
+      80%{transform:rotate(-1deg) scale(1.05);filter:brightness(1.18) saturate(1.14)}
+    }
+    @keyframes leafReactSongV2{
+      0%,100%{transform:translateY(0) rotate(0) scale(1)}
+      16%{transform:translateY(-8px) rotate(-12deg) scale(1.04)}
+      32%{transform:translateY(-2px) rotate(11deg) scale(1.08)}
+      48%{transform:translateY(-10px) rotate(-9deg) scale(1.07)}
+      64%{transform:translateY(-3px) rotate(8deg) scale(1.08)}
+      80%{transform:translateY(-7px) rotate(-5deg) scale(1.04)}
+    }
+    @keyframes leafReactKindV2{
+      0%,100%{transform:scale(1);filter:brightness(1)}
+      24%{transform:scale(1.07)}
+      50%{transform:translateY(-7px) scale(1.14);filter:brightness(1.3) saturate(1.25) drop-shadow(0 0 28px rgba(244,169,183,.75))}
+      72%{transform:scale(1.07)}
+    }
+    @keyframes leafReactFeedV2{
+      0%{transform:scale(1)}
+      30%{transform:translateY(3px) scaleX(1.06) scaleY(.97)}
+      62%{transform:translateY(-8px) scale(1.17)}
+      82%{transform:translateY(-5px) scale(1.12)}
+      100%{transform:translateY(-3px) scale(1.09)}
+    }
+    @keyframes leafReactVisitorV2{
+      0%,100%{transform:rotate(0) translateY(0) scale(1)}
+      25%{transform:rotate(5deg) translate(4px,-4px) scale(1.04)}
+      48%{transform:rotate(9deg) translate(7px,-8px) scale(1.08)}
+      70%{transform:rotate(5deg) translate(4px,-5px) scale(1.06)}
+    }
+    @keyframes leafCareWind{
+      from{transform:translate(-210px,var(--care-y)) scale(.7);opacity:0}
+      22%{opacity:1}
+      to{transform:translate(175px,calc(var(--care-y) - 42px)) scale(1.18);opacity:0}
+    }
+    @keyframes leafCareNote{
+      from{transform:translate(var(--care-x),5px) scale(.7);opacity:0}
+      20%{opacity:1}
+      to{transform:translate(calc(var(--care-x) + 18px),-125px) scale(1.2);opacity:0}
+    }
+    @keyframes leafCareHeart{
+      from{transform:translate(var(--care-x),0) scale(.65);opacity:0}
+      24%{opacity:1}
+      to{transform:translate(calc(var(--care-x) + 10px),-118px) scale(1.25);opacity:0}
+    }
+    @keyframes leafCareVisitor{
+      0%{transform:translate(-145px,30px) rotate(-12deg) scale(.5);opacity:0}
+      20%{opacity:1}
+      46%{transform:translate(28px,-64px) rotate(8deg) scale(1)}
+      68%{transform:translate(42px,-52px) rotate(-5deg) scale(.95)}
+      88%{opacity:1}
+      100%{transform:translate(145px,-112px) rotate(12deg) scale(.65);opacity:0}
+    }
+    @media(max-width:560px){
+      #myLeaf .leaf-journey-panel{padding:7px 8px !important;}
+      #growthPlantWrap .leaf-care-particle,
+      #growthPlantWrap .leaf-care-visitor{top:31% !important;}
+    }
+    @media(prefers-reduced-motion:reduce){
+      #myLeaf #growthMainLeaf[class*="leaf-react-"]{animation:none !important;}
+    }
+  `;
+  document.head.appendChild(style);
 })();
 </script>
 
