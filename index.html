@@ -5083,6 +5083,7 @@ if(growthCard){
 try{ loadLeafDayNotes(member); }catch(error){ console.warn("My Leaf notes:", error); }
 try{ updateLeafCareView(member); }catch(error){ console.warn("My Leaf care:", error); }
 try{ window.updateMyLeafGrowthJourney?.(member); }catch(error){ console.warn("My Leaf journey:", error); }
+try{ window.updateMyLeafPlayActions?.(member); }catch(error){ console.warn("My Leaf play actions:", error); }
 
 const smallLeavesBox =
   document.getElementById("growthSmallLeaves");
@@ -11707,7 +11708,461 @@ no-repeat !important;
     remembered.insertBefore(growthCard,dayNoteCard);
   }
 
-})();</script>
+})();
+
+/* =========================================================
+   MY LEAF CARE PLAYGROUND V1
+   Six gentle care actions stored on this device only
+========================================================= */
+(function setupMyLeafCarePlaygroundV1(){
+  if(document.getElementById("myLeafCarePlaygroundV1Style")) return;
+
+  const style = document.createElement("style");
+  style.id = "myLeafCarePlaygroundV1Style";
+  style.textContent = `
+    #myLeaf .living-leaf-actions{
+      display:grid !important;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:9px !important;
+      margin:12px 0 !important;
+    }
+    #myLeaf .living-leaf-actions button{
+      width:100%;
+      min-height:44px;
+      padding:9px 10px !important;
+      border-radius:15px !important;
+      font-size:13px !important;
+      line-height:1.25;
+      box-shadow:0 6px 14px rgba(42,78,45,.08) !important;
+    }
+    #myLeaf .living-leaf-actions button:disabled{
+      cursor:not-allowed;
+      opacity:.5;
+      filter:grayscale(.25);
+    }
+    #myLeaf .leaf-kindness-composer{
+      display:none;
+      grid-template-columns:minmax(0,1fr) auto;
+      gap:8px;
+      margin:10px 0 12px;
+      padding:10px;
+      border:1px solid rgba(77,121,78,.2);
+      border-radius:16px;
+      background:rgba(255,255,255,.7);
+    }
+    #myLeaf .leaf-kindness-composer.is-open{display:grid;}
+    #myLeaf .leaf-kindness-composer input{
+      min-width:0;
+      padding:10px 11px;
+      border:1px solid rgba(77,121,78,.25);
+      border-radius:12px;
+      background:#fffdf7;
+      color:#284a34;
+      font:inherit;
+    }
+    #myLeaf .leaf-kindness-composer button{
+      padding:9px 13px !important;
+      border-radius:12px !important;
+      font-size:13px !important;
+    }
+    #myLeaf .leaf-care-moments{
+      display:inline-flex;
+      align-items:center;
+      gap:5px;
+      margin-top:8px;
+      padding:5px 9px;
+      border-radius:999px;
+      background:rgba(71,123,75,.09);
+      color:#526d57;
+      font-size:12px;
+    }
+    #growthPlantWrap .leaf-care-effect-layer{
+      position:absolute;
+      inset:0;
+      z-index:7;
+      overflow:hidden;
+      pointer-events:none;
+    }
+    #growthPlantWrap .leaf-care-particle,
+    #growthPlantWrap .leaf-care-visitor{
+      position:absolute;
+      left:50%;
+      top:50%;
+      pointer-events:none;
+    }
+    #growthPlantWrap.care-breeze .growth-main-leaf{
+      animation:leafCareBreeze 1.9s ease-in-out !important;
+      transform-origin:50% 92%;
+    }
+    #growthPlantWrap.care-wipe .growth-main-leaf{
+      animation:leafCareClean 1.8s ease-out !important;
+    }
+    #growthPlantWrap.care-song .growth-main-leaf{
+      animation:leafCareDance 2.6s ease-in-out !important;
+      transform-origin:50% 90%;
+    }
+    #growthPlantWrap.care-kind .growth-main-leaf{
+      animation:leafCareKindGlow 2.2s ease-in-out !important;
+    }
+    #growthPlantWrap.care-feed .growth-main-leaf,
+    #growthPlantWrap.is-naturally-fed .growth-main-leaf{
+      filter:brightness(1.12) saturate(1.22) drop-shadow(0 14px 18px rgba(42,105,48,.28)) !important;
+    }
+    #growthPlantWrap.care-feed .growth-main-leaf{
+      animation:leafCareFeed 2.3s ease-in-out !important;
+    }
+    #growthPlantWrap.care-wipe .leaf-care-effect-layer::after{
+      content:"";
+      position:absolute;
+      left:22%;
+      top:18%;
+      width:28%;
+      height:65%;
+      background:linear-gradient(90deg,transparent,rgba(255,255,255,.9),transparent);
+      filter:blur(2px);
+      transform:rotate(18deg);
+      animation:leafCareWipe 1.5s ease-out both;
+    }
+    #growthPlantWrap.care-breeze .leaf-care-particle{
+      color:rgba(216,248,229,.95);
+      font-size:22px;
+      animation:leafCareWind 1.7s ease-out both;
+    }
+    #growthPlantWrap.care-song .leaf-care-particle{
+      color:#806c3c;
+      font-size:20px;
+      animation:leafCareNote 2.1s ease-out both;
+    }
+    #growthPlantWrap.care-kind .leaf-care-particle{
+      color:#f4a9b7;
+      font-size:18px;
+      animation:leafCareHeart 2s ease-out both;
+    }
+    #growthPlantWrap .leaf-care-visitor{
+      z-index:9;
+      font-size:30px;
+      filter:drop-shadow(0 5px 7px rgba(28,57,33,.22));
+      animation:leafCareVisitor 4.8s ease-in-out both;
+    }
+    @keyframes leafCareBreeze{
+      0%,100%{transform:rotate(0) scale(1)}
+      22%{transform:rotate(-8deg) scale(1.02)}
+      48%{transform:rotate(7deg) scale(1.04)}
+      72%{transform:rotate(-4deg) scale(1.02)}
+    }
+    @keyframes leafCareClean{
+      0%{filter:brightness(.96) saturate(.92)}
+      55%{filter:brightness(1.24) saturate(1.2)}
+      100%{filter:brightness(1.08) saturate(1.1)}
+    }
+    @keyframes leafCareDance{
+      0%,100%{transform:rotate(0) translateY(0)}
+      20%{transform:rotate(-7deg) translateY(-4px)}
+      40%{transform:rotate(7deg) translateY(0)}
+      60%{transform:rotate(-5deg) translateY(-5px)}
+      80%{transform:rotate(5deg) translateY(0)}
+    }
+    @keyframes leafCareKindGlow{
+      0%,100%{filter:brightness(1)}
+      50%{filter:brightness(1.24) saturate(1.2) drop-shadow(0 0 22px rgba(244,169,183,.55))}
+    }
+    @keyframes leafCareFeed{
+      0%,100%{transform:scale(1)}
+      45%{transform:scale(1.12)}
+      70%{transform:scale(1.07)}
+    }
+    @keyframes leafCareWipe{
+      from{transform:translateX(-130%) rotate(18deg);opacity:0}
+      30%{opacity:1}
+      to{transform:translateX(260%) rotate(18deg);opacity:0}
+    }
+    @keyframes leafCareWind{
+      from{transform:translate(-210px,var(--care-y)) scale(.7);opacity:0}
+      25%{opacity:.9}
+      to{transform:translate(170px,calc(var(--care-y) - 18px)) scale(1.15);opacity:0}
+    }
+    @keyframes leafCareNote{
+      from{transform:translate(var(--care-x),20px) scale(.7);opacity:0}
+      25%{opacity:1}
+      to{transform:translate(calc(var(--care-x) + 18px),-105px) scale(1.15);opacity:0}
+    }
+    @keyframes leafCareHeart{
+      from{transform:translate(var(--care-x),8px) scale(.65);opacity:0}
+      30%{opacity:1}
+      to{transform:translate(calc(var(--care-x) + 10px),-95px) scale(1.2);opacity:0}
+    }
+    @keyframes leafCareVisitor{
+      0%{transform:translate(-150px,55px) rotate(-12deg) scale(.5);opacity:0}
+      22%{opacity:1}
+      45%{transform:translate(35px,-40px) rotate(8deg) scale(1)}
+      68%{transform:translate(48px,-25px) rotate(-5deg) scale(.95)}
+      88%{opacity:1}
+      100%{transform:translate(150px,-85px) rotate(12deg) scale(.65);opacity:0}
+    }
+    @media(max-width:430px){
+      #myLeaf .living-leaf-actions{gap:7px !important;}
+      #myLeaf .living-leaf-actions button{min-height:42px;font-size:12px !important;padding:8px 7px !important;}
+      #myLeaf .leaf-kindness-composer{grid-template-columns:1fr;}
+    }
+    @media(prefers-reduced-motion:reduce){
+      #growthPlantWrap[class*="care-"] .growth-main-leaf,
+      #growthPlantWrap .leaf-care-particle,
+      #growthPlantWrap .leaf-care-visitor,
+      #growthPlantWrap .leaf-care-effect-layer::after{animation:none !important;}
+    }
+  `;
+  document.head.appendChild(style);
+
+  const FOOD_COOLDOWN = 3 * 24 * 60 * 60 * 1000;
+  const actionDetails = {
+    air:{label:"\u{1F343} Give Fresh Air",stage:"\u{1F343} Your leaf is breathing in the fresh Garden air.",note:"It swayed happily and feels peaceful."},
+    wipe:{label:"\u2728 Wipe the Dew",stage:"\u2728 Your leaf looks clean and bright again.",note:"A little sparkle moved across its surface."},
+    song:{label:"\u{1F3B5} Play a Gentle Song",stage:"\u{1F3B5} Your leaf is dancing very softly.",note:"It will remember this small melody."},
+    kind:{label:"\u{1F4AC} Say Something Kind",stage:"\u{1F49A} Your kind words reached the leaf.",note:"Something small noticed your kindness."},
+    feed:{label:"\u{1F33E} Give Natural Food",stage:"\u{1F331} Your leaf feels fuller, fresher and well nourished.",note:"Natural food lasts for three quiet days."},
+    visitor:{label:"\u{1F98B} Invite a Tiny Visitor",stage:"\u{1F98B} A tiny visitor has found your leaf.",note:"The Garden sometimes sends a little surprise."}
+  };
+
+  function memberNumber(member){
+    return Number(member?.memberNo || member?.no || 0);
+  }
+  function stateKey(member){
+    return `eog_leaf_play_v1_${memberNumber(member) || "guest"}`;
+  }
+  function readState(member){
+    try{return JSON.parse(localStorage.getItem(stateKey(member)) || "{}");}
+    catch(error){return {};}
+  }
+  function writeState(member,state){
+    localStorage.setItem(stateKey(member),JSON.stringify(state));
+    return state;
+  }
+  function currentMember(){
+    return typeof window.getMyMember === "function" ? window.getMyMember() : null;
+  }
+  function ensurePlayUi(){
+    const actions = document.querySelector("#myLeaf .living-leaf-actions");
+    if(!actions) return null;
+
+    const definitions = [
+      ["air","leafFreshAirButton"],
+      ["wipe","leafWipeDewButton"],
+      ["song","leafSongButton"],
+      ["kind","leafKindButton"],
+      ["feed","leafFoodButton"],
+      ["visitor","leafVisitorButton"]
+    ];
+    definitions.forEach(([type,id]) => {
+      if(document.getElementById(id)) return;
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "soft leaf-play-button";
+      button.id = id;
+      button.dataset.leafAction = type;
+      button.textContent = actionDetails[type].label;
+      button.addEventListener("click",() => handleAction(type));
+      actions.appendChild(button);
+    });
+
+    let composer = document.getElementById("leafKindnessComposer");
+    if(!composer){
+      composer = document.createElement("div");
+      composer.id = "leafKindnessComposer";
+      composer.className = "leaf-kindness-composer";
+      composer.innerHTML = '<input id="leafKindnessInput" maxlength="120" placeholder="Write one kind sentence..." aria-label="A kind sentence for your leaf"><button type="button" id="sendLeafKindnessButton">Send to My Leaf</button>';
+      actions.insertAdjacentElement("afterend",composer);
+      document.getElementById("sendLeafKindnessButton")?.addEventListener("click",sendKindness);
+      document.getElementById("leafKindnessInput")?.addEventListener("keydown",event => {
+        if(event.key === "Enter") sendKindness();
+      });
+    }
+
+    let moments = document.getElementById("leafCareMoments");
+    if(!moments){
+      moments = document.createElement("div");
+      moments.id = "leafCareMoments";
+      moments.className = "leaf-care-moments";
+      moments.setAttribute("aria-live","polite");
+      document.getElementById("livingLeafCareNote")?.insertAdjacentElement("afterend",moments);
+    }
+
+    const wrap = document.getElementById("growthPlantWrap");
+    if(wrap && !document.getElementById("leafCareEffectLayer")){
+      const layer = document.createElement("div");
+      layer.id = "leafCareEffectLayer";
+      layer.className = "leaf-care-effect-layer";
+      wrap.appendChild(layer);
+    }
+    return {actions,composer,moments,wrap};
+  }
+  function setMessage(type,extra){
+    const detail = actionDetails[type];
+    const stage = document.getElementById("livingLeafStage");
+    const note = document.getElementById("livingLeafCareNote");
+    if(stage) stage.textContent = detail.stage;
+    if(note) note.textContent = extra || detail.note;
+  }
+  function clearTemporaryEffect(wrap){
+    if(!wrap) return;
+    ["care-breeze","care-wipe","care-song","care-kind","care-feed"].forEach(name => wrap.classList.remove(name));
+    const layer = document.getElementById("leafCareEffectLayer");
+    if(layer) layer.textContent = "";
+  }
+  function addParticles(type,characters){
+    const layer = document.getElementById("leafCareEffectLayer");
+    if(!layer) return;
+    layer.textContent = "";
+    characters.forEach((character,index) => {
+      const particle = document.createElement("span");
+      particle.className = "leaf-care-particle";
+      particle.textContent = character;
+      particle.style.setProperty("--care-x",`${-55 + index * 28}px`);
+      particle.style.setProperty("--care-y",`${-55 + index * 25}px`);
+      particle.style.animationDelay = `${index * .14}s`;
+      layer.appendChild(particle);
+    });
+  }
+  function playMelody(){
+    try{
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if(!AudioContext) return;
+      const audio = new AudioContext();
+      const notes = [523.25,659.25,783.99,659.25,587.33];
+      notes.forEach((frequency,index) => {
+        const oscillator = audio.createOscillator();
+        const gain = audio.createGain();
+        const start = audio.currentTime + index * .24;
+        oscillator.type = "sine";
+        oscillator.frequency.setValueAtTime(frequency,start);
+        gain.gain.setValueAtTime(.0001,start);
+        gain.gain.exponentialRampToValueAtTime(.028,start + .035);
+        gain.gain.exponentialRampToValueAtTime(.0001,start + .28);
+        oscillator.connect(gain);
+        gain.connect(audio.destination);
+        oscillator.start(start);
+        oscillator.stop(start + .31);
+      });
+      setTimeout(() => audio.close(),1800);
+    }catch(error){/* Sound remains optional. */}
+  }
+  function showEffect(type){
+    const ui = ensurePlayUi();
+    const wrap = ui?.wrap;
+    if(!wrap) return;
+    clearTemporaryEffect(wrap);
+    void wrap.offsetWidth;
+
+    if(type === "air"){
+      wrap.classList.add("care-breeze");
+      addParticles(type,["~","~","~","~"]);
+    }else if(type === "wipe"){
+      wrap.classList.add("care-wipe");
+    }else if(type === "song"){
+      wrap.classList.add("care-song");
+      addParticles(type,["\u266A","\u266B","\u266A"]);
+      playMelody();
+    }else if(type === "kind"){
+      wrap.classList.add("care-kind");
+      addParticles(type,["\u2665","\u2665","\u2665"]);
+    }else if(type === "feed"){
+      wrap.classList.add("care-feed","is-naturally-fed");
+    }else if(type === "visitor"){
+      const layer = document.getElementById("leafCareEffectLayer");
+      const visitors = ["\u{1F98B}","\u{1F41E}","\u{1F41D}","\u{1F525}"];
+      if(layer){
+        const visitor = document.createElement("span");
+        visitor.className = "leaf-care-visitor";
+        visitor.textContent = visitors[Math.floor(Math.random() * visitors.length)];
+        layer.appendChild(visitor);
+      }
+    }
+    setTimeout(() => clearTemporaryEffect(wrap),type === "visitor" ? 5000 : 2800);
+  }
+  function saveAction(member,type,extra){
+    const state = readState(member);
+    state.counts = state.counts && typeof state.counts === "object" ? state.counts : {};
+    state.counts[type] = Number(state.counts[type] || 0) + 1;
+    state.careMoments = Number(state.careMoments || 0) + 1;
+    state.lastAction = type;
+    state.updatedAt = new Date().toISOString();
+    if(type === "feed") state.lastFoodAt = state.updatedAt;
+    if(extra?.kindWord) state.kindWord = extra.kindWord;
+    return writeState(member,state);
+  }
+  function handleAction(type){
+    const member = currentMember();
+    if(!member) return;
+    const ui = ensurePlayUi();
+
+    if(type === "kind"){
+      ui?.composer?.classList.toggle("is-open");
+      if(ui?.composer?.classList.contains("is-open")) document.getElementById("leafKindnessInput")?.focus();
+      return;
+    }
+    if(type === "feed"){
+      const state = readState(member);
+      const lastFood = new Date(state.lastFoodAt || 0).getTime();
+      if(lastFood && Date.now() - lastFood < FOOD_COOLDOWN){
+        const available = new Date(lastFood + FOOD_COOLDOWN).toLocaleDateString();
+        setMessage("feed",`Your leaf is still nourished. Natural food is available again on ${available}.`);
+        return;
+      }
+    }
+    saveAction(member,type);
+    showEffect(type);
+    setMessage(type);
+    window.updateMyLeafPlayActions(member);
+  }
+  function sendKindness(){
+    const member = currentMember();
+    const input = document.getElementById("leafKindnessInput");
+    const sentence = String(input?.value || "").trim();
+    if(!member || !sentence){
+      input?.focus();
+      return;
+    }
+    saveAction(member,"kind",{kindWord:sentence.slice(0,120)});
+    showEffect("kind");
+    setMessage("kind",`Your leaf remembers: \u201c${sentence.slice(0,120)}\u201d`);
+    if(input) input.value = "";
+    document.getElementById("leafKindnessComposer")?.classList.remove("is-open");
+    window.updateMyLeafPlayActions(member,true);
+  }
+
+  window.updateMyLeafPlayActions = function(member,preserveMessage){
+    if(!member) return;
+    const ui = ensurePlayUi();
+    if(!ui) return;
+    const state = readState(member);
+    const foodTime = new Date(state.lastFoodAt || 0).getTime();
+    const nourished = Boolean(foodTime && Date.now() - foodTime < FOOD_COOLDOWN);
+    ui.wrap?.classList.toggle("is-naturally-fed",nourished);
+
+    const foodButton = document.getElementById("leafFoodButton");
+    if(foodButton){
+      foodButton.disabled = nourished;
+      foodButton.title = nourished ? "Your leaf is still nourished." : "";
+    }
+    if(ui.moments){
+      const count = Number(state.careMoments || 0);
+      ui.moments.textContent = `\u{1F49A} ${count} gentle care moment${count === 1 ? "" : "s"}`;
+    }
+    if(!preserveMessage && actionDetails[state.lastAction]){
+      if(state.lastAction === "kind" && state.kindWord){
+        setMessage("kind",`Your leaf remembers: \u201c${state.kindWord}\u201d`);
+      }else{
+        setMessage(state.lastAction);
+      }
+    }
+  };
+
+  ensurePlayUi();
+  setTimeout(() => {
+    const member = currentMember();
+    if(member) window.updateMyLeafPlayActions(member);
+  },1400);
+})();
+</script>
 
 </body>
 </html>
