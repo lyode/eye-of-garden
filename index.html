@@ -9189,14 +9189,14 @@ no-repeat !important;
 
       animation:
         eogRareSpaceGlint
-        2.15s
+        var(--eog-glint-duration, 2.65s)
         ease-in-out
         1
         both;
     }
 
     @keyframes eogRareSpaceGlint{
-      0%, 22%{
+      0%{
         opacity:0;
         filter:
           brightness(0.75)
@@ -9204,26 +9204,26 @@ no-repeat !important;
         transform:translate(-50%, -50%) scale(0.72);
       }
 
-      46%{
-        opacity:0.34;
+      20%{
+        opacity:0.15;
         filter:
-          brightness(1)
-          drop-shadow(0 0 4px rgba(239,220,165,0.42));
+          brightness(0.90)
+          drop-shadow(0 0 3px rgba(239,220,165,0.34));
       }
 
-      55%{
+      42%, 65%{
         opacity:1;
         filter:
-          brightness(4)
+          brightness(var(--eog-glint-brightness, 4))
           drop-shadow(0 0 9px rgba(255,242,198,0.92));
         transform:translate(-50%, -50%) scale(1.12);
       }
 
-      66%{
-        opacity:0.30;
+      80%{
+        opacity:0.34;
         filter:
-          brightness(1.05)
-          drop-shadow(0 0 4px rgba(239,220,165,0.40));
+          brightness(1.10)
+          drop-shadow(0 0 4px rgba(239,220,165,0.42));
       }
 
       100%{
@@ -9282,7 +9282,7 @@ no-repeat !important;
 
     const delay = firstRun
       ? 1400 + (Math.random() * 1800)
-      : 4400 + (Math.random() * 4200);
+      : 3400 + (Math.random() * 2600);
 
     twinkleTimer = window.setTimeout(
       runRareTwinkle,
@@ -9294,6 +9294,32 @@ no-repeat !important;
     const glint = document.createElement("span");
     glint.className = "eog-rare-glint";
     glint.setAttribute("aria-hidden", "true");
+
+    const brightnessRoll = Math.random();
+    const peakBrightness =
+      brightnessRoll < 0.55
+        ? 3
+        : brightnessRoll < 0.90
+          ? 4
+          : 8;
+
+    const addedShineTime =
+      Math.random() < 0.5
+        ? 0.50
+        : 0.65;
+
+    glint.style.setProperty(
+      "--eog-glint-brightness",
+      String(peakBrightness)
+    );
+
+    glint.style.setProperty(
+      "--eog-glint-duration",
+      (2.15 + addedShineTime) + "s"
+    );
+
+    glint.dataset.twinklePeak =
+      String(peakBrightness * 100);
 
     glint.addEventListener(
       "animationend",
