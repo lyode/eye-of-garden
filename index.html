@@ -9676,6 +9676,938 @@ no-repeat !important;
   document.head.appendChild(style);
 
 })();
+/* =========================================================
+   TODAY IN THE GARDEN V1
+   One shared daily action + quiet return ritual
+========================================================= */
+
+(function setupTodayInTheGardenV1(){
+
+  if(document.getElementById("todayInGardenV1Style")){
+    return;
+  }
+
+  const style = document.createElement("style");
+  style.id = "todayInGardenV1Style";
+  style.textContent = `
+    #home .today-garden-card{
+      position:relative;
+      width:min(100%,640px);
+      margin:12px auto 0;
+      padding:12px 14px 13px;
+      overflow:hidden;
+
+      border:1px solid rgba(55,103,65,0.18);
+      border-radius:18px;
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(248,253,238,0.92),
+          rgba(235,246,220,0.88)
+        );
+
+      box-shadow:0 8px 20px rgba(49,82,47,0.08);
+      color:#294a34;
+      text-align:left;
+    }
+
+    #home .today-garden-card.is-carried{
+      border-color:rgba(188,151,53,0.30);
+      background:
+        linear-gradient(
+          135deg,
+          rgba(255,252,230,0.94),
+          rgba(231,246,219,0.92)
+        );
+    }
+
+    #home .today-garden-heading{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin:0 0 6px;
+    }
+
+    #home .today-garden-heading strong{
+      color:#234b31;
+      font-size:14px;
+      font-weight:700;
+      letter-spacing:0.01em;
+    }
+
+    #home .today-garden-date{
+      color:#70806d;
+      font-size:10px;
+      white-space:nowrap;
+    }
+
+    #home .today-garden-action{
+      margin:0;
+      color:#36543d;
+      font-size:14px;
+      font-weight:500;
+      line-height:1.42;
+    }
+
+    #home .today-garden-footer{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-top:9px;
+    }
+
+    #home .today-garden-button{
+      flex:0 0 auto;
+      min-height:38px !important;
+      margin:0 !important;
+      padding:8px 13px !important;
+      border-radius:999px !important;
+      background:#356b44 !important;
+      color:#fff !important;
+      font-size:12px !important;
+      font-weight:700 !important;
+      line-height:1.2 !important;
+      box-shadow:0 6px 14px rgba(53,107,68,0.18) !important;
+    }
+
+    #home .today-garden-button:hover,
+    #home .today-garden-button:focus-visible{
+      filter:brightness(1.06);
+    }
+
+    #home .today-garden-button:disabled{
+      cursor:default;
+      opacity:0.82;
+      filter:none;
+    }
+
+    #home .today-garden-meta{
+      min-width:0;
+      color:#657566;
+      font-size:10.5px;
+      line-height:1.35;
+    }
+
+    #home .today-garden-status{
+      margin:7px 0 0;
+      color:#7a6630;
+      font-size:10.5px;
+      line-height:1.35;
+    }
+
+    #home .today-garden-status:empty{
+      display:none;
+    }
+
+    #home .today-garden-card.is-celebrating{
+      animation:eogTodayCardCelebrate 1.15s ease-out 1;
+    }
+
+    #garden #members .garden-believer-leaf
+    .eog-today-leaf-halo{
+      position:absolute;
+      left:50%;
+      top:50%;
+      z-index:4;
+
+      width:34px;
+      height:34px;
+
+      border:1px solid rgba(255,239,151,0.62);
+      border-radius:50%;
+
+      pointer-events:none;
+      opacity:0.42;
+      transform:translate(-50%,-50%) scale(0.72);
+
+      box-shadow:
+        0 0 8px rgba(255,248,207,0.55),
+        0 0 20px rgba(150,255,177,0.28);
+
+      animation:eogTodayLeafHalo 4.8s ease-in-out infinite;
+    }
+
+    @keyframes eogTodayCardCelebrate{
+      0%{
+        box-shadow:0 8px 20px rgba(49,82,47,0.08);
+      }
+      38%{
+        box-shadow:
+          0 10px 24px rgba(49,82,47,0.10),
+          0 0 0 3px rgba(255,231,138,0.26),
+          0 0 28px rgba(129,231,147,0.22);
+      }
+      100%{
+        box-shadow:0 8px 20px rgba(49,82,47,0.08);
+      }
+    }
+
+    @keyframes eogTodayLeafHalo{
+      0%,100%{
+        opacity:0.28;
+        transform:translate(-50%,-50%) scale(0.70);
+      }
+      50%{
+        opacity:0.64;
+        transform:translate(-50%,-50%) scale(1.04);
+      }
+    }
+
+    @media(max-width:560px){
+      #home .today-garden-card{
+        width:min(100%,430px);
+        margin-top:9px;
+        padding:10px 11px 11px;
+        border-radius:15px;
+      }
+
+      #home .today-garden-heading{
+        margin-bottom:4px;
+      }
+
+      #home .today-garden-heading strong{
+        font-size:12.5px;
+      }
+
+      #home .today-garden-action{
+        font-size:12.5px;
+        line-height:1.34;
+      }
+
+      #home .today-garden-footer{
+        gap:8px;
+        margin-top:7px;
+      }
+
+      #home .today-garden-button{
+        min-height:35px !important;
+        padding:7px 10px !important;
+        font-size:10.5px !important;
+      }
+
+      #home .today-garden-meta,
+      #home .today-garden-status{
+        font-size:9.5px;
+      }
+    }
+
+    @media(prefers-reduced-motion:reduce){
+      #home .today-garden-card,
+      #garden #members .eog-today-leaf-halo{
+        animation:none !important;
+      }
+    }
+  `;
+
+  document.head.appendChild(style);
+
+  const todayActions = [
+    {
+      en:"Notice someone who is usually overlooked.",
+      ms:"Perhatikan seseorang yang biasanya tidak diberi perhatian.",
+      zh:"ç•™æ„ä¸€ä¸ªå¹³æ—¶å®¹æ˜“è¢«å¿½ç•¥çš„äººã€‚"
+    },
+    {
+      en:"Send one honest thank-you message.",
+      ms:"Hantar satu mesej terima kasih yang ikhlas.",
+      zh:"å‘é€ä¸€åˆ™çœŸè¯šçš„æ„Ÿè°¢ä¿¡æ¯ã€‚"
+    },
+    {
+      en:"Put your phone away during one conversation.",
+      ms:"Letakkan telefon anda ketika berbual dengan seseorang.",
+      zh:"åœ¨ä¸€æ¬¡è°ˆè¯ä¸­ï¼ŒæŠŠæ‰‹æœºæš‚æ—¶æ”¶èµ·æ¥ã€‚"
+    },
+    {
+      en:"Pick up one piece of litter you did not drop.",
+      ms:"Kutip satu sampah yang bukan anda buang.",
+      zh:"æ¡èµ·ä¸€ä»¶ä¸æ˜¯æ‚¨ä¸¢ä¸‹çš„åžƒåœ¾ã€‚"
+    },
+    {
+      en:"Ask someone how they areâ€”and truly listen.",
+      ms:"Tanya khabar seseorangâ€”dan dengar dengan sepenuh hati.",
+      zh:"é—®å€™ä¸€ä¸ªäººï¼Œå¹¶è®¤çœŸå¬å®Œä»–çš„å›žç­”ã€‚"
+    },
+    {
+      en:"Give someone one sincere compliment.",
+      ms:"Berikan satu pujian yang ikhlas kepada seseorang.",
+      zh:"çœŸè¯šåœ°ç§°èµžä¸€ä¸ªäººã€‚"
+    },
+    {
+      en:"Care for one plant, tree, or small living thing.",
+      ms:"Jaga satu tumbuhan, pokok atau hidupan kecil.",
+      zh:"ç…§é¡¾ä¸€æ ªæ¤ç‰©ã€ä¸€æ£µæ ‘æˆ–ä¸€ä¸ªå°ç”Ÿå‘½ã€‚"
+    },
+    {
+      en:"Let someone go before you today.",
+      ms:"Berikan laluan kepada seseorang hari ini.",
+      zh:"ä»Šå¤©ï¼Œè®©ä¸€ä¸ªäººå…ˆèµ°ä¸€æ­¥ã€‚"
+    },
+    {
+      en:"Check on someone who has been quiet lately.",
+      ms:"Tanya khabar seseorang yang kebelakangan ini lebih senyap.",
+      zh:"å…³å¿ƒä¸€ä¸ªæœ€è¿‘å˜å¾—å®‰é™çš„äººã€‚"
+    },
+    {
+      en:"Learn the name of someone you often see.",
+      ms:"Kenali nama seseorang yang sering anda temui.",
+      zh:"è®°ä½ä¸€ä¸ªæ‚¨ç»å¸¸è§åˆ°çš„äººçš„åå­—ã€‚"
+    },
+    {
+      en:"Reuse one thing you would normally throw away.",
+      ms:"Guna semula satu benda yang biasanya anda buang.",
+      zh:"é‡æ–°ä½¿ç”¨ä¸€ä»¶æ‚¨é€šå¸¸ä¼šä¸¢å¼ƒçš„ä¸œè¥¿ã€‚"
+    },
+    {
+      en:"Release one small annoyance without passing it on.",
+      ms:"Lepaskan satu rasa jengkel tanpa menyebarkannya kepada orang lain.",
+      zh:"æ”¾ä¸‹ä¸€ä»¶å°å°çš„ä¸å¿«ï¼Œä¸æŠŠå®ƒä¼ ç»™åˆ«äººã€‚"
+    },
+    {
+      en:"Share a little food with someone.",
+      ms:"Kongsi sedikit makanan dengan seseorang.",
+      zh:"ä¸Žä¸€ä¸ªäººåˆ†äº«ä¸€ç‚¹é£Ÿç‰©ã€‚"
+    },
+    {
+      en:"Look at the sky for five quiet minutes.",
+      ms:"Pandang langit dengan tenang selama lima minit.",
+      zh:"å®‰é™åœ°çœ‹äº”åˆ†é’Ÿå¤©ç©ºã€‚"
+    },
+    {
+      en:"Write down one hope you do not want to lose.",
+      ms:"Tuliskan satu harapan yang anda tidak mahu hilang.",
+      zh:"å†™ä¸‹ä¸€ä»½æ‚¨ä¸æ„¿å¤±åŽ»çš„å¸Œæœ›ã€‚"
+    },
+    {
+      en:"Help with one small task before being asked.",
+      ms:"Bantu melakukan satu tugas kecil sebelum diminta.",
+      zh:"åœ¨åˆ«äººå¼€å£ä¹‹å‰ï¼Œä¸»åŠ¨å¸®å¿™å®Œæˆä¸€ä»¶å°äº‹ã€‚"
+    },
+    {
+      en:"Speak to yourself as gently as you would to a friend.",
+      ms:"Bercakaplah kepada diri sendiri selembut anda bercakap kepada seorang sahabat.",
+      zh:"åƒå¯¹å¾…æœ‹å‹ä¸€æ ·ï¼Œæ¸©æŸ”åœ°å¯¹è‡ªå·±è¯´è¯ã€‚"
+    },
+    {
+      en:"Leave one place cleaner than you found it.",
+      ms:"Tinggalkan satu tempat lebih bersih daripada ketika anda menemuinya.",
+      zh:"ç¦»å¼€ä¸€ä¸ªåœ°æ–¹æ—¶ï¼Œè®©å®ƒæ¯”åŽŸæ¥æ›´å¹²å‡€ã€‚"
+    },
+    {
+      en:"Thank a service worker and use their name if you know it.",
+      ms:"Ucapkan terima kasih kepada seorang petugas dan sebut namanya jika anda tahu.",
+      zh:"æ„Ÿè°¢ä¸€ä½æœåŠ¡äººå‘˜ï¼›å¦‚æžœçŸ¥é“ï¼Œè¯·ç§°å‘¼ä»–çš„åå­—ã€‚"
+    },
+    {
+      en:"Pause once before criticising someone.",
+      ms:"Berhenti sejenak sebelum mengkritik seseorang.",
+      zh:"åœ¨æ‰¹è¯„åˆ«äººä¹‹å‰ï¼Œå…ˆåœé¡¿ä¸€æ¬¡ã€‚"
+    },
+    {
+      en:"Give someone a reason to smile.",
+      ms:"Berikan seseorang satu sebab untuk tersenyum.",
+      zh:"ç»™ä¸€ä¸ªäººä¸€ä¸ªå¾®ç¬‘çš„ç†ç”±ã€‚"
+    },
+    {
+      en:"Choose one unused item to give away.",
+      ms:"Pilih satu barang yang tidak digunakan untuk diberikan kepada orang lain.",
+      zh:"æŒ‘é€‰ä¸€ä»¶é—²ç½®ç‰©å“é€ç»™éœ€è¦çš„äººã€‚"
+    },
+    {
+      en:"Call or message a family member you have not spoken to recently.",
+      ms:"Hubungi ahli keluarga yang sudah lama tidak anda sapa.",
+      zh:"è”ç³»ä¸€ä½æœ€è¿‘æ²¡æœ‰äº¤è°ˆçš„å®¶äººã€‚"
+    },
+    {
+      en:"Read one page that opens your mind to another life.",
+      ms:"Baca satu halaman yang membuka fikiran anda kepada kehidupan orang lain.",
+      zh:"è¯»ä¸€é¡µèƒ½è®©æ‚¨ç†è§£å¦ä¸€ç§ç”Ÿæ´»çš„æ–‡å­—ã€‚"
+    },
+    {
+      en:"Save a little water during one ordinary task.",
+      ms:"Jimatkan sedikit air ketika melakukan satu tugas harian.",
+      zh:"åœ¨ä¸€ä»¶æ—¥å¸¸å°äº‹ä¸­èŠ‚çœä¸€ç‚¹æ°´ã€‚"
+    },
+    {
+      en:"Support one small local business today.",
+      ms:"Sokong satu perniagaan kecil tempatan hari ini.",
+      zh:"ä»Šå¤©æ”¯æŒä¸€å®¶æœ¬åœ°å°å•†å®¶ã€‚"
+    },
+    {
+      en:"Include someone who seems to be standing alone.",
+      ms:"Ajak seseorang yang kelihatan bersendirian untuk bersama.",
+      zh:"é‚€è¯·ä¸€ä¸ªçœ‹èµ·æ¥ç‹¬è‡ªç«™ç€çš„äººåŠ å…¥ã€‚"
+    },
+    {
+      en:"Write down one good thing that happened today.",
+      ms:"Tuliskan satu perkara baik yang berlaku hari ini.",
+      zh:"å†™ä¸‹ä¸€ä»¶ä»Šå¤©å‘ç”Ÿçš„å¥½äº‹ã€‚"
+    },
+    {
+      en:"Offer one sincere apology without defending yourself.",
+      ms:"Berikan satu permohonan maaf yang ikhlas tanpa mempertahankan diri.",
+      zh:"çœŸè¯šåœ°é“ä¸€æ¬¡æ­‰ï¼Œä¸ä¸ºè‡ªå·±è¾©è§£ã€‚"
+    },
+    {
+      en:"Do one kind thing without telling anyone.",
+      ms:"Lakukan satu kebaikan tanpa memberitahu sesiapa.",
+      zh:"åšä¸€ä»¶å–„äº‹ï¼Œä¸å‘Šè¯‰ä»»ä½•äººã€‚"
+    }
+  ];
+
+  const todayCopy = {
+    en:{
+      heading:"ðŸŒ± Today in the Garden",
+      carry:"Carry This Leaf Today",
+      carrying:"Carrying this leaf...",
+      carried:"âœ“ Carried Today",
+      plant:"Plant a leaf to carry this",
+      first:"Be the first leaf to carry this today.",
+      count(count){
+        return count === 1
+          ? "1 leaf carried this today."
+          : count + " leaves carried this today.";
+      },
+      success:"Your leaf carried todayâ€™s small action.",
+      quiet:"Your action was remembered quietly on this device.",
+      weekly(count){
+        return "Your leaf returned " + count +
+          (count === 1 ? " time" : " times") +
+          " during the last 7 days.";
+      }
+    },
+    ms:{
+      heading:"ðŸŒ± Hari Ini di Taman",
+      carry:"Bawa Daun Ini Hari Ini",
+      carrying:"Sedang membawa daun ini...",
+      carried:"âœ“ Dibawa Hari Ini",
+      plant:"Tanam daun untuk membawanya",
+      first:"Jadilah daun pertama yang melakukannya hari ini.",
+      count(count){
+        return count + " daun membawa tindakan ini hari ini.";
+      },
+      success:"Daun anda membawa tindakan kecil hari ini.",
+      quiet:"Tindakan anda diingati dengan senyap pada peranti ini.",
+      weekly(count){
+        return "Daun anda kembali " + count +
+          " kali dalam tempoh 7 hari yang lalu.";
+      }
+    },
+    zh:{
+      heading:"ðŸŒ± ä»Šæ—¥èŠ±å›­è¡ŒåŠ¨",
+      carry:"ä»Šå¤©å¸¦ä¸Šè¿™ç‰‡å¶å­",
+      carrying:"æ­£åœ¨å¸¦ä¸Šè¿™ç‰‡å¶å­â€¦â€¦",
+      carried:"âœ“ ä»Šå¤©å·²å®Œæˆ",
+      plant:"ç§ä¸‹ä¸€ç‰‡å¶å­åŽå‚ä¸Ž",
+      first:"æˆä¸ºä»Šå¤©ç¬¬ä¸€ç‰‡å¸¦ç€è¡ŒåŠ¨å‰è¡Œçš„å¶å­ã€‚",
+      count(count){
+        return "ä»Šå¤©å·²æœ‰ " + count + " ç‰‡å¶å­å¸¦ç€è¿™é¡¹è¡ŒåŠ¨å‰è¡Œã€‚";
+      },
+      success:"æ‚¨çš„å¶å­å¸¦ä¸Šäº†ä»Šå¤©çš„å°è¡ŒåŠ¨ã€‚",
+      quiet:"æ‚¨çš„è¡ŒåŠ¨å·²é™é™åœ°ä¿å­˜åœ¨è¿™å°è®¾å¤‡ä¸Šã€‚",
+      weekly(count){
+        return "è¿‡åŽ» 7 å¤©ï¼Œæ‚¨çš„å¶å­å›žæ¥è¿‡ " + count + " æ¬¡ã€‚";
+      }
+    }
+  };
+
+  const gardenTimeZone = "Asia/Kuala_Lumpur";
+  let todayCount = 0;
+  let todayCarried = false;
+  let todaySyncQuiet = false;
+  let todayLoading = false;
+  let todayStateKey = "";
+
+  function gardenDateParts(date = new Date()){
+    const parts = new Intl.DateTimeFormat(
+      "en-CA",
+      {
+        timeZone:gardenTimeZone,
+        year:"numeric",
+        month:"2-digit",
+        day:"2-digit"
+      }
+    ).formatToParts(date);
+
+    const values = {};
+    parts.forEach(part => {
+      if(part.type !== "literal") values[part.type] = part.value;
+    });
+
+    return {
+      year:Number(values.year),
+      month:Number(values.month),
+      day:Number(values.day)
+    };
+  }
+
+  function gardenDateKey(date = new Date()){
+    const parts = gardenDateParts(date);
+    return [
+      String(parts.year).padStart(4,"0"),
+      String(parts.month).padStart(2,"0"),
+      String(parts.day).padStart(2,"0")
+    ].join("-");
+  }
+
+  function gardenDateValue(dateKey){
+    const values = dateKey.split("-").map(Number);
+    return Date.UTC(values[0], values[1] - 1, values[2]);
+  }
+
+  function todayActionIndex(dateKey){
+    const dayNumber = Math.floor(
+      gardenDateValue(dateKey) / 86400000
+    );
+
+    return (
+      (dayNumber % todayActions.length) + todayActions.length
+    ) % todayActions.length;
+  }
+
+  function todayLeafNumber(){
+    return Number(
+      localStorage.getItem("eog_my_leaf_no") || 0
+    );
+  }
+
+  function todayLocalKey(dateKey, leafNo){
+    return "eog_today_garden_v1_" + dateKey + "_" + leafNo;
+  }
+
+  function todayHistoryKey(leafNo){
+    return "eog_today_garden_history_v1_" + leafNo;
+  }
+
+  function readTodayHistory(leafNo){
+    if(!leafNo) return [];
+
+    try{
+      const history = JSON.parse(
+        localStorage.getItem(todayHistoryKey(leafNo)) || "[]"
+      );
+
+      return Array.isArray(history)
+        ? history.filter(value => /^\d{4}-\d{2}-\d{2}$/.test(value))
+        : [];
+    }catch(error){
+      return [];
+    }
+  }
+
+  function rememberToday(dateKey, leafNo){
+    localStorage.setItem(
+      todayLocalKey(dateKey, leafNo),
+      "carried"
+    );
+
+    const history = Array.from(
+      new Set([
+        ...readTodayHistory(leafNo),
+        dateKey
+      ])
+    ).sort();
+
+    localStorage.setItem(
+      todayHistoryKey(leafNo),
+      JSON.stringify(history.slice(-45))
+    );
+  }
+
+  function weeklyReturnCount(leafNo, dateKey){
+    if(!leafNo) return 0;
+
+    const todayValue = gardenDateValue(dateKey);
+
+    return readTodayHistory(leafNo).filter(historyDate => {
+      const difference =
+        (todayValue - gardenDateValue(historyDate)) / 86400000;
+
+      return difference >= 0 && difference < 7;
+    }).length;
+  }
+
+  function todayLocale(){
+    if(currentLang === "ms") return "ms-MY";
+    if(currentLang === "zh") return "zh-CN";
+    return "en-MY";
+  }
+
+  function todayDateLabel(){
+    return new Intl.DateTimeFormat(
+      todayLocale(),
+      {
+        timeZone:gardenTimeZone,
+        weekday:"short",
+        month:"short",
+        day:"numeric"
+      }
+    ).format(new Date());
+  }
+
+  function ensureTodayCard(){
+    let card = document.getElementById("todayGardenCard");
+    if(card) return card;
+
+    const myLeafAction =
+      document.querySelector("#home .home-my-leaf-action");
+
+    if(!myLeafAction) return null;
+
+    card = document.createElement("section");
+    card.id = "todayGardenCard";
+    card.className = "today-garden-card";
+    card.setAttribute("data-no-translate", "");
+    card.setAttribute("aria-labelledby", "todayGardenHeading");
+
+    card.innerHTML = `
+      <div class="today-garden-heading">
+        <strong id="todayGardenHeading"></strong>
+        <span class="today-garden-date" id="todayGardenDate"></span>
+      </div>
+
+      <p class="today-garden-action" id="todayGardenAction"></p>
+
+      <div class="today-garden-footer">
+        <button
+          type="button"
+          class="today-garden-button"
+          id="todayGardenButton"
+        ></button>
+
+        <span
+          class="today-garden-meta"
+          id="todayGardenMeta"
+          aria-live="polite"
+        ></span>
+      </div>
+
+      <p
+        class="today-garden-status"
+        id="todayGardenStatus"
+        aria-live="polite"
+      ></p>
+    `;
+
+    myLeafAction.insertAdjacentElement("afterend", card);
+
+    card.querySelector("#todayGardenButton").addEventListener(
+      "click",
+      carryTodayGardenAction
+    );
+
+    return card;
+  }
+
+  function currentTodayState(){
+    const dateKey = gardenDateKey();
+    const leafNo = todayLeafNumber();
+    const actionIndex = todayActionIndex(dateKey);
+
+    if(todayStateKey !== dateKey){
+      todayStateKey = dateKey;
+      todayCount = 0;
+      todaySyncQuiet = false;
+      todayCarried = Boolean(
+        leafNo &&
+        localStorage.getItem(todayLocalKey(dateKey, leafNo))
+      );
+    }
+
+    return {
+      dateKey,
+      leafNo,
+      actionIndex,
+      action:todayActions[actionIndex]
+    };
+  }
+
+  function renderTodayInGarden(){
+    const card = ensureTodayCard();
+    if(!card) return;
+
+    const state = currentTodayState();
+    const copy = todayCopy[currentLang] || todayCopy.en;
+
+    const heading = document.getElementById("todayGardenHeading");
+    const date = document.getElementById("todayGardenDate");
+    const action = document.getElementById("todayGardenAction");
+    const button = document.getElementById("todayGardenButton");
+    const meta = document.getElementById("todayGardenMeta");
+    const status = document.getElementById("todayGardenStatus");
+
+    if(heading) heading.textContent = copy.heading;
+    if(date) date.textContent = todayDateLabel();
+    if(action){
+      action.textContent =
+        state.action[currentLang] || state.action.en;
+    }
+
+    card.classList.toggle("is-carried", todayCarried);
+
+    if(button){
+      button.disabled = todayLoading || todayCarried;
+
+      if(!state.leafNo){
+        button.disabled = false;
+        button.textContent = copy.plant;
+      }else if(todayLoading){
+        button.textContent = copy.carrying;
+      }else if(todayCarried){
+        button.textContent = copy.carried;
+      }else{
+        button.textContent = copy.carry;
+      }
+    }
+
+    if(meta){
+      meta.textContent =
+        todayCount > 0
+          ? copy.count(todayCount)
+          : copy.first;
+    }
+
+    if(status){
+      if(todayCarried && state.leafNo){
+        const weeklyCount =
+          weeklyReturnCount(state.leafNo, state.dateKey);
+
+        status.textContent =
+          (todaySyncQuiet ? copy.quiet : copy.success) +
+          (weeklyCount > 0 ? " " + copy.weekly(weeklyCount) : "");
+      }else{
+        status.textContent = "";
+      }
+    }
+
+    if(todayCarried){
+      markTodayGardenStar(state.leafNo);
+    }
+  }
+
+  function todayActionDocumentId(state){
+    return state.dateKey;
+  }
+
+  function todayCarryDocumentId(state){
+    return state.dateKey + "_leaf_" + state.leafNo;
+  }
+
+  async function loadTodayGardenState(){
+    const state = currentTodayState();
+
+    try{
+      const countRef = doc(
+        db,
+        "gardenDailyActions",
+        todayActionDocumentId(state)
+      );
+
+      const requests = [getDoc(countRef)];
+
+      if(state.leafNo){
+        requests.push(
+          getDoc(
+            doc(
+              db,
+              "gardenDailyCarries",
+              todayCarryDocumentId(state)
+            )
+          )
+        );
+      }
+
+      const results = await Promise.all(requests);
+      const countSnapshot = results[0];
+
+      todayCount = countSnapshot.exists()
+        ? Number(countSnapshot.data()?.count || 0)
+        : 0;
+
+      if(state.leafNo && results[1]?.exists()){
+        todayCarried = true;
+        rememberToday(state.dateKey, state.leafNo);
+      }
+    }catch(error){
+      console.warn("Today in the Garden count is resting:", error);
+    }
+
+    renderTodayInGarden();
+  }
+
+  function celebrateTodayCard(){
+    const card = document.getElementById("todayGardenCard");
+    if(!card) return;
+
+    card.classList.remove("is-celebrating");
+    void card.offsetWidth;
+    card.classList.add("is-celebrating");
+
+    window.setTimeout(
+      () => card.classList.remove("is-celebrating"),
+      1250
+    );
+  }
+
+  function markTodayGardenStar(leafNo){
+    if(!leafNo) return;
+
+    const memberLights = document.querySelectorAll(
+      "#garden #members .garden-believer-leaf"
+    );
+
+    memberLights.forEach(light => {
+      const label = [
+        light.getAttribute("aria-label"),
+        light.getAttribute("title")
+      ].filter(Boolean).join(" ");
+
+      const match = label.match(/Leaf\s*#?\s*(\d+)/i);
+      const lightNo = match ? Number(match[1]) : 0;
+
+      if(lightNo !== leafNo) return;
+
+      light.classList.add("eog-carried-today");
+
+      if(!light.querySelector(".eog-today-leaf-halo")){
+        const halo = document.createElement("span");
+        halo.className = "eog-today-leaf-halo";
+        halo.setAttribute("aria-hidden", "true");
+        light.appendChild(halo);
+      }
+    });
+  }
+
+  async function carryTodayGardenAction(){
+    const state = currentTodayState();
+    const copy = todayCopy[currentLang] || todayCopy.en;
+
+    if(!state.leafNo){
+      show("plant");
+      return;
+    }
+
+    if(todayCarried || todayLoading) return;
+
+    todayLoading = true;
+    todaySyncQuiet = false;
+    renderTodayInGarden();
+
+    try{
+      const result = await runTransaction(
+        db,
+        async transaction => {
+          const actionRef = doc(
+            db,
+            "gardenDailyActions",
+            todayActionDocumentId(state)
+          );
+
+          const carryRef = doc(
+            db,
+            "gardenDailyCarries",
+            todayCarryDocumentId(state)
+          );
+
+          const carrySnapshot = await transaction.get(carryRef);
+          const actionSnapshot = await transaction.get(actionRef);
+
+          const existingCount = actionSnapshot.exists()
+            ? Number(actionSnapshot.data()?.count || 0)
+            : 0;
+
+          if(carrySnapshot.exists()){
+            return {
+              count:existingCount,
+              alreadyCarried:true
+            };
+          }
+
+          const nextCount = existingCount + 1;
+
+          transaction.set(
+            carryRef,
+            {
+              dateKey:state.dateKey,
+              actionId:state.actionIndex + 1,
+              memberNo:state.leafNo,
+              carriedAt:serverTimestamp()
+            }
+          );
+
+          transaction.set(
+            actionRef,
+            {
+              dateKey:state.dateKey,
+              actionId:state.actionIndex + 1,
+              count:nextCount,
+              updatedAt:serverTimestamp()
+            },
+            { merge:true }
+          );
+
+          return {
+            count:nextCount,
+            alreadyCarried:false
+          };
+        }
+      );
+
+      todayCount = Number(result.count || todayCount || 0);
+    }catch(error){
+      todaySyncQuiet = true;
+      console.warn("Todayâ€™s shared count could not update:", error);
+    }
+
+    rememberToday(state.dateKey, state.leafNo);
+    todayCarried = true;
+    todayLoading = false;
+
+    celebrateTodayCard();
+    markTodayGardenStar(state.leafNo);
+    renderTodayInGarden();
+  }
+
+  const languageSelect = document.getElementById("languageSelect");
+  if(languageSelect){
+    languageSelect.addEventListener(
+      "change",
+      () => window.setTimeout(renderTodayInGarden, 0)
+    );
+  }
+
+  document.querySelectorAll("[data-eog-language]").forEach(button => {
+    button.addEventListener(
+      "click",
+      () => window.setTimeout(renderTodayInGarden, 0)
+    );
+  });
+
+  const membersContainer = document.getElementById("members");
+  if(membersContainer){
+    const memberObserver = new MutationObserver(() => {
+      if(todayCarried){
+        markTodayGardenStar(todayLeafNumber());
+      }
+    });
+
+    memberObserver.observe(
+      membersContainer,
+      {
+        childList:true
+      }
+    );
+  }
+
+  window.renderTodayInGarden = renderTodayInGarden;
+  window.carryTodayGardenAction = carryTodayGardenAction;
+
+  ensureTodayCard();
+  renderTodayInGarden();
+  loadTodayGardenState();
+
+})();
 </script>
 
 </body>
