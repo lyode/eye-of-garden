@@ -5084,6 +5084,7 @@ try{ loadLeafDayNotes(member); }catch(error){ console.warn("My Leaf notes:", err
 try{ updateLeafCareView(member); }catch(error){ console.warn("My Leaf care:", error); }
 try{ window.updateMyLeafGrowthJourney?.(member); }catch(error){ console.warn("My Leaf journey:", error); }
 try{ window.updateMyLeafPlayActions?.(member); }catch(error){ console.warn("My Leaf play actions:", error); }
+try{ window.updateMyLeafFlightGame?.(member); }catch(error){ console.warn("My Leaf flight game:", error); }
 
 const smallLeavesBox =
   document.getElementById("growthSmallLeaves");
@@ -12537,6 +12538,593 @@ no-repeat !important;
     }
   `;
   document.head.appendChild(style);
+})();
+/* =========================================================
+   MY LEAF FLIGHT GAME V1
+   A private touch-friendly sky game for My Leaf
+========================================================= */
+(function setupMyLeafFlightGameV1(){
+  if(document.getElementById("myLeafFlightGameV1Style")) return;
+
+  const style=document.createElement("style");
+  style.id="myLeafFlightGameV1Style";
+  style.textContent=`
+    #myLeaf .leaf-flight-game-card{
+      position:relative;
+      overflow:hidden;
+      margin:14px 0 !important;
+      padding:16px !important;
+      border:1px solid rgba(65,119,148,.22) !important;
+      border-radius:24px !important;
+      background:
+        radial-gradient(circle at 18% 12%,rgba(255,255,255,.72),transparent 0 18%),
+        linear-gradient(160deg,rgba(225,245,249,.95),rgba(235,248,226,.94)) !important;
+      box-shadow:0 14px 30px rgba(49,92,110,.10) !important;
+    }
+    #myLeaf .leaf-flight-game-card[hidden]{display:none !important;}
+    #myLeaf .leaf-flight-game-heading{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+    }
+    #myLeaf .leaf-flight-game-heading h3{margin:3px 0 5px;}
+    #myLeaf .leaf-flight-game-heading p{
+      margin:0;
+      color:#567078;
+      font-size:13px;
+      line-height:1.45;
+    }
+    #myLeaf .leaf-flight-open{
+      flex:0 0 auto;
+      min-height:40px;
+      padding:8px 13px !important;
+      border-radius:999px !important;
+      background:#477e74 !important;
+      color:#fff !important;
+      font-size:13px !important;
+      box-shadow:0 7px 16px rgba(48,104,91,.18) !important;
+    }
+    #myLeaf .leaf-flight-body{display:none;margin-top:13px;}
+    #myLeaf .leaf-flight-body.is-open{display:block;}
+    #myLeaf .leaf-flight-scoreboard{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:7px;
+      margin-bottom:8px;
+    }
+    #myLeaf .leaf-flight-stat{
+      padding:7px 5px;
+      border-radius:12px;
+      background:rgba(255,255,255,.68);
+      text-align:center;
+      color:#48636b;
+      font-size:11px;
+    }
+    #myLeaf .leaf-flight-stat b{
+      display:block;
+      margin-top:2px;
+      color:#284f51;
+      font-size:17px;
+    }
+    #myLeaf .leaf-flight-canvas-wrap{
+      position:relative;
+      width:min(100%,390px);
+      margin:0 auto;
+    }
+    #myLeaf #leafFlightCanvas{
+      display:block;
+      width:100%;
+      height:auto;
+      aspect-ratio:3 / 4;
+      border:1px solid rgba(57,106,133,.22);
+      border-radius:20px;
+      background:#8fc7e5;
+      box-shadow:inset 0 0 35px rgba(255,255,255,.16),0 12px 24px rgba(48,92,113,.12);
+      touch-action:none;
+      user-select:none;
+      outline:none;
+    }
+    #myLeaf #leafFlightCanvas:focus-visible{
+      box-shadow:0 0 0 3px rgba(80,143,136,.28),0 12px 24px rgba(48,92,113,.12);
+    }
+    #myLeaf .leaf-flight-instruction{
+      margin:7px 0 9px;
+      color:#5d7379;
+      font-size:11px;
+      line-height:1.4;
+      text-align:center;
+    }
+    #myLeaf .leaf-flight-controls{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:9px;
+      width:min(100%,390px);
+      margin:0 auto 9px;
+    }
+    #myLeaf .leaf-flight-controls button{
+      min-height:46px;
+      padding:9px 8px !important;
+      border-radius:15px !important;
+      background:rgba(255,255,255,.82) !important;
+      color:#315f5a !important;
+      border:1px solid rgba(62,119,111,.22) !important;
+      font-size:14px !important;
+      box-shadow:0 6px 13px rgba(48,92,83,.09) !important;
+      touch-action:manipulation;
+    }
+    #myLeaf .leaf-flight-controls button.is-held{
+      transform:translateY(1px) scale(.98);
+      background:rgba(215,241,225,.94) !important;
+    }
+    #myLeaf .leaf-flight-start{
+      display:block;
+      width:min(100%,390px);
+      min-height:44px;
+      margin:0 auto;
+      padding:10px 14px !important;
+      border-radius:15px !important;
+      background:linear-gradient(135deg,#efc95e,#dfa53f) !important;
+      color:#4c3a14 !important;
+      font-size:15px !important;
+      box-shadow:0 8px 18px rgba(164,116,34,.18) !important;
+    }
+    #myLeaf .leaf-flight-status{
+      min-height:18px;
+      margin:8px 0 0;
+      color:#526c70;
+      font-size:12px;
+      text-align:center;
+    }
+    @media(max-width:560px){
+      #myLeaf .leaf-flight-game-card{padding:13px 10px !important;}
+      #myLeaf .leaf-flight-game-heading{align-items:center;}
+      #myLeaf .leaf-flight-game-heading p{font-size:12px;}
+      #myLeaf .leaf-flight-open{padding:8px 11px !important;font-size:12px !important;}
+    }
+  `;
+  document.head.appendChild(style);
+
+  const GAME_SECONDS=35;
+  const WIDTH=360;
+  const HEIGHT=480;
+  let member=null;
+  let canvas=null;
+  let ctx=null;
+  let running=false;
+  let frameId=0;
+  let previousTime=0;
+  let remaining=GAME_SECONDS;
+  let spawnTimer=0;
+  let score=0;
+  let leafX=WIDTH/2;
+  let leafY=392;
+  let leafVelocity=0;
+  let direction=0;
+  let pointerTarget=null;
+  let coins=[];
+  let sparkles=[];
+  let clouds=[];
+  let audio=null;
+
+  const leafImages=["my-leaf-realistic.webp","my-leaf-two-sprout-realistic.webp","my-leaf-four-clover-realistic.webp"].map(source => {
+    const image=new Image();
+    image.src=source;
+    return image;
+  });
+
+  function memberNumber(value){return Number(value?.memberNo||value?.no||0);}
+  function bestKey(value){return `eog_leaf_flight_best_${memberNumber(value)||"guest"}`;}
+  function readBest(){return Number(localStorage.getItem(bestKey(member))||0);}
+  function writeBest(value){localStorage.setItem(bestKey(member),String(value));}
+  function currentMember(){return typeof window.getMyMember==="function"?window.getMyMember():null;}
+
+  function ensureGameCard(){
+    let card=document.getElementById("leafFlightGameCard");
+    if(card) return card;
+    const growth=document.getElementById("leafGrowthCard");
+    if(!growth) return null;
+    card=document.createElement("div");
+    card.id="leafFlightGameCard";
+    card.className="story-card leaf-flight-game-card";
+    card.hidden=true;
+    card.innerHTML=`
+      <div class="leaf-flight-game-heading">
+        <div>
+          <div class="mini-title">&#9729;&#65039; Mini Game</div>
+          <h3>Leaf Flight</h3>
+          <p>Guide your leaf through the sky and gather golden Garden Coins.</p>
+        </div>
+        <button type="button" class="leaf-flight-open" id="leafFlightOpenButton">Open Game</button>
+      </div>
+      <div class="leaf-flight-body" id="leafFlightBody">
+        <div class="leaf-flight-scoreboard">
+          <div class="leaf-flight-stat">Coins<b id="leafFlightScore">0</b></div>
+          <div class="leaf-flight-stat">Time<b id="leafFlightTime">35</b></div>
+          <div class="leaf-flight-stat">Best<b id="leafFlightBest">0</b></div>
+        </div>
+        <div class="leaf-flight-canvas-wrap">
+          <canvas id="leafFlightCanvas" width="360" height="480" tabindex="0" aria-label="Leaf Flight game sky"></canvas>
+        </div>
+        <p class="leaf-flight-instruction">Drag the leaf, use the buttons, or press the left and right arrow keys.</p>
+        <div class="leaf-flight-controls">
+          <button type="button" id="leafFlightLeftButton" aria-label="Fly left">&#8592; Drift Left</button>
+          <button type="button" id="leafFlightRightButton" aria-label="Fly right">Drift Right &#8594;</button>
+        </div>
+        <button type="button" class="leaf-flight-start" id="leafFlightStartButton">Start 35-Second Flight</button>
+        <p class="leaf-flight-status" id="leafFlightStatus" aria-live="polite">A quiet sky is waiting.</p>
+      </div>`;
+    growth.insertAdjacentElement("afterend",card);
+    canvas=document.getElementById("leafFlightCanvas");
+    ctx=canvas?.getContext("2d")||null;
+    bindControls();
+    resetSky();
+    drawScene();
+    return card;
+  }
+
+  function resetSky(){
+    clouds=[
+      {x:40,y:72,size:1.05,speed:8},
+      {x:255,y:142,size:.78,speed:12},
+      {x:130,y:245,size:.62,speed:7}
+    ];
+  }
+  function activeLeafImage(){
+    const leaf=document.getElementById("growthMainLeaf");
+    if(leaf?.classList.contains("journey-stage-3")) return leafImages[2];
+    if(leaf?.classList.contains("journey-stage-2")) return leafImages[1];
+    return leafImages[0];
+  }
+  function initialiseAudio(){
+    try{
+      const AudioContext=window.AudioContext||window.webkitAudioContext;
+      if(!AudioContext) return;
+      if(!audio) audio=new AudioContext();
+      if(audio.state==="suspended") audio.resume();
+    }catch(error){audio=null;}
+  }
+  function coinSound(){
+    if(!audio) return;
+    try{
+      const oscillator=audio.createOscillator();
+      const gain=audio.createGain();
+      const now=audio.currentTime;
+      oscillator.type="sine";
+      oscillator.frequency.setValueAtTime(880,now);
+      oscillator.frequency.exponentialRampToValueAtTime(1320,now+.11);
+      gain.gain.setValueAtTime(.0001,now);
+      gain.gain.exponentialRampToValueAtTime(.035,now+.015);
+      gain.gain.exponentialRampToValueAtTime(.0001,now+.17);
+      oscillator.connect(gain);
+      gain.connect(audio.destination);
+      oscillator.start(now);
+      oscillator.stop(now+.19);
+    }catch(error){/* Collection sound is optional. */}
+  }
+  function bindHoldButton(id,value){
+    const button=document.getElementById(id);
+    if(!button) return;
+    const begin=event=>{
+      event.preventDefault();
+      direction=value;
+      pointerTarget=null;
+      button.classList.add("is-held");
+    };
+    const end=()=>{
+      if(direction===value) direction=0;
+      button.classList.remove("is-held");
+    };
+    button.addEventListener("pointerdown",begin);
+    button.addEventListener("pointerup",end);
+    button.addEventListener("pointercancel",end);
+    button.addEventListener("pointerleave",end);
+  }
+  function bindControls(){
+    document.getElementById("leafFlightOpenButton")?.addEventListener("click",toggleGame);
+    document.getElementById("leafFlightStartButton")?.addEventListener("click",startGame);
+    bindHoldButton("leafFlightLeftButton",-1);
+    bindHoldButton("leafFlightRightButton",1);
+
+    if(canvas){
+      const setTarget=event=>{
+        if(!running) return;
+        event.preventDefault();
+        const rect=canvas.getBoundingClientRect();
+        pointerTarget=(event.clientX-rect.left)*(WIDTH/rect.width);
+      };
+      canvas.addEventListener("pointerdown",event=>{
+        setTarget(event);
+        canvas.setPointerCapture?.(event.pointerId);
+      });
+      canvas.addEventListener("pointermove",event=>{
+        if(event.buttons||event.pointerType==="touch") setTarget(event);
+      });
+      canvas.addEventListener("pointerup",()=>{pointerTarget=null;});
+      canvas.addEventListener("pointercancel",()=>{pointerTarget=null;});
+    }
+
+    document.addEventListener("keydown",event=>{
+      if(!running) return;
+      if(event.key==="ArrowLeft"||event.key==="ArrowRight"){
+        event.preventDefault();
+        direction=event.key==="ArrowLeft"?-1:1;
+        pointerTarget=null;
+      }
+    });
+    document.addEventListener("keyup",event=>{
+      if(event.key==="ArrowLeft"&&direction===-1) direction=0;
+      if(event.key==="ArrowRight"&&direction===1) direction=0;
+    });
+    document.addEventListener("visibilitychange",()=>{
+      if(document.hidden&&running) finishGame(false);
+    });
+  }
+  function toggleGame(){
+    const body=document.getElementById("leafFlightBody");
+    const button=document.getElementById("leafFlightOpenButton");
+    if(!body||!button) return;
+    const opening=!body.classList.contains("is-open");
+    body.classList.toggle("is-open",opening);
+    button.textContent=opening?"Close Game":"Open Game";
+    if(opening){
+      drawScene();
+      canvas?.focus({preventScroll:true});
+    }else if(running){
+      finishGame(false);
+    }
+  }
+  function startGame(){
+    member=currentMember();
+    if(!member) return;
+    initialiseAudio();
+    cancelAnimationFrame(frameId);
+    running=true;
+    previousTime=performance.now();
+    remaining=GAME_SECONDS;
+    spawnTimer=.35;
+    score=0;
+    leafX=WIDTH/2;
+    leafVelocity=0;
+    direction=0;
+    pointerTarget=null;
+    coins=[];
+    sparkles=[];
+    resetSky();
+    updateScoreboard();
+    const start=document.getElementById("leafFlightStartButton");
+    const status=document.getElementById("leafFlightStatus");
+    if(start){start.textContent="Flying...";start.disabled=true;}
+    if(status) status.textContent="Catch the golden coins.";
+    canvas?.focus({preventScroll:true});
+    frameId=requestAnimationFrame(gameLoop);
+  }
+  function finishGame(completed=true){
+    if(!running&&completed) return;
+    running=false;
+    cancelAnimationFrame(frameId);
+    const best=Math.max(readBest(),score);
+    if(best>readBest()) writeBest(best);
+    const start=document.getElementById("leafFlightStartButton");
+    const status=document.getElementById("leafFlightStatus");
+    if(start){start.textContent="Fly Again";start.disabled=false;}
+    if(status){
+      status.textContent=completed
+        ?`Flight complete - you gathered ${score} Garden Coin${score===1?"":"s"}.`
+        :"Flight paused. Tap Fly Again when you are ready.";
+    }
+    updateScoreboard();
+    drawScene();
+  }
+  function spawnCoin(){
+    coins.push({
+      x:26+Math.random()*(WIDTH-52),
+      y:-18,
+      radius:12,
+      speed:105+Math.random()*55,
+      drift:(Math.random()-.5)*18,
+      phase:Math.random()*Math.PI*2
+    });
+  }
+  function collectCoin(index,coin){
+    coins.splice(index,1);
+    score+=1;
+    for(let i=0;i<8;i++){
+      sparkles.push({
+        x:coin.x,
+        y:coin.y,
+        vx:(Math.random()-.5)*90,
+        vy:(Math.random()-.7)*90,
+        life:.55+Math.random()*.25
+      });
+    }
+    coinSound();
+    updateScoreboard();
+  }
+  function updateScoreboard(){
+    const scoreNode=document.getElementById("leafFlightScore");
+    const timeNode=document.getElementById("leafFlightTime");
+    const bestNode=document.getElementById("leafFlightBest");
+    if(scoreNode) scoreNode.textContent=String(score);
+    if(timeNode) timeNode.textContent=String(Math.max(0,Math.ceil(remaining)));
+    if(bestNode) bestNode.textContent=String(Math.max(readBest(),score));
+  }
+  function updateGame(delta){
+    remaining-=delta;
+    if(remaining<=0){remaining=0;finishGame(true);return;}
+    spawnTimer-=delta;
+    if(spawnTimer<=0){spawnCoin();spawnTimer=.68+Math.random()*.38;}
+
+    if(pointerTarget!==null){
+      const difference=pointerTarget-leafX;
+      leafVelocity=difference*7.5;
+      leafX+=difference*Math.min(1,delta*9);
+    }else{
+      leafVelocity+=direction*850*delta;
+      leafVelocity*=Math.pow(.035,delta);
+      leafX+=leafVelocity*delta;
+    }
+    leafX=Math.max(34,Math.min(WIDTH-34,leafX));
+
+    clouds.forEach(cloud=>{
+      cloud.x+=cloud.speed*delta;
+      if(cloud.x>WIDTH+80) cloud.x=-100;
+    });
+    coins.forEach(coin=>{
+      coin.y+=coin.speed*delta;
+      coin.x+=Math.sin(coin.y*.025+coin.phase)*coin.drift*delta;
+    });
+    for(let index=coins.length-1;index>=0;index--){
+      const coin=coins[index];
+      if(Math.abs(coin.x-leafX)<34&&Math.abs(coin.y-leafY)<34){
+        collectCoin(index,coin);
+      }else if(coin.y>HEIGHT+25){
+        coins.splice(index,1);
+      }
+    }
+    sparkles.forEach(sparkle=>{
+      sparkle.x+=sparkle.vx*delta;
+      sparkle.y+=sparkle.vy*delta;
+      sparkle.vy+=100*delta;
+      sparkle.life-=delta;
+    });
+    sparkles=sparkles.filter(sparkle=>sparkle.life>0);
+    updateScoreboard();
+  }
+  function drawCloud(cloud){
+    if(!ctx) return;
+    ctx.save();
+    ctx.globalAlpha=.58;
+    ctx.fillStyle="#ffffff";
+    ctx.translate(cloud.x,cloud.y);
+    ctx.scale(cloud.size,cloud.size);
+    ctx.beginPath();
+    ctx.arc(-24,4,17,0,Math.PI*2);
+    ctx.arc(0,-4,24,0,Math.PI*2);
+    ctx.arc(27,5,16,0,Math.PI*2);
+    ctx.fill();
+    ctx.restore();
+  }
+  function drawCoin(coin){
+    if(!ctx) return;
+    ctx.save();
+    const pulse=1+Math.sin(performance.now()*.008+coin.phase)*.07;
+    ctx.translate(coin.x,coin.y);
+    ctx.scale(pulse,pulse);
+    const gradient=ctx.createRadialGradient(-4,-5,2,0,0,15);
+    gradient.addColorStop(0,"#fff7aa");
+    gradient.addColorStop(.42,"#f6cf55");
+    gradient.addColorStop(1,"#cf8f22");
+    ctx.fillStyle=gradient;
+    ctx.strokeStyle="rgba(132,82,17,.62)";
+    ctx.lineWidth=2;
+    ctx.beginPath();
+    ctx.arc(0,0,coin.radius,0,Math.PI*2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.strokeStyle="rgba(255,249,180,.82)";
+    ctx.lineWidth=1.5;
+    ctx.beginPath();
+    ctx.arc(0,0,7.5,0,Math.PI*2);
+    ctx.stroke();
+    ctx.fillStyle="#8e6a20";
+    ctx.font="bold 11px sans-serif";
+    ctx.textAlign="center";
+    ctx.textBaseline="middle";
+    ctx.fillText("G",0,.5);
+    ctx.restore();
+  }
+  function drawLeaf(){
+    if(!ctx) return;
+    const image=activeLeafImage();
+    const tilt=Math.max(-.22,Math.min(.22,leafVelocity/650));
+    ctx.save();
+    ctx.translate(leafX,leafY);
+    ctx.rotate(tilt);
+    ctx.shadowColor="rgba(24,74,47,.28)";
+    ctx.shadowBlur=13;
+    ctx.shadowOffsetY=7;
+    if(image.complete&&image.naturalWidth){
+      const ratio=image.naturalWidth/image.naturalHeight;
+      const height=72;
+      const width=Math.min(92,height*ratio);
+      ctx.drawImage(image,-width/2,-height/2,width,height);
+    }else{
+      ctx.font="58px serif";
+      ctx.textAlign="center";
+      ctx.textBaseline="middle";
+      ctx.fillText("\u{1F343}",0,0);
+    }
+    ctx.restore();
+  }
+  function drawScene(){
+    if(!ctx||!canvas) return;
+    const sky=ctx.createLinearGradient(0,0,0,HEIGHT);
+    sky.addColorStop(0,"#74b8df");
+    sky.addColorStop(.58,"#b8dfea");
+    sky.addColorStop(1,"#e7f2cf");
+    ctx.fillStyle=sky;
+    ctx.fillRect(0,0,WIDTH,HEIGHT);
+
+    const sun=ctx.createRadialGradient(300,74,3,300,74,48);
+    sun.addColorStop(0,"rgba(255,247,174,.82)");
+    sun.addColorStop(1,"rgba(255,247,174,0)");
+    ctx.fillStyle=sun;
+    ctx.fillRect(250,24,100,100);
+    clouds.forEach(drawCloud);
+    coins.forEach(drawCoin);
+
+    sparkles.forEach(sparkle=>{
+      ctx.save();
+      ctx.globalAlpha=Math.max(0,sparkle.life/.8);
+      ctx.fillStyle="#fff4a4";
+      ctx.beginPath();
+      ctx.arc(sparkle.x,sparkle.y,2.5,0,Math.PI*2);
+      ctx.fill();
+      ctx.restore();
+    });
+    drawLeaf();
+
+    if(!running){
+      ctx.save();
+      ctx.fillStyle="rgba(24,67,77,.16)";
+      ctx.fillRect(0,0,WIDTH,HEIGHT);
+      ctx.fillStyle="rgba(255,255,255,.90)";
+      ctx.font="600 17px sans-serif";
+      ctx.textAlign="center";
+      ctx.fillText("Tap Start to fly",WIDTH/2,HEIGHT/2);
+      ctx.restore();
+    }
+  }
+  function gameLoop(time){
+    if(!running) return;
+    if(!document.getElementById("myLeaf")?.classList.contains("active")){
+      finishGame(false);
+      return;
+    }
+    const delta=Math.min(.034,(time-previousTime)/1000||.016);
+    previousTime=time;
+    updateGame(delta);
+    if(!running) return;
+    drawScene();
+    frameId=requestAnimationFrame(gameLoop);
+  }
+
+  window.updateMyLeafFlightGame=function(value){
+    if(!value) return;
+    member=value;
+    const card=ensureGameCard();
+    if(card) card.hidden=false;
+    const best=document.getElementById("leafFlightBest");
+    if(best) best.textContent=String(readBest());
+    drawScene();
+  };
+
+  ensureGameCard();
+  setTimeout(()=>{
+    const value=currentMember();
+    if(value) window.updateMyLeafFlightGame(value);
+  },1500);
 })();
 </script>
 
