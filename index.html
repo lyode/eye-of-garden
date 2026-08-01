@@ -3731,6 +3731,7 @@ function styleHeroFinalLetter(){
 }
 function setLanguage(lang, save=true){
   currentLang = ["en","ms","zh"].includes(lang) ? lang : "en";
+  window.currentLang = currentLang;
   if(save) localStorage.setItem("eog_language", currentLang);
 
   const selector = document.getElementById("languageSelect");
@@ -4137,6 +4138,7 @@ async function loadMembers(){
   try{
     const snap = await getDocs(collection(db, "members"));
     members = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    window.members = members;
 
     members.sort((a,b)=>{
       const aa = Number(a.memberNo || a.no || 0);
@@ -6820,6 +6822,12 @@ function escapeHtml(text){
     "'":"&#039;"
   }[m]));
 }
+
+/* Compatibility bridge for the visual enhancements loaded below. */
+window.currentLang = currentLang;
+window.members = members;
+window.getMyMember = getMyMember;
+window.getLeafCareData = getLeafCareData;
 
 captureInviteCode();
 setupEmbeddedLanguageBars();
