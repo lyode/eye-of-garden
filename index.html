@@ -11835,7 +11835,7 @@ no-repeat !important;
       animation:leafCareNote 2.1s ease-out both;
     }
     #growthPlantWrap.care-kind .leaf-care-particle{
-      color:#f4a9b7;
+      color:#f2df8b;
       font-size:18px;
       animation:leafCareHeart 2s ease-out both;
     }
@@ -11865,7 +11865,7 @@ no-repeat !important;
     }
     @keyframes leafCareKindGlow{
       0%,100%{filter:brightness(1)}
-      50%{filter:brightness(1.24) saturate(1.2) drop-shadow(0 0 22px rgba(244,169,183,.55))}
+      50%{filter:brightness(1.24) saturate(1.2) drop-shadow(0 0 22px rgba(206,236,137,.58))}
     }
     @keyframes leafCareFeed{
       0%,100%{transform:scale(1)}
@@ -11919,7 +11919,7 @@ no-repeat !important;
     air:{label:"\u{1F343} Give Fresh Air",stage:"\u{1F343} Your leaf is breathing in the fresh Garden air.",note:"It swayed happily and feels peaceful."},
     wipe:{label:"\u2728 Wipe the Dew",stage:"\u2728 Your leaf looks clean and bright again.",note:"A little sparkle moved across its surface."},
     song:{label:"\u{1F3B5} Play a Gentle Song",stage:"\u{1F3B5} Your leaf is dancing very softly.",note:"It will remember this small melody."},
-    kind:{label:"\u{1F4AC} Say Something Kind",stage:"\u{1F49A} Your kind words reached the leaf.",note:"Something small noticed your kindness."},
+    kind:{label:"\u{1F4AB} Dance in the Breeze",stage:"\u{1F343} Your leaf is dancing in a playful breeze.",note:"It twirled lightly and looks cheerful."},
     feed:{label:"\u{1F33E} Give Natural Food",stage:"\u{1F331} Your leaf feels fuller, fresher and well nourished.",note:"Natural food lasts for three quiet days."},
     visitor:{label:"\u{1F98B} Invite a Tiny Visitor",stage:"\u{1F98B} A tiny visitor has found your leaf.",note:"The Garden sometimes sends a little surprise."}
   };
@@ -12085,7 +12085,7 @@ no-repeat !important;
       playMelody();
     }else if(type === "kind"){
       wrap.classList.add("care-kind");
-      addParticles(type,["\u2665","\u2665","\u2665"]);
+      addParticles(type,["\u2726","\u2311","\u2726","\u2311"]);
     }else if(type === "feed"){
       wrap.classList.add("care-feed","is-naturally-fed");
     }else if(type === "visitor"){
@@ -12118,8 +12118,10 @@ no-repeat !important;
     const ui = ensurePlayUi();
 
     if(type === "kind"){
-      ui?.composer?.classList.toggle("is-open");
-      if(ui?.composer?.classList.contains("is-open")) document.getElementById("leafKindnessInput")?.focus();
+      saveAction(member,"kind");
+      showEffect("kind");
+      setMessage("kind");
+      window.updateMyLeafPlayActions(member,true);
       return;
     }
     if(type === "feed"){
@@ -12286,7 +12288,7 @@ no-repeat !important;
     @keyframes leafReactKindV2{
       0%,100%{transform:scale(1);filter:brightness(1)}
       24%{transform:scale(1.07)}
-      50%{transform:translateY(-7px) scale(1.14);filter:brightness(1.3) saturate(1.25) drop-shadow(0 0 28px rgba(244,169,183,.75))}
+      50%{transform:translateY(-7px) scale(1.14);filter:brightness(1.3) saturate(1.25) drop-shadow(0 0 28px rgba(223,238,137,.72))}
       72%{transform:scale(1.07)}
     }
     @keyframes leafReactFeedV2{
@@ -12676,6 +12678,109 @@ no-repeat !important;
       font-size:12px;
       text-align:center;
     }
+    #myLeaf .leaf-flight-fullscreen-close{display:none;}
+    body.leaf-flight-fullscreen{
+      overflow:hidden !important;
+      overscroll-behavior:none !important;
+      touch-action:none;
+    }
+    body.leaf-flight-fullscreen #myLeaf .leaf-flight-game-card.is-fullscreen{
+      position:fixed !important;
+      inset:0 !important;
+      z-index:2147483000 !important;
+      box-sizing:border-box !important;
+      display:flex !important;
+      flex-direction:column !important;
+      width:100vw !important;
+      max-width:none !important;
+      height:100vh !important;
+      height:100dvh !important;
+      min-height:100vh !important;
+      min-height:100dvh !important;
+      margin:0 !important;
+      padding:calc(10px + env(safe-area-inset-top)) 10px calc(8px + env(safe-area-inset-bottom)) !important;
+      border:0 !important;
+      border-radius:0 !important;
+      background:linear-gradient(180deg,#6da9d0 0%,#a8d5e7 48%,#d9eddd 100%) !important;
+      box-shadow:none !important;
+    }
+    body.leaf-flight-fullscreen #myLeaf .leaf-flight-game-card.is-fullscreen .leaf-flight-game-heading{
+      display:none !important;
+    }
+    body.leaf-flight-fullscreen #myLeaf .leaf-flight-game-card.is-fullscreen .leaf-flight-body{
+      position:relative;
+      display:flex !important;
+      flex:1 1 auto;
+      flex-direction:column;
+      min-height:0;
+      margin:0 !important;
+    }
+    body.leaf-flight-fullscreen #myLeaf .leaf-flight-fullscreen-close{
+      position:absolute;
+      top:0;
+      right:0;
+      z-index:5;
+      display:grid;
+      place-items:center;
+      width:38px;
+      height:38px;
+      min-height:38px;
+      padding:0 !important;
+      border:1px solid rgba(255,255,255,.55) !important;
+      border-radius:50% !important;
+      background:rgba(20,59,78,.56) !important;
+      color:#fff !important;
+      font-size:17px !important;
+      line-height:1 !important;
+      box-shadow:0 6px 16px rgba(26,66,86,.18) !important;
+    }
+    body.leaf-flight-fullscreen #myLeaf .leaf-flight-scoreboard{
+      flex:0 0 auto;
+      width:min(calc(100% - 48px),390px);
+      margin:0 auto 6px;
+    }
+    body.leaf-flight-fullscreen #myLeaf .leaf-flight-canvas-wrap{
+      display:flex;
+      flex:1 1 auto;
+      align-items:center;
+      justify-content:center;
+      width:min(100%,430px);
+      min-height:0;
+      margin:0 auto;
+    }
+    body.leaf-flight-fullscreen #myLeaf #leafFlightCanvas{
+      width:auto !important;
+      max-width:100% !important;
+      height:100% !important;
+      max-height:calc(100dvh - 224px) !important;
+      aspect-ratio:3 / 4 !important;
+      border-radius:18px;
+      object-fit:contain;
+    }
+    body.leaf-flight-fullscreen #myLeaf .leaf-flight-instruction{
+      flex:0 0 auto;
+      margin:4px 0 5px;
+      color:#365e70;
+      font-size:10px;
+    }
+    body.leaf-flight-fullscreen #myLeaf .leaf-flight-controls{
+      flex:0 0 auto;
+      margin:0 auto 6px;
+    }
+    body.leaf-flight-fullscreen #myLeaf .leaf-flight-controls button{
+      min-height:40px;
+    }
+    body.leaf-flight-fullscreen #myLeaf .leaf-flight-start{
+      flex:0 0 auto;
+      min-height:40px;
+      padding:8px 12px !important;
+    }
+    body.leaf-flight-fullscreen #myLeaf .leaf-flight-status{
+      flex:0 0 auto;
+      min-height:16px;
+      margin:5px 0 0;
+      color:#31576a;
+    }
     @media(max-width:560px){
       #myLeaf .leaf-flight-game-card{padding:13px 10px !important;}
       #myLeaf .leaf-flight-game-heading{align-items:center;}
@@ -12738,6 +12843,7 @@ no-repeat !important;
         <button type="button" class="leaf-flight-open" id="leafFlightOpenButton">Open Game</button>
       </div>
       <div class="leaf-flight-body" id="leafFlightBody">
+        <button type="button" class="leaf-flight-fullscreen-close" id="leafFlightCloseFullScreen" aria-label="Close full-screen Leaf Flight">&#10005;</button>
         <div class="leaf-flight-scoreboard">
           <div class="leaf-flight-stat">Coins<b id="leafFlightScore">0</b></div>
           <div class="leaf-flight-stat">Time<b id="leafFlightTime">35</b></div>
@@ -12822,7 +12928,7 @@ no-repeat !important;
   }
   function bindControls(){
     document.getElementById("leafFlightOpenButton")?.addEventListener("click",toggleGame);
-    document.getElementById("leafFlightStartButton")?.addEventListener("click",startGame);
+    document.getElementById("leafFlightStartButton")?.addEventListener("click",startGame);`n    document.getElementById("leafFlightCloseFullScreen")?.addEventListener("click",closeFlightFullscreen);
     bindHoldButton("leafFlightLeftButton",-1);
     bindHoldButton("leafFlightRightButton",1);
 
@@ -12860,6 +12966,22 @@ no-repeat !important;
       if(document.hidden&&running) finishGame(false);
     });
   }
+  function enterFlightFullscreen(){
+    const card=document.getElementById("leafFlightGameCard");
+    const body=document.getElementById("leafFlightBody");
+    if(!card||!body) return;
+    body.classList.add("is-open");
+    card.classList.add("is-fullscreen");
+    document.body.classList.add("leaf-flight-fullscreen");
+  }
+  function exitFlightFullscreen(){
+    document.getElementById("leafFlightGameCard")?.classList.remove("is-fullscreen");
+    document.body.classList.remove("leaf-flight-fullscreen");
+  }
+  function closeFlightFullscreen(){
+    if(running) finishGame(false);
+    exitFlightFullscreen();
+  }
   function toggleGame(){
     const body=document.getElementById("leafFlightBody");
     const button=document.getElementById("leafFlightOpenButton");
@@ -12870,13 +12992,15 @@ no-repeat !important;
     if(opening){
       drawScene();
       canvas?.focus({preventScroll:true});
-    }else if(running){
-      finishGame(false);
+    }else{
+      if(running) finishGame(false);
+      exitFlightFullscreen();
     }
   }
   function startGame(){
     member=currentMember();
     if(!member) return;
+    enterFlightFullscreen();
     initialiseAudio();
     cancelAnimationFrame(frameId);
     running=true;
