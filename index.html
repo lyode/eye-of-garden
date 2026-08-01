@@ -3978,6 +3978,10 @@ function show(id){
   document.querySelector(".hero").style.display = "none";
   document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
   document.getElementById(id).classList.add("active");
+  document.querySelector(".language-control")?.classList.toggle(
+    "language-page-hidden",
+    id !== "question"
+  );
   if(id==="garden"){ renderMembers(); renderSparkLeafMembers(); }
   if(id==="dreams") renderDreamStats();
   if(id==="token") updateToken();
@@ -4090,6 +4094,7 @@ function showHome(){
   document.body.classList.add("eog-home-flat");
   document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
   document.querySelector(".hero").style.display = "grid";
+  document.querySelector(".language-control")?.classList.remove("language-page-hidden");
   updateCount();
   window.scrollTo({top:0,behavior:"smooth"});
 }
@@ -11543,6 +11548,120 @@ no-repeat !important;
     const member = getMyMember();
     if(member) window.updateMyLeafGrowthJourney(member);
   },1200);
+
+})();
+/* =========================================================
+   INTERFACE CORRECTIONS V1
+   Smaller Today card, scoped language control, visible My Leaf
+========================================================= */
+
+(function applyInterfaceCorrectionsV1(){
+
+  if(document.getElementById("eogInterfaceCorrectionsV1Style")){
+    return;
+  }
+
+  const style = document.createElement("style");
+  style.id = "eogInterfaceCorrectionsV1Style";
+
+  style.textContent = `
+    .language-control.language-page-hidden{
+      display:none !important;
+    }
+
+    #home .today-garden-card{
+      padding:10px 12px 11px !important;
+    }
+
+    #home .today-garden-heading{
+      align-items:center !important;
+      flex-wrap:nowrap !important;
+      gap:8px !important;
+      margin-bottom:5px !important;
+    }
+
+    #home .today-garden-heading strong{
+      font-size:21px !important;
+      line-height:1.12 !important;
+    }
+
+    #home .today-garden-date{
+      font-size:15px !important;
+      line-height:1.2 !important;
+    }
+
+    #home .today-garden-action{
+      font-size:21px !important;
+      line-height:1.24 !important;
+    }
+
+    #home .today-garden-footer{
+      align-items:center !important;
+      flex-direction:row !important;
+      flex-wrap:nowrap !important;
+      gap:8px !important;
+      margin-top:7px !important;
+    }
+
+    #home .today-garden-button{
+      width:auto !important;
+      max-width:62% !important;
+      min-height:36px !important;
+      padding:8px 11px !important;
+      font-size:18px !important;
+      line-height:1.15 !important;
+    }
+
+    #home .today-garden-meta,
+    #home .today-garden-status{
+      font-size:15.75px !important;
+      line-height:1.28 !important;
+    }
+
+    #home .today-garden-status{
+      margin-top:7px !important;
+    }
+
+    @media(max-width:560px){
+      #home .today-garden-card{
+        padding:8px 9px 9px !important;
+      }
+
+      #home .today-garden-heading strong{
+        font-size:18.75px !important;
+      }
+
+      #home .today-garden-date{
+        font-size:15px !important;
+      }
+
+      #home .today-garden-action{
+        font-size:18.75px !important;
+        line-height:1.22 !important;
+      }
+
+      #home .today-garden-button{
+        min-height:34px !important;
+        padding:7px 9px !important;
+        font-size:15.75px !important;
+      }
+
+      #home .today-garden-meta,
+      #home .today-garden-status{
+        font-size:14.25px !important;
+      }
+    }
+  `;
+
+  document.head.appendChild(style);
+
+  const remembered = document.getElementById("myLeafRemembered");
+  const growthCard = document.getElementById("leafGrowthCard");
+  const dayNoteCard = document.getElementById("leafDayNoteCard");
+
+  if(remembered && growthCard && dayNoteCard){
+    remembered.insertBefore(growthCard,dayNoteCard);
+  }
 
 })();</script>
 
