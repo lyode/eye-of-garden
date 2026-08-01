@@ -10228,9 +10228,26 @@ no-repeat !important;
     }).length;
   }
 
+  function todayCurrentLanguage(){
+    const selector = document.getElementById("languageSelect");
+    const selectedLanguage = selector?.value || "";
+
+    if(["en","ms","zh"].includes(selectedLanguage)){
+      return selectedLanguage;
+    }
+
+    const savedLanguage =
+      localStorage.getItem("eog_language") || "en";
+
+    return ["en","ms","zh"].includes(savedLanguage)
+      ? savedLanguage
+      : "en";
+  }
+
   function todayLocale(){
-    if(currentLang === "ms") return "ms-MY";
-    if(currentLang === "zh") return "zh-CN";
+    const language = todayCurrentLanguage();
+    if(language === "ms") return "ms-MY";
+    if(language === "zh") return "zh-CN";
     return "en-MY";
   }
 
@@ -10328,7 +10345,8 @@ no-repeat !important;
     if(!card) return;
 
     const state = currentTodayState();
-    const copy = todayCopy[currentLang] || todayCopy.en;
+    const language = todayCurrentLanguage();
+    const copy = todayCopy[language] || todayCopy.en;
 
     const heading = document.getElementById("todayGardenHeading");
     const date = document.getElementById("todayGardenDate");
@@ -10341,7 +10359,7 @@ no-repeat !important;
     if(date) date.textContent = todayDateLabel();
     if(action){
       action.textContent =
-        state.action[currentLang] || state.action.en;
+        state.action[language] || state.action.en;
     }
 
     card.classList.toggle("is-carried", todayCarried);
@@ -10481,10 +10499,9 @@ no-repeat !important;
 
   async function carryTodayGardenAction(){
     const state = currentTodayState();
-    const copy = todayCopy[currentLang] || todayCopy.en;
 
     if(!state.leafNo){
-      show("plant");
+      document.querySelector("#home .plantLeafButton")?.click();
       return;
     }
 
