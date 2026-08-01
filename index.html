@@ -12448,16 +12448,7 @@ no-repeat !important;
     wrap.appendChild(panel);
   }
 
-  document.querySelectorAll("#livingLeafCare button").forEach(button => {
-    if(button.dataset.leafFocusReady) return;
-    button.dataset.leafFocusReady = "true";
-    button.addEventListener("click",() => {
-      document.getElementById("growthPlantWrap")?.scrollIntoView({
-        behavior:"smooth",
-        block:"center"
-      });
-    },true);
-  });
+  /* Care reactions deliberately keep the visitor's scroll position still. */
 })();
 </script>
 
