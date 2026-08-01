@@ -9158,7 +9158,7 @@ no-repeat !important;
 
       pointer-events:none;
 
-      background:rgba(255,250,226,0.72);
+      background:rgba(255,250,226,0.88);
 
       clip-path:polygon(
         50% 0%,
@@ -9182,14 +9182,14 @@ no-repeat !important;
         45% 45%
       );
 
-      filter:drop-shadow(0 0 3px rgba(239,220,165,0.28));
+      filter:drop-shadow(0 0 4px rgba(239,220,165,0.48));
 
       opacity:0;
       transform:translate(-50%, -50%) scale(0.72);
 
       animation:
         eogRareSpaceGlint
-        1.65s
+        2.15s
         ease-in-out
         1
         both;
@@ -9202,16 +9202,16 @@ no-repeat !important;
       }
 
       46%{
-        opacity:0.16;
+        opacity:0.28;
       }
 
       55%{
-        opacity:0.42;
+        opacity:0.80;
         transform:translate(-50%, -50%) scale(1.05);
       }
 
       66%{
-        opacity:0.13;
+        opacity:0.24;
       }
 
       100%{
@@ -9267,7 +9267,7 @@ no-repeat !important;
 
     const delay = firstRun
       ? 1400 + (Math.random() * 1800)
-      : 4200 + (Math.random() * 5200);
+      : 3200 + (Math.random() * 3400);
 
     twinkleTimer = window.setTimeout(
       runRareTwinkle,
@@ -9307,7 +9307,7 @@ no-repeat !important;
     }
 
     const numberToTwinkle =
-      availableStars.length >= 24 && Math.random() < 0.28
+      availableStars.length >= 24 && Math.random() < 0.62
         ? 2
         : 1;
 
