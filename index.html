@@ -2642,6 +2642,23 @@ body.eog-home-flat #home .share-nudge{
   line-height:inherit;
   vertical-align:baseline;
 }
+
+/* Hero title: 20% larger while preserving its responsive proportions. */
+#home h1{
+  font-size:clamp(118px,13.79vw,196px) !important;
+}
+
+@media(max-width:560px){
+  #home h1{
+    font-size:clamp(89px,24.34vw,118px) !important;
+  }
+}
+
+@media(max-width:370px){
+  #home h1{
+    font-size:clamp(84px,23.4vw,108px) !important;
+  }
+}
 </style>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
