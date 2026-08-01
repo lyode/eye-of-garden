@@ -5084,7 +5084,7 @@ try{ loadLeafDayNotes(member); }catch(error){ console.warn("My Leaf notes:", err
 try{ updateLeafCareView(member); }catch(error){ console.warn("My Leaf care:", error); }
 try{ window.updateMyLeafGrowthJourney?.(member); }catch(error){ console.warn("My Leaf journey:", error); }
 try{ window.updateMyLeafPlayActions?.(member); }catch(error){ console.warn("My Leaf play actions:", error); }
-try{ window.updateMyLeafFlightGame?.(member); }catch(error){ console.warn("My Leaf flight game:", error); }
+try{ document.dispatchEvent(new CustomEvent("eog:my-leaf-member",{detail:member})); }catch(error){ console.warn("My Leaf flight game:", error); }
 
 const smallLeavesBox =
   document.getElementById("growthSmallLeaves");
@@ -13110,7 +13110,7 @@ no-repeat !important;
     frameId=requestAnimationFrame(gameLoop);
   }
 
-  window.updateMyLeafFlightGame=function(value){
+  function updateMyLeafFlightGame(value){
     if(!value) return;
     member=value;
     const card=ensureGameCard();
@@ -13118,12 +13118,16 @@ no-repeat !important;
     const best=document.getElementById("leafFlightBest");
     if(best) best.textContent=String(readBest());
     drawScene();
-  };
+  }
+
+  document.addEventListener("eog:my-leaf-member",event=>{
+    updateMyLeafFlightGame(event.detail);
+  });
 
   ensureGameCard();
   setTimeout(()=>{
     const value=currentMember();
-    if(value) window.updateMyLeafFlightGame(value);
+    if(value) updateMyLeafFlightGame(value);
   },1500);
 })();
 </script>
