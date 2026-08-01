@@ -10722,6 +10722,158 @@ no-repeat !important;
 
   document.head.appendChild(style);
 
+})();
+/* =========================================================
+   MY LEAF - REALISTIC BOTANICAL ARTWORK V1
+   Replaces emoji plant art without changing member data
+========================================================= */
+
+(function applyRealisticMyLeafV1(){
+
+  if(document.getElementById("realisticMyLeafV1Style")){
+    return;
+  }
+
+  const style = document.createElement("style");
+  style.id = "realisticMyLeafV1Style";
+
+  style.textContent = `
+    #myLeaf .growth-plant-wrap{
+      min-height:330px !important;
+      margin:20px 0 18px !important;
+      overflow:hidden !important;
+      isolation:isolate !important;
+      border-radius:30px !important;
+      background:
+        radial-gradient(circle at 34% 18%, rgba(255,245,190,0.38), transparent 0 23%),
+        radial-gradient(ellipse at 50% 104%, rgba(62,100,48,0.16), transparent 0 34%),
+        linear-gradient(180deg, rgba(249,252,241,0.86), rgba(226,239,211,0.58)) !important;
+    }
+
+    #myLeaf .growth-plant-wrap::after{
+      content:"" !important;
+      position:absolute !important;
+      left:50% !important;
+      bottom:18px !important;
+      width:160px !important;
+      height:24px !important;
+      border-radius:50% !important;
+      background:rgba(34,70,34,0.14) !important;
+      filter:blur(10px) !important;
+      transform:translateX(-50%) !important;
+      z-index:1 !important;
+      pointer-events:none !important;
+    }
+
+    #myLeaf .growth-main-leaf{
+      width:150px !important;
+      height:292px !important;
+      flex:0 0 150px !important;
+      font-size:0 !important;
+      line-height:0 !important;
+      color:transparent !important;
+      background:
+        url("my-leaf-realistic.webp")
+        center / contain
+        no-repeat !important;
+      filter:
+        drop-shadow(0 16px 13px rgba(35,76,35,0.22))
+        saturate(0.92) !important;
+      transform-origin:50% 92% !important;
+      animation:realisticLeafBreathe 6.8s ease-in-out infinite !important;
+      z-index:4 !important;
+    }
+
+    #myLeaf .growth-small-leaves{
+      z-index:3 !important;
+      animation:none !important;
+    }
+
+    #myLeaf .growth-small-leaf{
+      display:block !important;
+      width:38px !important;
+      height:74px !important;
+      font-size:0 !important;
+      line-height:0 !important;
+      color:transparent !important;
+      background:
+        url("my-leaf-realistic.webp")
+        center / contain
+        no-repeat !important;
+      opacity:0.10 !important;
+      filter:grayscale(0.72) saturate(0.55) !important;
+      transform-origin:50% 88% !important;
+    }
+
+    #myLeaf .growth-small-leaf.active{
+      opacity:0.88 !important;
+      filter:
+        saturate(0.88)
+        drop-shadow(0 7px 6px rgba(38,76,34,0.18)) !important;
+    }
+
+    #myLeaf .leaf-water-effect,
+    #myLeaf .leaf-light-effect{
+      z-index:5 !important;
+    }
+
+    #myLeaf .growth-main-leaf.leaf-watered{
+      animation:leafBounce 1.05s ease !important;
+      filter:
+        drop-shadow(0 15px 14px rgba(70,145,196,0.34))
+        saturate(1.02) !important;
+    }
+
+    #myLeaf .growth-main-leaf.leaf-lighted{
+      animation:leafWarmSway 1.5s ease !important;
+      filter:
+        drop-shadow(0 15px 16px rgba(255,193,72,0.34))
+        saturate(1.03) !important;
+      text-shadow:none !important;
+    }
+
+    @keyframes realisticLeafBreathe{
+      0%,100%{
+        transform:translateY(2px) rotate(-1.2deg) scale(0.992);
+        filter:
+          drop-shadow(0 16px 13px rgba(35,76,35,0.20))
+          saturate(0.90);
+      }
+      50%{
+        transform:translateY(-4px) rotate(1.2deg) scale(1.012);
+        filter:
+          drop-shadow(0 18px 15px rgba(35,76,35,0.25))
+          saturate(0.98);
+      }
+    }
+
+    @media(max-width:560px){
+      #myLeaf .growth-plant-wrap{
+        min-height:310px !important;
+        border-radius:24px !important;
+      }
+
+      #myLeaf .growth-main-leaf{
+        width:136px !important;
+        height:270px !important;
+        flex-basis:136px !important;
+      }
+
+      #myLeaf .growth-small-leaf{
+        width:32px !important;
+        height:64px !important;
+      }
+    }
+
+    @media(prefers-reduced-motion:reduce){
+      #myLeaf .growth-main-leaf{
+        animation:none !important;
+      }
+    }
+  `;
+
+  document.head.appendChild(style);
+
 })();</script>
 
 </body>
