@@ -9214,8 +9214,8 @@ no-repeat !important;
       55%{
         opacity:1;
         filter:
-          brightness(2.5)
-          drop-shadow(0 0 8px rgba(255,238,184,0.88));
+          brightness(4)
+          drop-shadow(0 0 9px rgba(255,242,198,0.92));
         transform:translate(-50%, -50%) scale(1.12);
       }
 
@@ -9282,7 +9282,7 @@ no-repeat !important;
 
     const delay = firstRun
       ? 1400 + (Math.random() * 1800)
-      : 3200 + (Math.random() * 3400);
+      : 4400 + (Math.random() * 4200);
 
     twinkleTimer = window.setTimeout(
       runRareTwinkle,
@@ -9322,7 +9322,7 @@ no-repeat !important;
     }
 
     const numberToTwinkle =
-      availableStars.length >= 24 && Math.random() < 0.62
+      availableStars.length >= 24 && Math.random() < 0.18
         ? 2
         : 1;
 
