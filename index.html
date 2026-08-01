@@ -9195,6 +9195,116 @@ no-repeat !important;
         both;
     }
 
+    /* Fine sparkler rays flicker while the chosen star stays bright. */
+    #garden #members .eog-rare-glint::before,
+    #garden #members .eog-rare-glint::after{
+      content:"";
+      position:absolute;
+      left:50%;
+      top:50%;
+      pointer-events:none;
+    }
+
+    #garden #members .eog-rare-glint::before{
+      width:24px;
+      height:24px;
+
+      background:
+        linear-gradient(
+          90deg,
+          transparent 47%,
+          rgba(255,255,246,0.96) 49.3%,
+          rgba(255,255,246,0.96) 50.7%,
+          transparent 53%
+        ),
+        linear-gradient(
+          0deg,
+          transparent 47%,
+          rgba(255,250,222,0.92) 49.3%,
+          rgba(255,250,222,0.92) 50.7%,
+          transparent 53%
+        );
+
+      opacity:0.18;
+      transform:translate(-50%, -50%) rotate(0deg) scale(0.72);
+
+      animation:
+        eogSparklerRays
+        0.44s
+        steps(2, end)
+        infinite;
+
+      animation-delay:var(--eog-spark-ray-delay, 0s);
+    }
+
+    #garden #members .eog-rare-glint::after{
+      width:3px;
+      height:3px;
+      border-radius:50%;
+      background:#fffdf0;
+
+      box-shadow:
+        0 -11px 0 rgba(255,248,205,0.90),
+        8px -7px 0 rgba(255,255,244,0.76),
+        12px 1px 0 rgba(255,226,145,0.72),
+        7px 9px 0 rgba(255,255,244,0.82),
+        -2px 12px 0 rgba(255,232,162,0.70),
+        -9px 7px 0 rgba(255,255,244,0.78),
+        -12px -2px 0 rgba(255,236,177,0.72),
+        -7px -9px 0 rgba(255,255,244,0.80);
+
+      opacity:0.12;
+      transform:translate(-50%, -50%) rotate(0deg) scale(0.66);
+
+      animation:
+        eogSparklerParticles
+        0.65s
+        ease-in-out
+        infinite
+        alternate;
+
+      animation-delay:var(--eog-spark-particle-delay, 0s);
+    }
+
+    @keyframes eogSparklerRays{
+      0%{
+        opacity:0.16;
+        transform:translate(-50%, -50%) rotate(-5deg) scale(0.74);
+      }
+
+      45%{
+        opacity:0.96;
+        transform:translate(-50%, -50%) rotate(4deg) scale(1.12);
+      }
+
+      70%{
+        opacity:0.34;
+        transform:translate(-50%, -50%) rotate(-2deg) scale(0.86);
+      }
+
+      100%{
+        opacity:0.78;
+        transform:translate(-50%, -50%) rotate(6deg) scale(1.02);
+      }
+    }
+
+    @keyframes eogSparklerParticles{
+      0%{
+        opacity:0.10;
+        transform:translate(-50%, -50%) rotate(0deg) scale(0.64);
+      }
+
+      48%{
+        opacity:0.88;
+        transform:translate(-50%, -50%) rotate(9deg) scale(1.08);
+      }
+
+      100%{
+        opacity:0.30;
+        transform:translate(-50%, -50%) rotate(18deg) scale(0.88);
+      }
+    }
+
     @keyframes eogRareSpaceGlint{
       0%{
         opacity:0;
@@ -9320,6 +9430,16 @@ no-repeat !important;
 
     glint.dataset.twinklePeak =
       String(peakBrightness * 100);
+
+    glint.style.setProperty(
+      "--eog-spark-ray-delay",
+      (-Math.random() * 0.44) + "s"
+    );
+
+    glint.style.setProperty(
+      "--eog-spark-particle-delay",
+      (-Math.random() * 0.65) + "s"
+    );
 
     glint.addEventListener(
       "animationend",
