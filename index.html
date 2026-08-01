@@ -3682,9 +3682,12 @@ function setupEmbeddedLanguageBars(){
 }
 
 function unwrapHeroFinalLetter(){
-  const finalLetter = document.querySelector("#home h1 .hero-final-f");
-  if(!finalLetter) return;
+  const heading = document.querySelector("#home h1");
+  const finalLetter = heading?.querySelector(".hero-final-f");
+  if(!heading || !finalLetter) return;
+
   finalLetter.replaceWith(document.createTextNode(finalLetter.textContent || ""));
+  heading.normalize();
 }
 
 function styleHeroFinalLetter(){
