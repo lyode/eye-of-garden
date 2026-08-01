@@ -5043,6 +5043,7 @@ recoveryBox.hidden = true;
 
 loadLeafDayNotes(member);
 updateLeafCareView(member);
+window.updateMyLeafGrowthJourney?.(member);
     
 const growthCard =
   document.getElementById("leafGrowthCard");
@@ -11003,6 +11004,545 @@ no-repeat !important;
   `;
 
   document.head.appendChild(style);
+
+})();
+/* =========================================================
+   MY LEAF - GROWTH JOURNEY V2
+   Stages, atmosphere, dew, care history and firefly
+========================================================= */
+
+(function setupMyLeafGrowthJourneyV2(){
+
+  if(document.getElementById("myLeafGrowthJourneyV2Style")){
+    return;
+  }
+
+  const style = document.createElement("style");
+  style.id = "myLeafGrowthJourneyV2Style";
+
+  style.textContent = `
+    #myLeaf .growth-plant-wrap{
+      transition:background 0.8s ease, box-shadow 0.8s ease !important;
+    }
+
+    #myLeaf .growth-plant-wrap.journey-morning{
+      background:
+        radial-gradient(circle at 22% 16%, rgba(255,247,197,0.62), transparent 0 26%),
+        linear-gradient(180deg, rgba(245,252,235,0.96), rgba(217,238,205,0.72)) !important;
+    }
+
+    #myLeaf .growth-plant-wrap.journey-afternoon{
+      background:
+        radial-gradient(circle at 70% 12%, rgba(255,241,174,0.40), transparent 0 24%),
+        linear-gradient(180deg, rgba(239,249,229,0.94), rgba(205,231,192,0.74)) !important;
+    }
+
+    #myLeaf .growth-plant-wrap.journey-evening{
+      background:
+        radial-gradient(circle at 76% 16%, rgba(255,190,111,0.46), transparent 0 28%),
+        linear-gradient(180deg, rgba(245,229,194,0.92), rgba(189,210,178,0.80)) !important;
+    }
+
+    #myLeaf .growth-plant-wrap.journey-night{
+      background:
+        radial-gradient(circle at 70% 18%, rgba(167,204,255,0.18), transparent 0 25%),
+        linear-gradient(180deg, #12283a, #183d39 62%, #1f4a39) !important;
+      box-shadow:inset 0 0 45px rgba(0,0,0,0.18) !important;
+    }
+
+    #myLeaf .growth-plant-wrap.journey-night::before{
+      content:"" !important;
+      position:absolute !important;
+      left:12% !important;
+      top:12% !important;
+      width:2px !important;
+      height:2px !important;
+      border-radius:50% !important;
+      background:rgba(255,255,238,0.82) !important;
+      box-shadow:
+        34px 18px rgba(255,255,238,0.58),
+        88px -4px rgba(255,244,196,0.68),
+        152px 26px rgba(255,255,238,0.50),
+        220px 2px rgba(255,244,196,0.64),
+        265px 44px rgba(255,255,238,0.54) !important;
+      opacity:0.8 !important;
+      animation:journeyStars 5s ease-in-out infinite !important;
+      z-index:1 !important;
+    }
+
+    #myLeaf .growth-main-leaf.journey-stage-1{
+      width:155px !important;
+      flex-basis:155px !important;
+      background-image:url("my-leaf-realistic.webp") !important;
+    }
+
+    #myLeaf .growth-main-leaf.journey-stage-2{
+      width:230px !important;
+      flex-basis:230px !important;
+      background-image:url("my-leaf-two-sprout-realistic.webp") !important;
+    }
+
+    #myLeaf .growth-main-leaf.journey-stage-3{
+      width:210px !important;
+      flex-basis:210px !important;
+      background-image:url("my-leaf-four-clover-realistic.webp") !important;
+    }
+
+    #myLeaf .journey-dew{
+      position:absolute;
+      left:50%;
+      top:38px;
+      width:210px;
+      height:190px;
+      transform:translateX(-50%);
+      z-index:6;
+      pointer-events:none;
+      opacity:0;
+      transition:opacity 0.7s ease;
+    }
+
+    #myLeaf .journey-dew.is-visible{
+      opacity:1;
+    }
+
+    #myLeaf .journey-dew-drop{
+      position:absolute;
+      width:9px;
+      height:12px;
+      border-radius:62% 38% 58% 42% / 72% 40% 60% 28%;
+      background:
+        radial-gradient(circle at 35% 25%, #fff 0 9%, rgba(255,255,255,0.65) 10% 19%, transparent 21%),
+        linear-gradient(145deg, rgba(225,249,255,0.92), rgba(90,177,218,0.58));
+      box-shadow:0 2px 5px rgba(30,97,128,0.28);
+      animation:journeyDewShine 4.8s ease-in-out infinite;
+    }
+
+    #myLeaf .journey-dew-drop:nth-child(1){left:44px;top:58px;}
+    #myLeaf .journey-dew-drop:nth-child(2){right:48px;top:42px;animation-delay:-1.7s;}
+    #myLeaf .journey-dew-drop:nth-child(3){left:98px;top:105px;width:7px;height:10px;animation-delay:-3s;}
+
+    #myLeaf .journey-firefly{
+      position:absolute;
+      right:15%;
+      top:24%;
+      width:34px;
+      height:34px;
+      padding:0;
+      border:0;
+      border-radius:50%;
+      background:transparent;
+      box-shadow:none;
+      z-index:7;
+      cursor:pointer;
+      opacity:0;
+      pointer-events:none;
+    }
+
+    #myLeaf .journey-firefly.is-unlocked{
+      opacity:1;
+      pointer-events:auto;
+      animation:journeyFireflyPath 8s ease-in-out infinite;
+    }
+
+    #myLeaf .journey-firefly::before{
+      content:"";
+      position:absolute;
+      left:50%;
+      top:50%;
+      width:5px;
+      height:5px;
+      border-radius:50%;
+      background:#fff7a4;
+      transform:translate(-50%,-50%);
+      box-shadow:0 0 7px #fff6a0, 0 0 16px rgba(220,255,111,0.92), 0 0 28px rgba(220,255,111,0.50);
+      animation:journeyFireflyGlow 2.6s ease-in-out infinite;
+    }
+
+    #myLeaf .journey-firefly.is-speaking::before{
+      box-shadow:0 0 9px #fff, 0 0 22px #fff49a, 0 0 38px rgba(209,255,112,0.84);
+    }
+
+    #myLeaf .leaf-journey-panel{
+      margin:14px 0 18px;
+      padding:15px;
+      border:1px solid rgba(72,115,70,0.20);
+      border-radius:22px;
+      background:rgba(249,252,242,0.90);
+      box-shadow:0 10px 25px rgba(43,68,37,0.07);
+    }
+
+    #myLeaf .leaf-journey-top{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:12px;
+    }
+
+    #myLeaf .leaf-journey-title{
+      color:#244d36;
+      font-weight:800;
+    }
+
+    #myLeaf .leaf-journey-stage{
+      color:#6c7e66;
+      font-size:0.85rem;
+      text-align:right;
+    }
+
+    #myLeaf .leaf-journey-week{
+      display:grid;
+      grid-template-columns:repeat(7,minmax(0,1fr));
+      gap:5px;
+    }
+
+    #myLeaf .leaf-journey-day{
+      min-width:0;
+      padding:7px 2px;
+      border-radius:12px;
+      background:rgba(223,234,214,0.62);
+      text-align:center;
+      color:#687663;
+    }
+
+    #myLeaf .leaf-journey-day.is-today{
+      box-shadow:0 0 0 1px rgba(69,116,70,0.42) inset;
+    }
+
+    #myLeaf .leaf-journey-day-name{
+      display:block;
+      margin-bottom:5px;
+      font-size:0.67rem;
+      font-weight:700;
+    }
+
+    #myLeaf .leaf-journey-marks{
+      display:flex;
+      justify-content:center;
+      gap:3px;
+      min-height:8px;
+    }
+
+    #myLeaf .leaf-journey-mark{
+      width:6px;
+      height:6px;
+      border-radius:50%;
+      background:rgba(90,107,84,0.18);
+    }
+
+    #myLeaf .leaf-journey-mark.has-water{background:#67bfe2;box-shadow:0 0 5px rgba(103,191,226,0.55);}
+    #myLeaf .leaf-journey-mark.has-light{background:#f0bd56;box-shadow:0 0 5px rgba(240,189,86,0.55);}
+
+    #myLeaf .leaf-journey-progress{
+      margin:11px 0 0;
+      color:#536d56;
+      font-size:0.86rem;
+      line-height:1.45;
+    }
+
+    #myLeaf .leaf-journey-message{
+      margin:8px 0 0;
+      color:#806c3b;
+      font-size:0.88rem;
+      line-height:1.45;
+    }
+
+    @keyframes journeyStars{0%,100%{opacity:0.48;}50%{opacity:0.9;}}
+    @keyframes journeyDewShine{0%,100%{filter:brightness(0.9);transform:translateY(0);}50%{filter:brightness(1.28);transform:translateY(1px);}}
+    @keyframes journeyFireflyGlow{0%,100%{opacity:0.58;transform:translate(-50%,-50%) scale(0.76);}50%{opacity:1;transform:translate(-50%,-50%) scale(1.16);}}
+    @keyframes journeyFireflyPath{0%,100%{transform:translate(0,0);}28%{transform:translate(-14px,8px);}58%{transform:translate(7px,19px);}82%{transform:translate(15px,-7px);}}
+
+    @media(max-width:560px){
+      #myLeaf .growth-main-leaf.journey-stage-1{width:142px !important;flex-basis:142px !important;}
+      #myLeaf .growth-main-leaf.journey-stage-2{width:210px !important;flex-basis:210px !important;}
+      #myLeaf .growth-main-leaf.journey-stage-3{width:190px !important;flex-basis:190px !important;}
+      #myLeaf .journey-dew{width:190px;top:32px;}
+      #myLeaf .journey-firefly{right:8%;}
+      #myLeaf .leaf-journey-panel{padding:12px 10px;}
+      #myLeaf .leaf-journey-week{gap:3px;}
+      #myLeaf .leaf-journey-day{padding:6px 1px;}
+    }
+
+    @media(prefers-reduced-motion:reduce){
+      #myLeaf .journey-firefly,
+      #myLeaf .journey-firefly::before,
+      #myLeaf .journey-dew-drop,
+      #myLeaf .growth-plant-wrap::before{
+        animation:none !important;
+      }
+    }
+  `;
+
+  document.head.appendChild(style);
+
+  const journeyCopy = {
+    en:{
+      title:"Seven days of care",
+      stages:["First Leaf","Young Sprout","Four-Leaf Clover"],
+      progress:(n)=>`${n} of 7 care moments toward your firefly.`,
+      unlocked:"Your firefly now visits this leaf.",
+      welcome:"Your clover waited quietly. It is happy you returned.",
+      firefly:"A small light noticed your care.",
+      fireflyLabel:"Visit your firefly"
+    },
+    ms:{
+      title:"Tujuh hari penjagaan",
+      stages:["Daun Pertama","Tunas Muda","Semanggi Empat Daun"],
+      progress:(n)=>`${n} daripada 7 detik penjagaan menuju kunang-kunang anda.`,
+      unlocked:"Kunang-kunang anda kini mengunjungi daun ini.",
+      welcome:"Semanggi anda menunggu dengan tenang. Ia gembira anda kembali.",
+      firefly:"Satu cahaya kecil menyedari penjagaan anda.",
+      fireflyLabel:"Kunjungi kunang-kunang anda"
+    },
+    zh:{
+      title:"\u4e03\u5929\u7167\u6599",
+      stages:["\u7b2c\u4e00\u7247\u53f6\u5b50","\u5e7c\u5ae9\u65b0\u82bd","\u56db\u53f6\u8349"],
+      progress:(n)=>`\u5df2\u5b8c\u6210 ${n} / 7 \u6b21\u7167\u6599\uff0c\u5411\u8424\u706b\u866b\u9760\u8fd1\u3002`,
+      unlocked:"\u60a8\u7684\u8424\u706b\u866b\u73b0\u5728\u4f1a\u6765\u63a2\u671b\u8fd9\u7247\u53f6\u5b50\u3002",
+      welcome:"\u60a8\u7684\u56db\u53f6\u8349\u5b89\u9759\u5730\u7b49\u7740\u3002\u5b83\u5f88\u9ad8\u5174\u60a8\u56de\u6765\u3002",
+      firefly:"\u4e00\u70b9\u5c0f\u5c0f\u7684\u5149\uff0c\u770b\u89c1\u4e86\u60a8\u7684\u7167\u6599\u3002",
+      fireflyLabel:"\u770b\u770b\u60a8\u7684\u8424\u706b\u866b"
+    }
+  };
+
+  const releaseTime = Date.parse("2026-08-01T00:00:00Z");
+  const welcomedMembers = new Set();
+  const welcomeMessages = new Map();
+
+  function journeyMemberNo(member){
+    return Number(member?.memberNo || member?.no || 0);
+  }
+
+  function journeyKey(member){
+    return `eog_leaf_journey_v2_${journeyMemberNo(member) || "guest"}`;
+  }
+
+  function localDayKey(date = new Date()){
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2,"0");
+    const day = String(date.getDate()).padStart(2,"0");
+    return `${year}-${month}-${day}`;
+  }
+
+  function memberCreatedTime(member){
+    const value = member?.createdAt || member?.joinedAt || member?.plantedAt || member?.timestamp;
+    if(!value) return 0;
+    if(typeof value.toMillis === "function") return value.toMillis();
+    if(Number.isFinite(Number(value.seconds))) return Number(value.seconds) * 1000;
+    const parsed = new Date(value).getTime();
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+
+  function readJourney(member){
+    let data = {};
+    try{
+      data = JSON.parse(localStorage.getItem(journeyKey(member)) || "{}");
+    }catch(error){
+      data = {};
+    }
+    if(!data.days || typeof data.days !== "object") data.days = {};
+    if(typeof data.legacy !== "boolean"){
+      const created = memberCreatedTime(member);
+      data.legacy = !created || created < releaseTime;
+    }
+    return data;
+  }
+
+  function writeJourney(member, data){
+    localStorage.setItem(journeyKey(member), JSON.stringify(data));
+    return data;
+  }
+
+  function careCount(data){
+    return Object.values(data.days || {}).reduce((total, day) =>
+      total + (day?.water ? 1 : 0) + (day?.light ? 1 : 0), 0
+    );
+  }
+
+  function ensureJourneyUi(){
+    const wrap = document.getElementById("growthPlantWrap");
+    if(!wrap) return null;
+
+    let dew = document.getElementById("leafJourneyDew");
+    if(!dew){
+      dew = document.createElement("div");
+      dew.id = "leafJourneyDew";
+      dew.className = "journey-dew";
+      dew.setAttribute("aria-hidden","true");
+      dew.innerHTML = '<span class="journey-dew-drop"></span><span class="journey-dew-drop"></span><span class="journey-dew-drop"></span>';
+      wrap.appendChild(dew);
+    }
+
+    let firefly = document.getElementById("leafJourneyFirefly");
+    if(!firefly){
+      firefly = document.createElement("button");
+      firefly.id = "leafJourneyFirefly";
+      firefly.className = "journey-firefly";
+      firefly.type = "button";
+      firefly.addEventListener("click", () => {
+        firefly.classList.add("is-speaking");
+        const message = document.getElementById("leafJourneyMessage");
+        const copy = journeyCopy[currentLang] || journeyCopy.en;
+        if(message) message.textContent = copy.firefly;
+        setTimeout(() => firefly.classList.remove("is-speaking"), 1400);
+      });
+      wrap.appendChild(firefly);
+    }
+
+    let panel = document.getElementById("leafJourneyPanel");
+    if(!panel){
+      panel = document.createElement("div");
+      panel.id = "leafJourneyPanel";
+      panel.className = "leaf-journey-panel";
+      panel.innerHTML = `
+        <div class="leaf-journey-top">
+          <div class="leaf-journey-title" id="leafJourneyTitle"></div>
+          <div class="leaf-journey-stage" id="leafJourneyStage"></div>
+        </div>
+        <div class="leaf-journey-week" id="leafJourneyWeek"></div>
+        <p class="leaf-journey-progress" id="leafJourneyProgress"></p>
+        <p class="leaf-journey-message" id="leafJourneyMessage"></p>
+      `;
+      wrap.insertAdjacentElement("afterend",panel);
+    }
+
+    return {wrap,dew,firefly,panel};
+  }
+
+  function atmosphereName(){
+    const hour = new Date().getHours();
+    if(hour < 6 || hour >= 20) return "night";
+    if(hour < 12) return "morning";
+    if(hour < 17) return "afternoon";
+    return "evening";
+  }
+
+  function seedExistingCare(member, data){
+    const care = getLeafCareData(member);
+    if(!care.lastAction || data.seededCare) return data;
+    const when = care.updatedAt ? new Date(care.updatedAt) : new Date();
+    if(!Number.isNaN(when.getTime())){
+      const key = localDayKey(when);
+      data.days[key] = data.days[key] || {};
+      data.days[key][care.lastAction] = true;
+    }
+    data.seededCare = true;
+    return data;
+  }
+
+  function recordJourneyCare(member,type){
+    const data = seedExistingCare(member,readJourney(member));
+    const key = localDayKey();
+    data.days[key] = data.days[key] || {};
+    data.days[key][type] = true;
+    data.updatedAt = new Date().toISOString();
+    writeJourney(member,data);
+    window.updateMyLeafGrowthJourney(member);
+  }
+
+  window.updateMyLeafGrowthJourney = function(member){
+    if(!member) return;
+    const ui = ensureJourneyUi();
+    if(!ui) return;
+
+    let data = seedExistingCare(member,readJourney(member));
+    const memberNo = journeyMemberNo(member);
+    const now = Date.now();
+
+    if(!welcomedMembers.has(memberNo)){
+      const previous = new Date(data.lastVisitAt || 0).getTime();
+      if(previous && now - previous > 36 * 60 * 60 * 1000){
+        welcomeMessages.set(memberNo,true);
+      }
+      welcomedMembers.add(memberNo);
+      data.lastVisitAt = new Date(now).toISOString();
+    }
+
+    writeJourney(member,data);
+
+    const copy = journeyCopy[currentLang] || journeyCopy.en;
+    const count = careCount(data);
+    const stage = data.legacy ? 3 : (count >= 5 ? 3 : count >= 2 ? 2 : 1);
+    const mainLeaf = document.getElementById("growthMainLeaf");
+    const care = getLeafCareData(member);
+
+    if(mainLeaf){
+      mainLeaf.classList.remove("journey-stage-1","journey-stage-2","journey-stage-3");
+      mainLeaf.classList.add(`journey-stage-${stage}`);
+    }
+
+    ui.wrap.classList.remove("journey-morning","journey-afternoon","journey-evening","journey-night");
+    ui.wrap.classList.add(`journey-${atmosphereName()}`);
+
+    const careTime = new Date(care.updatedAt || 0).getTime();
+    const showDew = care.lastAction === "water" && careTime && now - careTime < 6 * 60 * 60 * 1000;
+    ui.dew.classList.toggle("is-visible",Boolean(showDew));
+
+    const unlocked = count >= 7;
+    ui.firefly.classList.toggle("is-unlocked",unlocked);
+    ui.firefly.setAttribute("aria-label",copy.fireflyLabel);
+    ui.firefly.title = copy.fireflyLabel;
+
+    const title = document.getElementById("leafJourneyTitle");
+    const stageText = document.getElementById("leafJourneyStage");
+    const week = document.getElementById("leafJourneyWeek");
+    const progress = document.getElementById("leafJourneyProgress");
+    const message = document.getElementById("leafJourneyMessage");
+
+    if(title) title.textContent = copy.title;
+    if(stageText) stageText.textContent = copy.stages[stage - 1];
+    if(progress) progress.textContent = unlocked ? copy.unlocked : copy.progress(Math.min(count,7));
+    if(message) message.textContent = welcomeMessages.get(memberNo) ? copy.welcome : "";
+
+    if(week){
+      week.innerHTML = "";
+      const locale = currentLang === "ms" ? "ms-MY" : currentLang === "zh" ? "zh-CN" : "en";
+      for(let offset = 6; offset >= 0; offset--){
+        const date = new Date();
+        date.setHours(12,0,0,0);
+        date.setDate(date.getDate() - offset);
+        const key = localDayKey(date);
+        const dayData = data.days[key] || {};
+        const cell = document.createElement("div");
+        cell.className = "leaf-journey-day" + (offset === 0 ? " is-today" : "");
+        const dayName = new Intl.DateTimeFormat(locale,{weekday:"narrow"}).format(date);
+        cell.innerHTML = `
+          <span class="leaf-journey-day-name">${dayName}</span>
+          <span class="leaf-journey-marks">
+            <span class="leaf-journey-mark ${dayData.water ? "has-water" : ""}"></span>
+            <span class="leaf-journey-mark ${dayData.light ? "has-light" : ""}"></span>
+          </span>
+        `;
+        week.appendChild(cell);
+      }
+    }
+  };
+
+  const originalWaterMyLeaf = window.waterMyLeaf;
+  const originalGiveMorningLight = window.giveMorningLight;
+
+  window.waterMyLeaf = function(){
+    const member = getMyMember();
+    originalWaterMyLeaf?.();
+    if(member) recordJourneyCare(member,"water");
+  };
+
+  window.giveMorningLight = function(){
+    const member = getMyMember();
+    originalGiveMorningLight?.();
+    if(member) recordJourneyCare(member,"light");
+  };
+
+  document.getElementById("languageSelect")?.addEventListener("change",() => {
+    const member = getMyMember();
+    if(member) setTimeout(() => window.updateMyLeafGrowthJourney(member),0);
+  });
+
+  ensureJourneyUi();
+  setTimeout(() => {
+    const member = getMyMember();
+    if(member) window.updateMyLeafGrowthJourney(member);
+  },1200);
 
 })();</script>
 
