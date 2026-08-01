@@ -12679,6 +12679,7 @@ no-repeat !important;
       text-align:center;
     }
     #myLeaf .leaf-flight-fullscreen-close{display:none;}
+    html.leaf-flight-fullscreen,
     body.leaf-flight-fullscreen{
       overflow:hidden !important;
       overscroll-behavior:none !important;
@@ -12790,10 +12791,33 @@ no-repeat !important;
   `;
   document.head.appendChild(style);
 
+  const portalStyle=document.createElement("style");
+  portalStyle.id="myLeafFlightPortalStyle";
+  portalStyle.textContent=`
+    #leafFlightViewport{display:none;}
+    body.leaf-flight-fullscreen #leafFlightViewport{
+      position:fixed !important;
+      inset:0 !important;
+      z-index:2147483000 !important;
+      display:block !important;
+      width:100vw !important;
+      height:100vh !important;
+      height:100dvh !important;
+      overflow:hidden !important;
+      background:linear-gradient(180deg,#6da9d0 0%,#a8d5e7 48%,#d9eddd 100%) !important;
+      touch-action:none;
+      overscroll-behavior:none;
+    }
+  `+style.textContent.replaceAll("#myLeaf ","#leafFlightViewport ");
+  document.head.appendChild(portalStyle);
+
   const GAME_SECONDS=35;
   const WIDTH=360;
   const HEIGHT=480;
   let member=null;
+  let flightHomeParent=null;
+  let flightHomeNext=null;
+  let flightViewport=null;
   let canvas=null;
   let ctx=null;
   let running=false;
@@ -12967,17 +12991,44 @@ no-repeat !important;
       if(document.hidden&&running) finishGame(false);
     });
   }
+  function ensureFlightViewport(){
+    if(flightViewport?.isConnected) return flightViewport;
+    flightViewport=document.getElementById("leafFlightViewport");
+    if(!flightViewport){
+      flightViewport=document.createElement("div");
+      flightViewport.id="leafFlightViewport";
+      flightViewport.setAttribute("role","dialog");
+      flightViewport.setAttribute("aria-label","Leaf Flight full-screen game");
+      document.body.appendChild(flightViewport);
+    }
+    return flightViewport;
+  }
   function enterFlightFullscreen(){
     const card=document.getElementById("leafFlightGameCard");
     const body=document.getElementById("leafFlightBody");
-    if(!card||!body) return;
+    const viewport=ensureFlightViewport();
+    if(!card||!body||!viewport) return;
+    if(card.parentNode!==viewport){
+      flightHomeParent=card.parentNode;
+      flightHomeNext=card.nextSibling;
+      viewport.appendChild(card);
+    }
     body.classList.add("is-open");
     card.classList.add("is-fullscreen");
+    document.documentElement.classList.add("leaf-flight-fullscreen");
     document.body.classList.add("leaf-flight-fullscreen");
   }
   function exitFlightFullscreen(){
-    document.getElementById("leafFlightGameCard")?.classList.remove("is-fullscreen");
+    const card=document.getElementById("leafFlightGameCard");
+    card?.classList.remove("is-fullscreen");
+    document.documentElement.classList.remove("leaf-flight-fullscreen");
     document.body.classList.remove("leaf-flight-fullscreen");
+    if(card&&flightHomeParent){
+      const next=(flightHomeNext&&flightHomeNext.parentNode===flightHomeParent)?flightHomeNext:null;
+      flightHomeParent.insertBefore(card,next);
+    }
+    flightHomeParent=null;
+    flightHomeNext=null;
   }
   function closeFlightFullscreen(){
     if(running) finishGame(false);
