@@ -12589,9 +12589,49 @@ no-repeat !important;
     }
     #myLeaf .leaf-flight-body{display:none;margin-top:13px;}
     #myLeaf .leaf-flight-body.is-open{display:block;}
+    #myLeaf .leaf-flight-level-picker{
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:5px;
+      width:min(100%,390px);
+      margin:0 auto 5px;
+      padding-right:43px;
+      box-sizing:border-box;
+    }
+    #myLeaf .leaf-flight-level-picker button{
+      min-width:0;
+      min-height:39px;
+      padding:4px 2px !important;
+      border:1px solid rgba(57,106,133,.20) !important;
+      border-radius:11px !important;
+      background:rgba(255,255,255,.56) !important;
+      color:#45646c !important;
+      box-shadow:none !important;
+      line-height:1 !important;
+    }
+    #myLeaf .leaf-flight-level-picker button b{display:block;font-size:14px;}
+    #myLeaf .leaf-flight-level-picker button small{display:block;margin-top:3px;font-size:8px;}
+    #myLeaf .leaf-flight-level-picker button.is-active{
+      border-color:rgba(191,135,33,.52) !important;
+      background:linear-gradient(145deg,#fff2b0,#efd16d) !important;
+      color:#574414 !important;
+    }
+    #myLeaf .leaf-flight-level-picker button.is-locked{
+      opacity:.43;
+      filter:grayscale(.55);
+    }
+    #myLeaf .leaf-flight-level-name{
+      width:min(100%,390px);
+      margin:0 auto 5px;
+      color:#355f67;
+      font-size:11px;
+      font-weight:600;
+      text-align:center;
+      letter-spacing:.03em;
+    }
     #myLeaf .leaf-flight-scoreboard{
       display:grid;
-      grid-template-columns:repeat(3,1fr);
+      grid-template-columns:repeat(4,1fr);
       gap:7px;
       margin-bottom:8px;
     }
@@ -12811,7 +12851,13 @@ no-repeat !important;
   `+style.textContent.replaceAll("#myLeaf ","#leafFlightViewport ");
   document.head.appendChild(portalStyle);
 
-  const GAME_SECONDS=35;
+  const LEVELS=[
+    {number:1,name:"Gentle Sky",seconds:30,goal:8,spawnBase:.82,spawnRange:.30,speedMin:90,speedRange:38,drift:8,radius:13,wind:0},
+    {number:2,name:"Growing Wind",seconds:32,goal:12,spawnBase:.72,spawnRange:.26,speedMin:122,speedRange:48,drift:20,radius:12,wind:5},
+    {number:3,name:"Dancing Clouds",seconds:34,goal:16,spawnBase:.62,spawnRange:.24,speedMin:154,speedRange:58,drift:38,radius:11,wind:11},
+    {number:4,name:"High Breeze",seconds:36,goal:20,spawnBase:.54,spawnRange:.21,speedMin:187,speedRange:66,drift:57,radius:10,wind:19},
+    {number:5,name:"Golden Horizon",seconds:38,goal:25,spawnBase:.47,spawnRange:.19,speedMin:220,speedRange:76,drift:78,radius:9,wind:29}
+  ];
   const WIDTH=360;
   const HEIGHT=480;
   let member=null;
@@ -12823,7 +12869,8 @@ no-repeat !important;
   let running=false;
   let frameId=0;
   let previousTime=0;
-  let remaining=GAME_SECONDS;
+  let selectedLevel=1;
+  let remaining=LEVELS[0].seconds;
   let spawnTimer=0;
   let score=0;
   let leafX=WIDTH/2;
@@ -12844,8 +12891,28 @@ no-repeat !important;
 
   function memberNumber(value){return Number(value?.memberNo||value?.no||0);}
   function bestKey(value){return `eog_leaf_flight_best_${memberNumber(value)||"guest"}`;}
-  function readBest(){return Number(localStorage.getItem(bestKey(member))||0);}
-  function writeBest(value){localStorage.setItem(bestKey(member),String(value));}
+  function progressKey(value){return `eog_leaf_flight_levels_v1_${memberNumber(value)||"guest"}`;}
+  function levelConfig(){return LEVELS[selectedLevel-1]||LEVELS[0];}
+  function readProgress(){
+    const fallback=Number(localStorage.getItem(bestKey(member))||0);
+    try{
+      const saved=JSON.parse(localStorage.getItem(progressKey(member))||"{}");
+      const bests=saved.bests&&typeof saved.bests==="object"?saved.bests:{};
+      if(!Number(bests[1])&&fallback) bests[1]=fallback;
+      return {unlocked:Math.max(1,Math.min(5,Number(saved.unlocked)||1)),bests};
+    }catch(error){
+      return {unlocked:1,bests:fallback?{1:fallback}:{}};
+    }
+  }
+  function writeProgress(progress){
+    localStorage.setItem(progressKey(member),JSON.stringify(progress));
+  }
+  function readBest(){return Number(readProgress().bests[selectedLevel]||0);}
+  function writeBest(value){
+    const progress=readProgress();
+    progress.bests[selectedLevel]=Math.max(Number(progress.bests[selectedLevel])||0,Number(value)||0);
+    writeProgress(progress);
+  }
   function currentMember(){return typeof window.getMyMember==="function"?window.getMyMember():null;}
 
   function ensureGameCard(){
@@ -12868,9 +12935,18 @@ no-repeat !important;
       </div>
       <div class="leaf-flight-body" id="leafFlightBody">
         <button type="button" class="leaf-flight-fullscreen-close" id="leafFlightCloseFullScreen" aria-label="Close full-screen Leaf Flight">&#10005;</button>
+        <div class="leaf-flight-level-picker" id="leafFlightLevelPicker" aria-label="Leaf Flight levels">
+          <button type="button" data-flight-level="1"><b>1</b><small>Gentle</small></button>
+          <button type="button" data-flight-level="2"><b>2</b><small>Wind</small></button>
+          <button type="button" data-flight-level="3"><b>3</b><small>Clouds</small></button>
+          <button type="button" data-flight-level="4"><b>4</b><small>High</small></button>
+          <button type="button" data-flight-level="5"><b>5</b><small>Gold</small></button>
+        </div>
+        <div class="leaf-flight-level-name" id="leafFlightLevelName">Level 1 Â· Gentle Sky</div>
         <div class="leaf-flight-scoreboard">
           <div class="leaf-flight-stat">Coins<b id="leafFlightScore">0</b></div>
-          <div class="leaf-flight-stat">Time<b id="leafFlightTime">35</b></div>
+          <div class="leaf-flight-stat">Goal<b id="leafFlightGoal">8</b></div>
+          <div class="leaf-flight-stat">Time<b id="leafFlightTime">30</b></div>
           <div class="leaf-flight-stat">Best<b id="leafFlightBest">0</b></div>
         </div>
         <div class="leaf-flight-canvas-wrap">
@@ -12881,7 +12957,7 @@ no-repeat !important;
           <button type="button" id="leafFlightLeftButton" aria-label="Fly left">&#8592; Drift Left</button>
           <button type="button" id="leafFlightRightButton" aria-label="Fly right">Drift Right &#8594;</button>
         </div>
-        <button type="button" class="leaf-flight-start" id="leafFlightStartButton">Start 35-Second Flight</button>
+        <button type="button" class="leaf-flight-start" id="leafFlightStartButton">Play Level 1</button>
         <p class="leaf-flight-status" id="leafFlightStatus" aria-live="polite">A quiet sky is waiting.</p>
       </div>`;
     growth.insertAdjacentElement("afterend",card);
@@ -12954,6 +13030,9 @@ no-repeat !important;
     document.getElementById("leafFlightOpenButton")?.addEventListener("click",toggleGame);
     document.getElementById("leafFlightStartButton")?.addEventListener("click",startGame);
     document.getElementById("leafFlightCloseFullScreen")?.addEventListener("click",closeFlightFullscreen);
+    document.querySelectorAll("#leafFlightLevelPicker [data-flight-level]").forEach(button=>{
+      button.addEventListener("click",()=>selectFlightLevel(Number(button.dataset.flightLevel)));
+    });
     bindHoldButton("leafFlightLeftButton",-1);
     bindHoldButton("leafFlightRightButton",1);
 
@@ -13049,6 +13128,41 @@ no-repeat !important;
       exitFlightFullscreen();
     }
   }
+  function updateLevelMenu(){
+    const config=levelConfig();
+    const progress=readProgress();
+    document.querySelectorAll("#leafFlightLevelPicker [data-flight-level]").forEach(button=>{
+      const level=Number(button.dataset.flightLevel);
+      const locked=level>progress.unlocked;
+      button.disabled=running||locked;
+      button.classList.toggle("is-active",level===selectedLevel);
+      button.classList.toggle("is-locked",locked);
+      button.setAttribute("aria-label",locked?`Level ${level} locked`:`Level ${level}: ${LEVELS[level-1].name}`);
+    });
+    const name=document.getElementById("leafFlightLevelName");
+    const goal=document.getElementById("leafFlightGoal");
+    const start=document.getElementById("leafFlightStartButton");
+    if(name) name.textContent=`Level ${config.number} Â· ${config.name}`;
+    if(goal) goal.textContent=String(config.goal);
+    if(start&&!running){start.textContent=`Play Level ${config.number}`;start.disabled=false;}
+  }
+  function selectFlightLevel(level){
+    if(running) return;
+    const progress=readProgress();
+    if(level<1||level>progress.unlocked||level>LEVELS.length) return;
+    selectedLevel=level;
+    const config=levelConfig();
+    remaining=config.seconds;
+    score=0;
+    coins=[];
+    sparkles=[];
+    resetSky();
+    updateLevelMenu();
+    updateScoreboard();
+    const status=document.getElementById("leafFlightStatus");
+    if(status) status.textContent=`Collect ${config.goal} coins to clear ${config.name}.`;
+    drawScene();
+  }
   function startGame(){
     member=currentMember();
     if(!member) return;
@@ -13057,7 +13171,7 @@ no-repeat !important;
     cancelAnimationFrame(frameId);
     running=true;
     previousTime=performance.now();
-    remaining=GAME_SECONDS;
+    remaining=levelConfig().seconds;
     spawnTimer=.35;
     score=0;
     leafX=WIDTH/2;
@@ -13067,11 +13181,12 @@ no-repeat !important;
     coins=[];
     sparkles=[];
     resetSky();
+    updateLevelMenu();
     updateScoreboard();
     const start=document.getElementById("leafFlightStartButton");
     const status=document.getElementById("leafFlightStatus");
     if(start){start.textContent="Flying...";start.disabled=true;}
-    if(status) status.textContent="Catch the golden coins.";
+    if(status) status.textContent=`Level ${selectedLevel}: collect ${levelConfig().goal} golden coins.`;
     canvas?.focus({preventScroll:true});
     frameId=requestAnimationFrame(gameLoop);
   }
@@ -13079,26 +13194,44 @@ no-repeat !important;
     if(!running&&completed) return;
     running=false;
     cancelAnimationFrame(frameId);
+    const config=levelConfig();
     const best=Math.max(readBest(),score);
     if(best>readBest()) writeBest(best);
+    let progress=readProgress();
+    const cleared=Boolean(completed&&score>=config.goal);
+    const unlockedNext=Boolean(cleared&&selectedLevel<LEVELS.length&&progress.unlocked<selectedLevel+1);
+    if(unlockedNext){
+      progress.unlocked=selectedLevel+1;
+      writeProgress(progress);
+    }
+    updateLevelMenu();
     const start=document.getElementById("leafFlightStartButton");
     const status=document.getElementById("leafFlightStatus");
-    if(start){start.textContent="Fly Again";start.disabled=false;}
+    if(start){start.textContent=`Fly Level ${selectedLevel} Again`;start.disabled=false;}
     if(status){
-      status.textContent=completed
-        ?`Flight complete - you gathered ${score} Garden Coin${score===1?"":"s"}.`
-        :"Flight paused. Tap Fly Again when you are ready.";
+      if(!completed){
+        status.textContent=`Level ${selectedLevel} paused. Tap Fly Again when you are ready.`;
+      }else if(cleared&&selectedLevel===LEVELS.length){
+        status.textContent=`Golden Horizon complete! You gathered ${score} coins.`;
+      }else if(unlockedNext){
+        status.textContent=`Level ${selectedLevel} cleared! Level ${selectedLevel+1} is now unlocked.`;
+      }else if(cleared){
+        status.textContent=`Level ${selectedLevel} cleared with ${score} coins.`;
+      }else{
+        status.textContent=`You gathered ${score}. Collect ${config.goal-score} more coin${config.goal-score===1?"":"s"} to clear this level.`;
+      }
     }
     updateScoreboard();
     drawScene();
   }
   function spawnCoin(){
+    const config=levelConfig();
     coins.push({
       x:26+Math.random()*(WIDTH-52),
       y:-18,
-      radius:12,
-      speed:105+Math.random()*55,
-      drift:(Math.random()-.5)*18,
+      radius:config.radius,
+      speed:config.speedMin+Math.random()*config.speedRange,
+      drift:(Math.random()-.5)*config.drift,
       phase:Math.random()*Math.PI*2
     });
   }
@@ -13121,15 +13254,17 @@ no-repeat !important;
     const scoreNode=document.getElementById("leafFlightScore");
     const timeNode=document.getElementById("leafFlightTime");
     const bestNode=document.getElementById("leafFlightBest");
+    const goalNode=document.getElementById("leafFlightGoal");
     if(scoreNode) scoreNode.textContent=String(score);
     if(timeNode) timeNode.textContent=String(Math.max(0,Math.ceil(remaining)));
+    if(goalNode) goalNode.textContent=String(levelConfig().goal);
     if(bestNode) bestNode.textContent=String(Math.max(readBest(),score));
   }
   function updateGame(delta){
     remaining-=delta;
     if(remaining<=0){remaining=0;finishGame(true);return;}
     spawnTimer-=delta;
-    if(spawnTimer<=0){spawnCoin();spawnTimer=.68+Math.random()*.38;}
+    if(spawnTimer<=0){const config=levelConfig();spawnCoin();spawnTimer=config.spawnBase+Math.random()*config.spawnRange;}
 
     if(pointerTarget!==null){
       const difference=pointerTarget-leafX;
@@ -13140,6 +13275,8 @@ no-repeat !important;
       leafVelocity*=Math.pow(.035,delta);
       leafX+=leafVelocity*delta;
     }
+    const windShift=Math.sin((levelConfig().seconds-remaining)*1.15+selectedLevel)*levelConfig().wind;
+    leafX+=windShift*delta;
     leafX=Math.max(34,Math.min(WIDTH-34,leafX));
 
     clouds.forEach(cloud=>{
@@ -13152,7 +13289,8 @@ no-repeat !important;
     });
     for(let index=coins.length-1;index>=0;index--){
       const coin=coins[index];
-      if(Math.abs(coin.x-leafX)<34&&Math.abs(coin.y-leafY)<34){
+      const catchDistance=21+coin.radius;
+      if(Math.abs(coin.x-leafX)<catchDistance&&Math.abs(coin.y-leafY)<catchDistance){
         collectCoin(index,coin);
       }else if(coin.y>HEIGHT+25){
         coins.splice(index,1);
@@ -13291,8 +13429,11 @@ no-repeat !important;
     member=value;
     const card=ensureGameCard();
     if(card) card.hidden=false;
-    const best=document.getElementById("leafFlightBest");
-    if(best) best.textContent=String(readBest());
+    const progress=readProgress();
+    if(selectedLevel>progress.unlocked) selectedLevel=progress.unlocked;
+    remaining=levelConfig().seconds;
+    updateLevelMenu();
+    updateScoreboard();
     drawScene();
   }
 
