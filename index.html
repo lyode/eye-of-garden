@@ -11,7 +11,8 @@
 <meta name="theme-color" content="#f7f1e5">
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Eye of Garden — Stage 1</title>
+<title>Eye of Garden</title>
+<meta name="description" content="A gentle space for people living with movement-related conditions, and the families and partners beside them.">
 <style>
 :root{
   --paper:#f7f1e5;
@@ -2677,49 +2678,7 @@ body.eog-home-flat #home .share-nudge{
 </div>
 
 <div class="wrap">
-  <section id="home" class="hero">
-    <div>
-      <small class="kicker">Eye of Garden</small>
-      <div class="embedded-language-bar landing-language-bar" data-no-translate role="group" aria-label="Choose your language">
-        <span class="embedded-language-prompt">Choose your language &middot; Pilih bahasa &middot; &#x9009;&#x62E9;&#x8BED;&#x8A00;</span>
-        <div class="embedded-language-options">
-          <button type="button" class="embedded-language-button" data-eog-language="en" aria-pressed="false">English</button>
-          <button type="button" class="embedded-language-button" data-eog-language="ms" aria-pressed="false">Bahasa Melayu</button>
-          <button type="button" class="embedded-language-button" data-eog-language="zh" aria-pressed="false">&#x7B80;&#x4F53;&#x4E2D;&#x6587;</button>
-        </div>
-      </div>      <h1>Plant<br>Your Leaf</h1>
-      <div class="garden-evolution">
-        <div class="evolution-question" id="landingHeroQuestion">
-          Can small actions grow into something greater?
-        </div>
-      </div>
-
-      <div class="home-primary-actions" aria-label="Main Garden actions">
-        <button class="plantLeafButton" onclick="show('plant')">&#x1F331; Plant My Leaf</button>
-        <button class="seeGardenButton" onclick="show('garden')">&#x1F30D; See the Garden</button>
-      </div>
-
-      <div class="home-my-leaf-action">
-        <button class="secondary myLeafButton" onclick="show('myLeaf')">&#x1F343; Open My Leaf</button>
-      </div>
-
-      <div class="home-secondary-actions" aria-label="More from the Garden">
-        <button class="secondary storyHomeButton" onclick="show('question')">&#x1F4D6; Story</button>
-        <button class="secondary tellGardenButton" onclick="show('tell')">&#x1F441;&#xFE0F; Tell The Garden</button>
-        <button class="secondary irisMessageButton" id="irisMessagesHomeButton" data-no-translate onclick="show('irisMessages')">&#x1F48C; Iris Messages</button>
-      </div>      <div class="counter">
-        <b id="count">0</b> leaves planted so far.<br>
-        <small>🌟 The Garden remembers its first lights.</small>
-      </div>
-
-      <div class="share-nudge">
-        <p>Eye of Garden grows through the people who believe.</p>
-        <button onclick="inviteNewLeaf()">🌱 Invite a New Leaf</button>
-        <p class="hint" id="shareMsgHome"></p>
-      </div>
-    </div>
-
-  </section>
+  <section id="home" class="hero"><noscript>Please enable JavaScript to enter Eye of Garden.</noscript></section>
 
   <section id="plant" class="section">
     <button class="secondary" onclick="showHome()">← Back to Garden</button>
@@ -3432,7 +3391,6 @@ body.eog-home-flat #home .share-nudge{
     </div>
   </section>
 
-  <div class="footer">🌿 Eye of Garden — eyeofgarden.com</div>
 </div>
 
 
@@ -3659,7 +3617,7 @@ function translateStaticText(root=document.body){
     el.setAttribute("placeholder", tr(el.dataset.originalPlaceholder));
   });
 
-  document.title = tr("Eye of Garden — Stage 1");
+  document.title = "Eye of Garden";
   document.documentElement.lang = currentLang === "zh" ? "zh-CN" : currentLang;
 }
 
@@ -3753,6 +3711,7 @@ function setLanguage(lang, save=true){
   renderBroadcastInterface();
   renderBroadcastMessages();
   renderOpenIrisPopup();
+  document.dispatchEvent(new CustomEvent("eog:language", {detail: currentLang}));
 }
 
 
@@ -3975,6 +3934,8 @@ let selected = [];
 let members = [];
 
 function show(id){
+  if(!document.getElementById(id)) return;
+  document.dispatchEvent(new CustomEvent("eog:navigation", {detail: id}));
   document.body.classList.remove("eog-home-flat");
   document.querySelector(".hero").style.display = "none";
   document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
@@ -4092,6 +4053,7 @@ function show(id){
 })();
 
 function showHome(){
+  document.dispatchEvent(new CustomEvent("eog:navigation", {detail: "home"}));
   document.body.classList.add("eog-home-flat");
   document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
   document.querySelector(".hero").style.display = "grid";
@@ -6696,7 +6658,7 @@ function buildNoOverlapGardenPositions(total = 1000) {
 }
 
 const demoGardenCount = Math.min(
-  Number(new URLSearchParams(window.location.search).get("demoGarden") || 0),
+  Number(new URLSearchParams(window.location.search).get("demoGarden") || (window.EOG_PREVIEW ? 36 : 0)),
   120
 );
 
@@ -13449,5 +13411,11 @@ no-repeat !important;
 })();
 </script>
 
+<link rel="stylesheet" href="welcome.css">
+<script src="welcome.js"></script>
+<link rel="stylesheet" href="medication.css">
+<script src="medication.js"></script>
+<link rel="stylesheet" href="night-garden.css">
+<script src="night-garden.js"></script>
 </body>
 </html>
