@@ -21,7 +21,7 @@
     const toolbar=document.createElement('div');toolbar.className='tracker-tabs';toolbar.setAttribute('role','group');toolbar.setAttribute('aria-label',t('title'));
     toolbar.innerHTML=['daily','weekly','list'].map(v=>`<button type="button" class="eog-button eog-secondary" data-view="${v}" aria-pressed="${trackerView===v}">${t(v)}</button>`).join('');
     const stats=document.createElement('div');stats.id='tracker-stats';stats.className='tracker-stats';
-    heading.after(toolbar,stats);stats.insertAdjacentHTML('afterend','<p id="tracker-storage-status" class="eog-small"></p>');
+    heading.after(toolbar,stats);stats.insertAdjacentHTML('afterend','<div class="eog-panel"><div class="eog-actions"><button type="button" class="eog-button" id="med-save-device">Save records on this device</button><button type="button" class="eog-button eog-secondary" id="med-backup-top">Download backup</button></div><p id="tracker-storage-status" class="eog-small" role="status"></p><p class="eog-small">First save changes inside the medicine or day editor, then save records here. Once enabled, confirmed changes save automatically in this browser. Clearing browser data or using private browsing can remove records. Keep a downloaded backup.</p><p class="eog-small">Online sync is not connected. Records and doctor documents are not uploaded to a private account.</p></div>');
     const daily=section.querySelector('#med-doses').parentElement;daily.id='tracker-daily';
     const dateInput=section.querySelector('#med-day');
     const dateNav=document.createElement('div');dateNav.className='eog-actions';dateNav.innerHTML=`<button type="button" class="eog-button eog-secondary" data-day-step="-1" aria-label="${t('previous')}">←</button><button type="button" class="eog-button eog-secondary" data-day-step="0">${t('returnToday')}</button><button type="button" class="eog-button eog-secondary" data-day-step="1" aria-label="${t('next')}">→</button>`;dateInput.after(dateNav);
@@ -56,7 +56,7 @@
   }
   function trackerRows(){
     const panel=section.querySelector('#tracker-stats');if(!panel)return;
-    section.querySelector('#tracker-storage-status').textContent=t(remember?'stored':'volatile');
+    storageStatus();
     const items=occurrences(selectedDay),counts={total:items.filter(o=>!o.s.asNeeded).length,takenLabel:0,missed:0,skipped:0,remaining:0};
     for(const o of items){const r=data.records[o.id];if(o.s.asNeeded&&(!r||r.status==='unknown'))continue;counts[r?.status==='taken'?'takenLabel':r?.status==='missed'?'missed':r?.status==='skipped'?'skipped':'remaining']++;}
     panel.innerHTML=Object.entries(counts).map(([k,v])=>`<div><strong>${v}</strong><span>${t(k)}</span></div>`).join('');
@@ -107,7 +107,10 @@
   const banner=document.createElement('aside');banner.className='med-alert eog-surface';banner.dataset.noTranslate='';banner.hidden=true;banner.setAttribute('role','status');document.querySelector('.eog-header').after(banner);
   let formKey=null;
   const status=message=>section.querySelector('#med-message').textContent=message;
-  function persist(){if(remember){try{localStorage.setItem(key,JSON.stringify(data));}catch{status(t('storageError'));return false;}}return true;}
+  let storageFailed=false;
+  function storageStatus(){const el=section.querySelector('#tracker-storage-status');if(el)el.textContent=storageFailed?'Not saved: device storage failed. Download a backup before closing.':remember?'Saved on this device · confirmed changes save automatically. Not synced online.':t('volatile');}
+  function persist(){if(remember){try{localStorage.setItem(key,JSON.stringify(data));storageFailed=false;}catch{storageFailed=true;storageStatus();status(t('storageError'));return false;}}storageStatus();return true;}
+
   function occurrences(date){return data.schedules.flatMap(s=>(data.dayPlans&&Object.hasOwn(data.dayPlans,date)?data.dayPlans[date].includes(s.id):date>=s.start&&(!s.end||date<=s.end)&&!s.dayOnly)?s.times.map(time=>({s,date,time,id:`${s.id}|${date}|${time}`})):[]).sort((a,b)=>(slotStart(a.time)<'06:00'?1:0)-(slotStart(b.time)<'06:00'?1:0)||a.time.localeCompare(b.time));}
   function describe(r){return r?.status==='taken'?({en:'Taken',ms:'Diambil',zh:'已服用'}[lang]||'Taken'):t(r?.status==='skipped'?'skipped':r?.status==='missed'?'missed':'unknown');}
   function renderRows(){
@@ -169,7 +172,7 @@
       if(Object.keys(data.records).some(k=>k.split('|')[1]===date)){error.textContent='This day already has intake records. Choose another day to keep those records safe.';return;}
       if(occurrences(date).length&&!dialog.querySelector('#plan-replace').checked){error.textContent='Tick Replace the planned medicines to confirm the plan for this day.';return;}
       const next=JSON.parse(JSON.stringify(data));const now=new Date().toISOString();const list=draft.map(s=>({id:'day-'+(globalThis.crypto?.randomUUID?.()||Date.now().toString(36)+'-'+Math.random().toString(36).slice(2)),name:s.name.trim(),dose:s.dose.trim(),times:[s.time],start:date,end:date,dayOnly:true,asNeeded:!!s.asNeeded,instructions:s.instructions||'',createdAt:now}));next.schedules.push(...list);next.dayPlans=next.dayPlans||{};next.dayPlans[date]=list.map(s=>s.id);
-      try{validate(next);}catch{error.textContent='Could not save this plan. Download a backup and check the entries.';return;}data=next;persist();selectedDay=date;section.querySelector('#med-day').value=date;renderRows();dialog.close();status('Day plan saved. No doses marked taken.');
+      try{validate(next);}catch{error.textContent='Could not save this plan. Download a backup and check the entries.';return;}data=next;const savedToDevice=persist();selectedDay=date;section.querySelector('#med-day').value=date;renderRows();dialog.close();status(!savedToDevice?t('storageError'):remember?'Day plan saved on this device. No doses marked taken.':'Day plan updated for this session. Use Save records on this device before closing.');
     };
   }
 
@@ -182,6 +185,9 @@
   }
   banner.addEventListener('click',()=>{selectedDay=day();section.querySelector('#med-day').value=selectedDay;renderRows();});
   function bind(){
+    section.querySelector('#med-save-device').onclick=()=>{remember=true;section.querySelector('#med-remember').checked=true;if(persist())status('Records saved on this device. You can close and reopen this browser.');};
+    section.querySelector('#med-backup-top').onclick=()=>section.querySelector('#med-backup').click();
+
     section.querySelector('#med-day').onchange=e=>{if(validDay(e.target.value)){selectedDay=e.target.value;renderRows();}};
     section.querySelector('#med-remind').onchange=e=>{reminders=e.target.checked;tick();};
     section.querySelector('#med-remember').onchange=e=>{remember=e.target.checked;if(remember){if(persist())status(t('stored'));}else{try{localStorage.removeItem(key);status(t('volatile'));}catch{status(t('storageError'));}}};
