@@ -1,0 +1,19 @@
+import {connectFirebase} from '../private-account/firebase-adapter.mjs';
+import {doctorSharingEnabled} from '../private-account/config.mjs';
+import {authMessage} from '../private-account/verification.mjs';
+import {renderReport} from './records.mjs';
+const $=s=>document.querySelector(s),reportHost=$('#patient-report'),status=$('#doctor-status'),params=new URLSearchParams(location.hash.slice(1)),uid=params.get('patient'),id=params.get('share');
+let api,watching=null,generation=0,expires=0,busy=false;
+function hide(message){reportHost.hidden=true;reportHost.replaceChildren();expires=0;status.textContent=message;$('#doctor-print').disabled=true;}
+function show(data){if(!data||!data.active||data.expiresAt.toMillis()<=Date.now()){hide('This report has expired or the patient revoked access. Ask the patient for a new link.');return;}try{const report=JSON.parse(data.payload);if(report.version!==1||!Array.isArray(report.rows)||report.rows.length>15000||!Array.isArray(report.remarks))throw Error();renderReport(reportHost,report);reportHost.hidden=false;expires=data.expiresAt.toMillis();$('#doctor-print').disabled=false;status.textContent='Read-only access · expires '+data.expiresAt.toDate().toLocaleString()+'.';}catch{hide('This report could not be displayed. Ask the patient to create a new report.');}}
+async function load(){hide('Checking access…');const epoch=++generation;watching?.();watching=null;try{const data=await api.shares.read(uid,id);if(epoch!==generation)return;show(data);watching=api.shares.watch(uid,id,next=>{if(epoch===generation)show(next);},()=>{if(epoch===generation)hide('Access is unavailable. The link may have expired, been revoked, or belong to another email.');});}catch{if(epoch===generation)hide('Cannot open this report. Check your connection and use the verified email invited by the patient. The link may also be expired or revoked.');}}
+if(!doctorSharingEnabled){hide('Private doctor links are not active yet. Please ask the patient for a printed report.');$('#doctor-login').hidden=true;}
+else if(!/^[A-Za-z0-9_-]{1,128}$/.test(uid||'')||!/^[a-f0-9-]{36}$/.test(id||'')){hide('This doctor link is incomplete. Ask the patient to copy the full link.');$('#doctor-login').hidden=true;}
+else {try{api=await connectFirebase();api.observe(async user=>{generation++;watching?.();watching=null;hide('Sign in to view the patient-selected report.');$('#doctor-login').hidden=!!user;$('#doctor-actions').hidden=!user;$('#doctor-register').hidden=!!user;if(user?.emailVerified)await load();else if(user)hide('Verify your email first, then choose Refresh report.');});}catch{hide('Could not connect. Please check your connection and reload.');}}
+$('#doctor-login').onsubmit=async e=>{e.preventDefault();if(busy||!api)return;busy=true;const form=e.target,button=form.querySelector('button');button.disabled=true;try{const password=form.elements.password.value;form.elements.password.value='';await api.signIn(form.elements.email.value.trim(),password);}catch(error){hide(authMessage(error));}finally{busy=false;button.disabled=false;}};
+$('#doctor-reload').onclick=async()=>{if(busy)return;busy=true;try{await api.refresh();await load();}catch(error){hide(authMessage(error));}finally{busy=false;}};
+$('#doctor-out').onclick=async()=>{generation++;watching?.();hide('Signing out…');await api.signOut();};
+$('#doctor-print').onclick=()=>{if(expires>Date.now()&&!reportHost.hidden)window.print();};
+setInterval(()=>{if(expires&&expires<=Date.now())hide('This report has expired. Ask the patient for a new link.');},1000);
+window.addEventListener('offline',()=>hide('Connection lost. Reconnect and refresh to check access again.'));
+document.addEventListener('visibilitychange',()=>{if(document.hidden){generation++;watching?.();watching=null;hide('Refresh to check access again.');}else if(api?.auth.currentUser?.emailVerified)load();});

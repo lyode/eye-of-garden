@@ -1,0 +1,5 @@
+const dbName='eog-private-voice-v1';
+let opening;
+function database(){if(!opening)opening=new Promise((resolve,reject)=>{const request=indexedDB.open(dbName,1);request.onupgradeneeded=()=>{const store=request.result.createObjectStore('clips',{keyPath:'id'});store.createIndex('scope','scope');};request.onsuccess=()=>resolve(request.result);request.onerror=()=>{opening=null;reject(request.error);};});return opening;}
+export async function saveClip(clip){const db=await database();await new Promise((resolve,reject)=>{const tx=db.transaction('clips','readwrite');tx.objectStore('clips').put(clip);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error||Error('Audio save was interrupted.'));});}
+export async function listClips(scope,date){const db=await database();return new Promise((resolve,reject)=>{const request=db.transaction('clips').objectStore('clips').index('scope').getAll(scope);request.onsuccess=()=>resolve(request.result.filter(c=>c.date===date).sort((a,b)=>b.createdAt.localeCompare(a.createdAt)));request.onerror=()=>reject(request.error);});}

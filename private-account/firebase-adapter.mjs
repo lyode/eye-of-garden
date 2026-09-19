@@ -1,5 +1,5 @@
 import {ConflictError} from './sync-core.mjs';
-import {firebaseConfig,privateDocumentsEnabled} from './config.mjs';
+import {firebaseConfig,privateDocumentsEnabled,doctorSharingEnabled} from './config.mjs';
 export async function connectFirebase(){
   const [appSDK,authSDK,dbSDK,fileSDK]=await Promise.all([
     import('https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js'),
@@ -26,6 +26,13 @@ export async function connectFirebase(){
     remote:{
       async read(uid){ensure(uid);const snap=await dbSDK.getDocFromServer(reference(uid));return snap.exists()?snap.data():null;},
       async commit(uid,expected,payload){ensure(uid);return dbSDK.runTransaction(db,async tx=>{const target=reference(uid),snap=await tx.get(target),revision=snap.exists()?snap.data().revision:0;if(revision!==expected)throw new ConflictError();const next={revision:revision+1,payload,updatedAt:dbSDK.serverTimestamp()};tx.set(target,next);tx.set(dbSDK.doc(db,'healthAccounts',uid,'history',String(next.revision)),next);return next.revision;});}
+    },
+    shares:{
+      async create(uid,{doctorEmail,days,report}){ensure(uid);if(!doctorSharingEnabled)throw Error('Doctor sharing is not activated yet.');if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(doctorEmail)||![7,14,30].includes(days))throw Error('Check the doctor email and expiry.');const payload=JSON.stringify(report);if(new TextEncoder().encode(payload).length>650000)throw Error('Choose a shorter date range.');const id=crypto.randomUUID();await dbSDK.setDoc(dbSDK.doc(db,'healthAccounts',uid,'doctorShares',id),{doctorEmail,payload,active:true,createdAt:dbSDK.serverTimestamp(),updatedAt:dbSDK.serverTimestamp(),expiresAt:dbSDK.Timestamp.fromMillis(Date.now()+days*86400000)});return id;},
+      async list(uid){ensure(uid);const snap=await dbSDK.getDocs(dbSDK.collection(db,'healthAccounts',uid,'doctorShares'));return snap.docs.map(doc=>({id:doc.id,...doc.data()}));},
+      async revoke(uid,id){ensure(uid);await dbSDK.updateDoc(dbSDK.doc(db,'healthAccounts',uid,'doctorShares',id),{active:false,updatedAt:dbSDK.serverTimestamp()});},
+      async read(uid,id){if(!auth.currentUser?.emailVerified)throw Error('Sign in with your verified email to open this report.');const snap=await dbSDK.getDocFromServer(dbSDK.doc(db,'healthAccounts',uid,'doctorShares',id));if(!snap.exists())throw Error('This report is unavailable.');return snap.data();},
+      watch(uid,id,onData,onError){return dbSDK.onSnapshot(dbSDK.doc(db,'healthAccounts',uid,'doctorShares',id),snap=>{if(!snap.metadata.fromCache)onData(snap.exists()?snap.data():null);},onError);}
     },
     async listDocuments(uid){ensure(uid);if(!storage)throw Error('Document uploads are not enabled.');const items=await fileSDK.listAll(fileSDK.ref(storage,'privateHealth/'+uid));return Promise.all(items.items.map(async ref=>{const meta=await fileSDK.getMetadata(ref);return {path:ref.fullPath,name:meta.customMetadata?.displayName||ref.name,size:meta.size};}));},
     async upload(uid,file){ensure(uid);if(!storage)throw Error('Document uploads are not enabled.');if(!['application/pdf','image/jpeg','image/png'].includes(file.type)||file.size>10*1024*1024)throw Error('Choose a PDF, JPG or PNG up to 10 MB.');const destination=fileSDK.ref(storage,'privateHealth/'+uid+'/'+crypto.randomUUID());await fileSDK.uploadBytes(destination,file,{contentType:file.type,customMetadata:{displayName:file.name.slice(0,160)}});},

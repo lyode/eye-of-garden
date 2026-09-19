@@ -10,3 +10,6 @@ export const firebaseConfig = {
   messagingSenderId: '1043903336556',
   appId: '1:1043903336556:web:9374e611a5bd487793c849'
 };
+
+// Activate after the additional doctor-sharing rules are approved and tested.
+export const doctorSharingEnabled = false;
