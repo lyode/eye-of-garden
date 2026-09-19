@@ -11,20 +11,24 @@
 @media screen {
   #medication {
     --eog-forest:#302a0b;--eog-muted:#665b29;--eog-line:#dfd598;
-    --med-yellow:#ffdd33;--med-gold:#ffcc00;--med-lemon:#fcf75e;
-    --med-soft:#ffff99;--med-paper:#ffffe0;
+    --med-yellow:#ffdd33;--med-gold:#ffbe00;--med-lemon:#fff0ad;
+    --med-soft:#faf1b5;--med-paper:#fffcef;
+    --med-orange:#ff7d2b;--med-peach:#ffbd94;--med-blue:#9ec6e5;
     color:var(--eog-forest);
   }
   #medication h2,#medication h3,#medication h4,#medication summary {color:var(--eog-forest)}
   #medication .eog-small,#medication .eog-eyebrow {color:var(--eog-muted)}
-  #medication .eog-eyebrow:before {background:#a28b22}
+  #medication .eog-eyebrow:before {background:var(--med-orange)}
   #medication .eog-panel,#medication dialog {background:var(--med-paper);border-color:var(--eog-line);color:var(--eog-forest)}
   #medication .patient-day-summary {background:var(--med-yellow);color:var(--eog-forest);box-shadow:0 12px 30px #8c74151a}
   #medication .patient-scope {background:var(--med-soft);border-color:#b79b22;color:var(--eog-forest)}
   #medication .patient-quick-links a {background:var(--med-paper);border-color:#a28b22;color:var(--eog-forest)!important}
   #medication .patient-quick-links a:hover {background:var(--med-soft)}
+  #medication .patient-quick-links a[href="#patient-profile"] {background:var(--med-peach)}
+  #medication .patient-quick-links a[href="#patient-voice"] {background:var(--med-blue)}
   #medication .tracker-stats>div {background:var(--med-soft);border-color:var(--eog-line)}
   #medication .tracker-stats>div:first-child {background:var(--med-lemon)}
+  #medication .tracker-stats>div:last-child {background:#e7f2fa;border-color:#aac8df}
   #medication button,#medication .eog-button,#medication #patient-tools button,#medication #med-doctor-summary {
     background:var(--med-yellow);color:var(--eog-forest);border-color:#a28b22;
   }
@@ -37,6 +41,10 @@
   #medication .tracker-week-day {background:var(--med-paper)!important;color:var(--eog-forest)!important;border-color:var(--eog-line)!important}
   #medication .tracker-week-day[aria-pressed=true] {background:var(--med-soft)!important;border-color:#665b29!important}
   #medication .patient-tools-nav a {background:var(--med-soft);border-color:#b79b22;color:var(--eog-forest)}
+  #medication .patient-tools-nav a[href="#patient-profile"] {background:var(--med-peach);border-color:#c58e68}
+  #medication .patient-tools-nav a[href="#patient-voice"] {background:var(--med-blue);border-color:#7fa5c2}
+  #medication #patient-profile {background:#fff0e5;border-color:#e5bda0}
+  #medication #patient-voice {background:#edf5fb;border-color:#aac8df}
   #medication input:not([type=checkbox]),#medication select,#medication textarea {background:#fffef5;color:var(--eog-forest);border-color:#a29761}
   #medication input[type=checkbox] {accent-color:#66551b}
   #medication .med-notice,#medication #private-account [data-status],#medication #patient-tools [role=status] {background:var(--med-soft);border-color:#a28b22;color:var(--eog-forest)}
@@ -44,7 +52,7 @@
   #medication .patient-clip a {color:var(--eog-forest)}
   #medication .review-table th,#medication .doctor-summary-totals {background:var(--med-soft)}
   #medication .review-table th,#medication .review-table td {border-color:var(--eog-line)}
-  #medication .doctor-summary-totals {border-left-color:#a28b22}
+  #medication .doctor-summary-totals {border-left-color:var(--med-orange)}
   #medication :is(button,a,input,textarea,select):focus-visible {outline:3px solid #66551b;outline-offset:3px}
   .eog-header button[data-eog-route=medication][aria-current=page] {background:#ffdd33;color:#302a0b}
 }
