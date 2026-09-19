@@ -112,7 +112,20 @@
   function describe(r){return r?.status==='taken'?({en:'Taken',ms:'Diambil',zh:'已服用'}[lang]||'Taken'):t(r?.status==='skipped'?'skipped':r?.status==='missed'?'missed':'unknown');}
   function renderRows(){
     const rows=occurrences(selectedDay);
-    section.querySelector('#med-doses').innerHTML=rows.length?rows.map(o=>{const r=data.records[o.id];return `<article class="med-dose"><div><strong>${esc(o.time)} · ${esc(o.s.name)}</strong><small>${esc(o.date)}</small><p>${esc(o.s.dose)}${o.s.asNeeded?' · Only when needed':''}</p><p>${esc(describe(r))}${r?.status==='taken'?` · ${esc(new Date(r.actual).toLocaleString())}`:''}</p>${r?.note?`<p>${esc(r.note)}</p>`:''}</div><div class="eog-actions">${(!r||r.status==='unknown')&&selectedDay===day()?`<button type="button" class="eog-button" data-taken="${o.id}">${t('taken')}</button>`:''}<button type="button" class="eog-button eog-secondary" data-record="${o.id}">${t('record')}</button></div></article>`;}).join(''):`<p>${t('empty')}</p>`;
+    section.querySelector('#med-doses').innerHTML=rows.length?rows.map(o=>{const r=data.records[o.id];return `<article class="med-dose"><div><strong>${esc(o.s.name)}</strong><p>${esc(o.s.dose)}${o.s.asNeeded?' · Only when needed':''}</p><p>${esc(describe(r))}${r?.status==='taken'?` · ${esc(new Date(r.actual).toLocaleString())}`:''}</p>${r?.note?`<p>${esc(r.note)}</p>`:''}</div><div class="eog-actions">${(!r||r.status==='unknown')&&selectedDay===day()?`<button type="button" class="eog-button" data-taken="${o.id}">${t('taken')}</button>`:''}<button type="button" class="eog-button eog-secondary" data-record="${o.id}">${t('record')}</button></div></article>`;}).join(''):`<p>${t('empty')}</p>`;
+    const doseList=section.querySelector('#med-doses');
+    const doseArticles=[...doseList.children];let timeGroup=null,lastTime=null;
+    rows.forEach((o,i)=>{
+      if(o.time!==lastTime){
+        lastTime=o.time;timeGroup=document.createElement('div');timeGroup.className='med-time-group';timeGroup.setAttribute('role','group');
+        const label=o.time.split('–').map(time=>{const [h,m]=time.split(':').map(Number);return `${h%12||12}${m?':'+String(m).padStart(2,'0'):''}${h<12?'am':'pm'}`;}).join('–');
+        timeGroup.setAttribute('aria-label',label+' · '+o.date);
+        const heading=document.createElement('h3');heading.textContent=label;
+        const dateLabel=document.createElement('p');dateLabel.className='eog-small med-slot-date';dateLabel.textContent=o.date;
+        timeGroup.append(heading,dateLabel);doseList.append(timeGroup);
+      }
+      timeGroup.append(doseArticles[i]);
+    });
     section.querySelector('#med-schedules').innerHTML=data.schedules.length?data.schedules.map(s=>`<article class="med-dose"><div><strong>${esc(s.name)}</strong><p>${esc(s.dose)} · ${esc(s.times.join(', '))}</p><small>${s.start} → ${s.end||'…'}</small></div>${!s.end?`<button type="button" class="eog-button eog-secondary" data-end="${s.id}">${t('stop')}</button>`:''}</article>`).join(''):`<p>${t('emptySchedule')}</p>`;
     trackerRows();tick();
   }
