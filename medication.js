@@ -228,7 +228,7 @@
     if(window.EOG_PREVIEW)return;
     const config=await import('./private-account/config.mjs');if(!config.privateAccountEnabled)return;
     accountHost=document.createElement('div');accountHost.className='eog-panel';accountHost.id='private-account';section.append(accountHost);render();
-    const {mountPrivateAccount}=await import('./private-account/account-panel.mjs');
+    const {mountPrivateAccount}=await import('./private-account/account-panel.mjs?v=20260919-patient2');
     await mountPrivateAccount(accountHost,{
       setLoading(loading){for(const child of section.children)if(child!==accountHost)child.inert=loading;},
       sessionChanged(user,api){activeAccountApi=user?.emailVerified?api:null;patientTools?.refresh();},
