@@ -194,6 +194,10 @@
   }
   banner.addEventListener('click',()=>{selectedDay=banner.dataset.recordDay||day();section.querySelector('#med-day').value=selectedDay;renderRows();});
   function bind(){
+    const viewBackup=document.createElement('button');viewBackup.type='button';viewBackup.className='eog-button eog-secondary';viewBackup.textContent='View / copy backup';viewBackup.id='med-view-backup';section.querySelector('#med-backup').after(viewBackup);
+    const backupDialog=document.createElement('dialog');backupDialog.className='eog-surface';backupDialog.innerHTML='<h3>Your restore file</h3><p>If downloading does not work, copy these contents into a text file ending in .json. Keep this file private. It includes the medication records and written notes currently loaded in the tracker; audio and documents are not included.</p><label>Backup contents<textarea id="med-backup-contents" readonly spellcheck="false" rows="12" style="width:100%;box-sizing:border-box"></textarea></label><button type="button" class="eog-button">Close backup</button>';section.append(backupDialog);
+    viewBackup.onclick=()=>{backupDialog.querySelector('textarea').textContent=JSON.stringify({...data,exportedAt:new Date().toISOString(),timezone:Intl.DateTimeFormat().resolvedOptions().timeZone},null,2);backupDialog.showModal();};
+    backupDialog.querySelector('button').onclick=()=>backupDialog.close();backupDialog.addEventListener('close',()=>{backupDialog.querySelector('textarea').textContent='';});
     section.querySelector('#med-save-device').onclick=()=>{if(accountGuest){if(persist())status('Account changes queued. Check the online sync status.');return;}remember=true;section.querySelector('#med-remember').checked=true;if(persist())status('Records saved on this device. You can close and reopen this browser.');};
     section.querySelector('#med-doctor-summary').onclick=()=>{if(!patientTools){status('Doctor summary is still loading. Please try again shortly.');return;}patientTools.generateSummary({from:section.querySelector('#med-from').value,to:section.querySelector('#med-to').value});};
     section.querySelector('#med-backup-top').onclick=()=>section.querySelector('#med-backup').click();
@@ -247,3 +251,4 @@
   preparePatientTools().catch(()=>status('Patient tools could not load. Your medication records are unchanged.'));
   prepareAccount().catch(()=>{if(accountHost)accountHost.textContent='Private account connection failed. Device-only records are unchanged.';});
 })();
+
