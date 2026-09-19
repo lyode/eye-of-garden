@@ -17,7 +17,7 @@ export async function connectFirebase(){
     auth,
     observe:fn=>authSDK.onAuthStateChanged(auth,fn),
     signIn:(email,password)=>authSDK.signInWithEmailAndPassword(auth,email,password),
-    async register(email,password){const result=await authSDK.createUserWithEmailAndPassword(auth,email,password);await authSDK.sendEmailVerification(result.user);return result;},
+    register:(email,password)=>authSDK.createUserWithEmailAndPassword(auth,email,password),
     verify:()=>authSDK.sendEmailVerification(auth.currentUser),
     async refresh(){await auth.currentUser.reload();await auth.currentUser.getIdToken(true);return auth.currentUser;},
     reset:email=>authSDK.sendPasswordResetEmail(auth,email),
