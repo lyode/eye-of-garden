@@ -1,4 +1,4 @@
-/* Device-only medication prototype. No network calls or dosing recommendations. */
+/* Medication tracker with optional verified private-account sync. No dosing recommendations. */
 (() => {
   'use strict';
   const words={
@@ -21,7 +21,7 @@
     const toolbar=document.createElement('div');toolbar.className='tracker-tabs';toolbar.setAttribute('role','group');toolbar.setAttribute('aria-label',t('title'));
     toolbar.innerHTML=['daily','weekly','list'].map(v=>`<button type="button" class="eog-button eog-secondary" data-view="${v}" aria-pressed="${trackerView===v}">${t(v)}</button>`).join('');
     const stats=document.createElement('div');stats.id='tracker-stats';stats.className='tracker-stats';
-    heading.after(toolbar,stats);stats.insertAdjacentHTML('afterend','<div class="eog-panel"><div class="eog-actions"><button type="button" class="eog-button" id="med-save-device">Save records on this device</button><button type="button" class="eog-button eog-secondary" id="med-backup-top">Download backup</button></div><p id="tracker-storage-status" class="eog-small" role="status"></p><p class="eog-small">First save changes inside the medicine or day editor, then save records here. Once enabled, confirmed changes save automatically in this browser. Clearing browser data or using private browsing can remove records. Keep a downloaded backup.</p><p class="eog-small">Online sync is not connected. Records and doctor documents are not uploaded to a private account.</p></div>');
+    heading.after(toolbar,stats);stats.insertAdjacentHTML('afterend','<div class="eog-panel"><div class="eog-actions"><button type="button" class="eog-button" id="med-save-device">Save records on this device</button><button type="button" class="eog-button eog-secondary" id="med-backup-top">Download backup</button></div><p id="tracker-storage-status" class="eog-small" role="status"></p><p class="eog-small" id="med-save-help">First save changes inside the medicine or day editor, then save records here. Once enabled, confirmed changes save automatically in this browser. Clearing browser data or using private browsing can remove records. Keep a downloaded backup.</p><p class="eog-small" id="med-cloud-note">Online sync is not connected. Records and doctor documents are not uploaded to a private account.</p></div>');
     const daily=section.querySelector('#med-doses').parentElement;daily.id='tracker-daily';
     const dateInput=section.querySelector('#med-day');
     const dateNav=document.createElement('div');dateNav.className='eog-actions';dateNav.innerHTML=`<button type="button" class="eog-button eog-secondary" data-day-step="-1" aria-label="${t('previous')}">←</button><button type="button" class="eog-button eog-secondary" data-day-step="0">${t('returnToday')}</button><button type="button" class="eog-button eog-secondary" data-day-step="1" aria-label="${t('next')}">→</button>`;dateInput.after(dateNav);
@@ -106,10 +106,11 @@
   const card=document.createElement('aside');card.className='eog-iris-strip';card.dataset.noTranslate='';document.querySelector('#home .eog-hero-grid').after(card);
   const banner=document.createElement('aside');banner.className='med-alert eog-surface';banner.dataset.noTranslate='';banner.hidden=true;banner.setAttribute('role','status');document.querySelector('.eog-header').after(banner);
   let formKey=null;
+  let accountHost=null,accountGuest=null;const accountChanges=new Set();
   const status=message=>section.querySelector('#med-message').textContent=message;
   let storageFailed=false;
-  function storageStatus(){const el=section.querySelector('#tracker-storage-status');if(el)el.textContent=storageFailed?'Not saved: device storage failed. Download a backup before closing.':remember?'Saved on this device · confirmed changes save automatically. Not synced online.':t('volatile');}
-  function persist(){if(remember){try{localStorage.setItem(key,JSON.stringify(data));storageFailed=false;}catch{storageFailed=true;storageStatus();status(t('storageError'));return false;}}storageStatus();return true;}
+  function storageStatus(){const el=section.querySelector('#tracker-storage-status');if(el)el.textContent=accountGuest?'Private account view. Check online save status below.':storageFailed?'Not saved: device storage failed. Download a backup before closing.':remember?'Saved on this device · confirmed changes save automatically. Not synced online.':t('volatile');}
+  function persist(){if(accountGuest){try{for(const listener of accountChanges)listener(JSON.parse(JSON.stringify(data)));return true;}catch{status('Account changes could not be saved. Download a backup.');return false;}}if(remember){try{localStorage.setItem(key,JSON.stringify(data));storageFailed=false;}catch{storageFailed=true;storageStatus();status(t('storageError'));return false;}}storageStatus();return true;}
 
   function occurrences(date){return data.schedules.flatMap(s=>(data.dayPlans&&Object.hasOwn(data.dayPlans,date)?data.dayPlans[date].includes(s.id):date>=s.start&&(!s.end||date<=s.end)&&!s.dayOnly)?s.times.map(time=>({s,date,time,id:`${s.id}|${date}|${time}`})):[]).sort((a,b)=>(slotStart(a.time)<'06:00'?1:0)-(slotStart(b.time)<'06:00'?1:0)||a.time.localeCompare(b.time));}
   function describe(r){return r?.status==='taken'?({en:'Taken',ms:'Diambil',zh:'已服用'}[lang]||'Taken'):t(r?.status==='skipped'?'skipped':r?.status==='missed'?'missed':'unknown');}
@@ -144,7 +145,7 @@
 
     nav.textContent=t('title');card.innerHTML=`<div><h3>${t('title')}</h3><p>${t('homeDesc')}</p></div><button type="button" class="eog-button" data-eog-route="medication">${t('home')} →</button>`;
     section.innerHTML=`<div class="eog-eyebrow">${t('title')}</div><h2 tabindex="-1">${t('intro')}</h2><p class="med-notice">${t('limit')}</p><p class="eog-small">${t('device')} ${esc(Intl.DateTimeFormat().resolvedOptions().timeZone)}</p><label class="med-check"><input id="med-remember" type="checkbox" ${remember?'checked':''}>${t('local')}</label><p class="eog-small">${t('privacy')}</p><label class="med-check"><input id="med-remind" type="checkbox" ${reminders?'checked':''}>${t('remind')}</label><p id="med-message" role="status" class="eog-status"></p><div class="eog-panel"><h3>${t('today')}</h3><label for="med-day">${t('scheduled')}</label><input id="med-day" type="date" value="${selectedDay}"><div id="med-doses"></div></div><details class="eog-panel"><summary>${t('add')}</summary><form id="med-add"><label>${t('name')}<input name="name" required maxlength="120" autocomplete="off"></label><label>${t('dose')}<input name="dose" required maxlength="240" autocomplete="off"></label><label>${t('times')}<input name="times" required placeholder="08:00, 11:00, 14:00, 17:00" autocomplete="off"></label><label>${t('start')}<input name="start" type="date" required value="${day()}"></label><button class="eog-button">${t('save')}</button></form></details><div class="eog-panel"><h3>${t('all')}</h3><p class="eog-small">${t('version')}</p><div id="med-schedules"></div></div><div class="eog-panel"><h3>${t('history')}</h3><div class="med-range"><label>${t('from')}<input id="med-from" type="date" value="${day(new Date(Date.now()-6*86400000))}" required></label><label>${t('to')}<input id="med-to" type="date" value="${day()}" required></label></div><div class="eog-actions"><button type="button" class="eog-button" id="med-report">${t('report')}</button><button type="button" class="eog-button eog-secondary" id="med-backup">${t('backup')}</button></div><label>${t('restore')}<input type="file" id="med-import" accept="application/json,.json"></label><p class="eog-small">${t('corrections')}</p></div><dialog id="med-dialog" class="eog-surface"><form id="med-edit"><h3>${t('edit')}</h3><p id="med-identity"></p><label>${t('state')}<select id="med-state"><option value="taken">${t('taken')}</option><option value="skipped">${t('skipped')}</option><option value="unknown">${t('notTaken')}</option></select></label><label>${t('actual')}<input type="datetime-local" id="med-actual"></label><label>${t('note')}<input id="med-note" maxlength="500"></label><p id="med-edit-error" role="alert"></p><div class="eog-actions"><button class="eog-button">${t('submit')}</button><button type="button" class="eog-button eog-secondary" id="med-cancel">${t('cancel')}</button></div></form></dialog><dialog id="med-end-dialog" class="eog-surface"><form id="med-end-form"><label>${t('end')}<input type="date" id="med-end-day" required></label><p id="med-end-error" role="alert"></p><div class="eog-actions"><button class="eog-button">${t('apply')}</button><button type="button" class="eog-button eog-secondary" id="med-end-cancel">${t('cancel')}</button></div></form></dialog>`;
-    trackerUI();planUI();renderRows();bind();
+    trackerUI();planUI();renderRows();bind();if(accountGuest){section.querySelector('#med-save-device').textContent='Save account changes';section.querySelector('#med-save-help').textContent='Confirm changes in the medicine or day editor. Account changes then save automatically when online. Check the account status below before closing, and keep a downloaded backup.';}if(accountHost){section.append(accountHost);const cloudNote=section.querySelector('#med-cloud-note');cloudNote.textContent='Device-only plans stay separate until you choose to copy them into an account. ';const accountButton=document.createElement('button');accountButton.type='button';accountButton.className='eog-button eog-secondary';accountButton.textContent='My account / Sync';accountButton.onclick=()=>{accountHost.scrollIntoView({behavior:'smooth',block:'start'});accountHost.querySelector('h3')?.focus({preventScroll:true});};cloudNote.append(accountButton);}
     if(trackerDraft){
       for(const [selector,value] of Object.entries(trackerDraft.fields)){const el=section.querySelector(selector);if(el)el.value=value;}
       section.querySelector('#med-add').parentElement.open=trackerDraft.openAdd;
@@ -172,7 +173,7 @@
       if(Object.keys(data.records).some(k=>k.split('|')[1]===date)){error.textContent='This day already has intake records. Choose another day to keep those records safe.';return;}
       if(occurrences(date).length&&!dialog.querySelector('#plan-replace').checked){error.textContent='Tick Replace the planned medicines to confirm the plan for this day.';return;}
       const next=JSON.parse(JSON.stringify(data));const now=new Date().toISOString();const list=draft.map(s=>({id:'day-'+(globalThis.crypto?.randomUUID?.()||Date.now().toString(36)+'-'+Math.random().toString(36).slice(2)),name:s.name.trim(),dose:s.dose.trim(),times:[s.time],start:date,end:date,dayOnly:true,asNeeded:!!s.asNeeded,instructions:s.instructions||'',createdAt:now}));next.schedules.push(...list);next.dayPlans=next.dayPlans||{};next.dayPlans[date]=list.map(s=>s.id);
-      try{validate(next);}catch{error.textContent='Could not save this plan. Download a backup and check the entries.';return;}data=next;const savedToDevice=persist();selectedDay=date;section.querySelector('#med-day').value=date;renderRows();dialog.close();status(!savedToDevice?t('storageError'):remember?'Day plan saved on this device. No doses marked taken.':'Day plan updated for this session. Use Save records on this device before closing.');
+      try{validate(next);}catch{error.textContent='Could not save this plan. Download a backup and check the entries.';return;}data=next;const savedToDevice=persist();selectedDay=date;section.querySelector('#med-day').value=date;renderRows();dialog.close();status(!savedToDevice?t('storageError'):accountGuest?'Day plan saved locally for your account. Check online sync status. No doses marked taken.':remember?'Day plan saved on this device. No doses marked taken.':'Day plan updated for this session. Use Save records on this device before closing.');
     };
   }
 
@@ -185,12 +186,12 @@
   }
   banner.addEventListener('click',()=>{selectedDay=day();section.querySelector('#med-day').value=selectedDay;renderRows();});
   function bind(){
-    section.querySelector('#med-save-device').onclick=()=>{remember=true;section.querySelector('#med-remember').checked=true;if(persist())status('Records saved on this device. You can close and reopen this browser.');};
+    section.querySelector('#med-save-device').onclick=()=>{if(accountGuest){if(persist())status('Account changes queued. Check the online sync status.');return;}remember=true;section.querySelector('#med-remember').checked=true;if(persist())status('Records saved on this device. You can close and reopen this browser.');};
     section.querySelector('#med-backup-top').onclick=()=>section.querySelector('#med-backup').click();
 
     section.querySelector('#med-day').onchange=e=>{if(validDay(e.target.value)){selectedDay=e.target.value;renderRows();}};
     section.querySelector('#med-remind').onchange=e=>{reminders=e.target.checked;tick();};
-    section.querySelector('#med-remember').onchange=e=>{remember=e.target.checked;if(remember){if(persist())status(t('stored'));}else{try{localStorage.removeItem(key);status(t('volatile'));}catch{status(t('storageError'));}}};
+    section.querySelector('#med-remember').onchange=e=>{if(accountGuest){e.target.checked=false;status('Account records use separate storage.');return;}remember=e.target.checked;if(remember){if(persist())status(t('stored'));}else{try{localStorage.removeItem(key);status(t('volatile'));}catch{status(t('storageError'));}}};
     section.querySelector('#med-add').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target);const times=String(f.get('times')).split(/[,，]/).map(x=>x.trim());const name=String(f.get('name')).trim(),dose=String(f.get('dose')).trim(),start=String(f.get('start'));if(!name||!dose||!validDay(start)||times.some(x=>!validSlot(x))||times.length>24||new Set(times).size!==times.length){status(t('error'));return;}data.schedules.push({id:'s-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8),name,dose,medicineType:String(f.get('medicineType')),colour:String(f.get('colour')),instructions:String(f.get('instructions')).trim(),times:times.sort(),start,end:null,createdAt:new Date().toISOString()});if(persist())status(t('saved'));e.target.reset();e.target.elements.start.value=day();selectedDay=start;section.querySelector('#med-day').value=start;renderRows();};
     section.querySelector('#med-doses').onclick=e=>{const taken=e.target.closest('[data-taken]'),edit=e.target.closest('[data-record]');if(taken){record(taken.dataset.taken,'taken',new Date().toISOString(),'');return;}if(edit){formKey=edit.dataset.record;const r=data.records[formKey];section.querySelector('#med-identity').textContent=formKey.split('|').slice(1).join(' ');section.querySelector('#med-state').value=r?.status||'taken';section.querySelector('#med-actual').disabled=!!r&&r.status!=='taken';section.querySelector('#med-actual').value=r?.actual?local(new Date(r.actual)):local();section.querySelector('#med-note').value=r?.note||'';section.querySelector('#med-edit-error').textContent='';section.querySelector('#med-dialog').showModal();}};
     section.querySelector('#med-state').onchange=e=>{section.querySelector('#med-actual').disabled=e.target.value!=='taken';};
@@ -206,5 +207,22 @@
   }
   document.addEventListener('eog:language',e=>{lang=e.detail;render();});
   document.getElementById('eogLanguage').addEventListener('change',e=>{if(!window.setLanguage){lang=e.target.value;render();}});
+
+  // Private accounts stay gated until server rules and isolation tests are verified.
+  async function prepareAccount(){
+    if(window.EOG_PREVIEW)return;
+    const config=await import('./private-account/config.mjs');if(!config.privateAccountEnabled)return;
+    accountHost=document.createElement('div');accountHost.className='eog-panel';accountHost.id='private-account';section.append(accountHost);render();
+    const {mountPrivateAccount}=await import('./private-account/account-panel.mjs');
+    await mountPrivateAccount(accountHost,{
+      setLoading(loading){for(const child of section.children)if(child!==accountHost)child.inert=loading;},
+      enterAccount(){if(!accountGuest)accountGuest={data:JSON.parse(JSON.stringify(data)),remember};data={version:1,schedules:[],records:{}};remember=false;render();},
+      leaveAccount(){if(!accountGuest)return;data=accountGuest.data;remember=accountGuest.remember;accountGuest=null;render();},
+      showAccount(next){if(!accountGuest)return;data=next?validate(JSON.parse(JSON.stringify(next))):{version:1,schedules:[],records:{}};renderRows();},
+      guestCopy(){return JSON.parse(JSON.stringify(accountGuest?accountGuest.data:data));},
+      onChange(listener){accountChanges.add(listener);return()=>accountChanges.delete(listener);}
+    });
+  }
   document.addEventListener('visibilitychange',tick);setInterval(tick,15000);render();
+  prepareAccount().catch(()=>{if(accountHost)accountHost.textContent='Private account connection failed. Device-only records are unchanged.';});
 })();

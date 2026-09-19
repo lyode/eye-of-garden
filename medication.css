@@ -4,3 +4,5 @@
 #medication #plan-dialog{box-sizing:border-box;max-height:88dvh;overflow:auto;width:650px}#plan-rows fieldset{min-width:0;border:1px solid #c8d0be;border-radius:12px;margin:18px 0;padding:16px}#plan-rows label{display:block}#plan-dialog input{box-sizing:border-box}#plan-dialog .med-check{display:flex}
 
 #med-doses .med-time-group{border:1px solid #c8d0be;border-radius:14px;background:#fffef9;padding:18px;margin:22px 0}#med-doses .med-time-group>h3{margin:0;font-size:26px;color:#294b3a}#med-doses .med-slot-date{margin:4px 0 12px}#med-doses .med-time-group>.med-dose:last-child{border-bottom:0;margin-bottom:0}@media(max-width:600px){#med-doses .med-time-group{padding:14px}}
+
+#private-account button{min-height:44px;margin:6px 8px 6px 0;padding:10px 16px;border-radius:8px;white-space:normal;max-width:100%;font-size:16px}#private-account label{display:block}#private-account input{box-sizing:border-box}#private-account [data-status]{padding:12px;background:#edf0e5;border-radius:8px}#private-account{scroll-margin-top:24px}
