@@ -7,3 +7,7 @@
 .patient-quick-links{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}.patient-quick-links a{padding:10px 12px;min-height:44px;display:flex;align-items:center;border:1px solid #ffffff70;border-radius:9px;color:#fff!important;text-decoration:none;font:600 15px system-ui}.patient-quick-links a:hover{background:#ffffff20}
 
 .doctor-summary-totals{padding:18px;border-left:5px solid #315d46;background:#edf0e5;font-weight:600;line-height:1.8}#med-doctor-summary{background:#234b3d;border:2px solid #234b3d;font-weight:700}
+@media print{
+  body.printing-patient-report>:not(.wrap),body.printing-patient-report>.wrap>:not(#medication),body.printing-patient-report #medication>:not(#patient-tools),body.printing-patient-report #patient-tools>:not(#patient-review),body.printing-patient-report #patient-review>:not(#patient-report){display:none!important}
+  body.printing-patient-report,body.printing-patient-report>.wrap,body.printing-patient-report #medication,body.printing-patient-report #patient-tools,body.printing-patient-report #patient-review,body.printing-patient-report #patient-report{display:block!important;position:static!important;margin:0!important;padding:0!important;border:0!important;box-shadow:none!important;max-width:none!important;width:100%!important;background:white!important}
+}
