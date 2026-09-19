@@ -1,4 +1,4 @@
-import {cleanProfile,buildReport,renderReport} from './records.mjs?v=20260920-summary1';
+import {cleanProfile,buildReport,renderReport} from './records.mjs?v=20260920-intakeday1';
 import {mountVoice} from './voice.mjs';
 import {doctorSharingEnabled} from '../private-account/config.mjs';
 export function mountPatientTools(host,bridge){
