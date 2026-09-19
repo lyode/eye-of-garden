@@ -1,0 +1,126 @@
+/* Owner's botanical palette: warm, cheerful surfaces with dark, readable type. */
+@media screen {
+  body.eog-redesign {
+    --garden-peach:#f8ca9d;--garden-mint:#8ec9bb;--garden-sage:#c5d7c0;
+    --garden-coral:#fb8e7e;--garden-yellow:#f2cf59;--garden-orange:#fa6e4f;
+    --garden-ink:#183f46;--garden-teal:#20555a;--garden-paper:#fffdf8;
+    --eog-forest:var(--garden-ink);--eog-muted:#526966;--eog-line:#d4dfd7;
+    background:#f7f8f3;color:var(--garden-ink);
+  }
+  body.eog-redesign .eog-header {background:var(--garden-paper);max-width:none;border-bottom:1px solid var(--eog-line);padding-block:18px}
+  body.eog-redesign .eog-brand {color:var(--garden-ink);font-weight:600!important;letter-spacing:-.6px}
+  body.eog-redesign .eog-brand svg {background:var(--garden-mint);border-radius:50%;padding:5px;width:40px;height:40px}
+  body.eog-redesign .eog-header nav {gap:5px}
+  body.eog-redesign .eog-header nav button {font-size:14px;font-weight:600;border-radius:12px}
+  body.eog-redesign .eog-header nav button:hover {background:#edf4ef}
+  body.eog-redesign .eog-header nav button[aria-current=page] {background:var(--garden-mint);color:var(--garden-ink)}
+  body.eog-redesign .eog-header select {border-color:#96ada5;background:var(--garden-paper)}
+  body.eog-redesign .eog-footer {background:var(--garden-paper);color:var(--eog-muted)}
+  body.eog-redesign .eog-surface h2,body.eog-redesign .eog-surface h3 {color:var(--garden-ink)}
+  body.eog-redesign .eog-eyebrow {color:var(--garden-teal);font-size:12px;letter-spacing:1.9px}
+  body.eog-redesign .eog-eyebrow:before {width:9px;height:9px;border-radius:50%;background:var(--garden-orange)}
+  body.eog-redesign :focus-visible {outline:3px solid var(--garden-teal)!important;outline-offset:4px}
+  body.eog-redesign .eog-surface .eog-button {background:var(--garden-teal);border-color:var(--garden-teal);color:white;border-radius:12px;font-weight:650;min-height:52px}
+  body.eog-redesign .eog-surface .eog-button:hover {background:#183f46;border-color:#183f46}
+  body.eog-redesign .eog-surface .eog-button.eog-secondary {background:var(--garden-paper);color:var(--garden-ink);border-color:#829f97}
+  body.eog-redesign .eog-surface .eog-button.eog-secondary:hover {background:#e5f1eb}
+  body.eog-redesign .eog-subpage .eog-panel {background:var(--garden-paper);border-color:var(--eog-line);border-radius:20px}
+  body.eog-redesign .eog-resource {background:var(--garden-paper);border-color:var(--eog-line);border-radius:18px;color:var(--garden-ink)}
+  body.eog-redesign .eog-resource:hover {background:#edf4ed;border-color:#829f97}
+  body.eog-redesign .eog-moods button {color:var(--garden-ink);background:var(--garden-paper);border-color:#829f97}
+  body.eog-redesign .eog-moods button[aria-pressed=true] {background:var(--garden-mint);border-color:var(--garden-teal)}
+  body.eog-redesign .eog-hero-grid {gap:56px;padding-block:56px 38px}
+  body.eog-redesign #home.eog-welcome h1 {color:var(--garden-ink)!important;letter-spacing:-2px!important;line-height:1.1!important}
+  body.eog-redesign .eog-intro {color:var(--eog-muted);font-size:18px}
+  body.eog-redesign .eog-hero-grid .eog-eyebrow {display:inline-flex;padding:7px 13px;border-radius:30px;background:#e2eee6;letter-spacing:1.4px}
+  body.eog-redesign #home .eog-button[data-eog-route=medication] {background:var(--garden-yellow);color:var(--garden-ink);border-color:#9c8535}
+  body.eog-redesign #home .eog-button[data-eog-route=medication]:hover {background:var(--garden-peach)}
+  body.eog-redesign .eog-hero-photo {border-radius:100px 28px 100px 28px;border:8px solid var(--garden-sage);box-shadow:12px 12px 0 var(--garden-peach);min-height:430px}
+  body.eog-redesign .eog-hero-photo img {filter:saturate(.9)}
+  body.eog-redesign .eog-hero-photo:after {background:linear-gradient(transparent,#183f46db)}
+  body.eog-redesign .eog-welcome-line {margin-top:24px;border:0;border-radius:18px;background:#e4eee1;padding:20px 25px;color:var(--eog-muted)}
+  body.eog-redesign .eog-welcome-line span:first-child {color:var(--garden-ink)}
+  body.eog-redesign .eog-section-heading p,body.eog-redesign .eog-card p {color:var(--eog-muted)}
+  body.eog-redesign .eog-card {border:1px solid var(--eog-line);border-radius:20px;background:var(--garden-paper);padding:26px 22px 20px;box-shadow:0 5px 15px #183f4605}
+  body.eog-redesign .eog-card:nth-child(1) {border-top:5px solid var(--garden-peach)}
+  body.eog-redesign .eog-card:nth-child(2) {border-top:5px solid var(--garden-mint)}
+  body.eog-redesign .eog-card:nth-child(3) {border-top:5px solid var(--garden-coral)}
+  body.eog-redesign .eog-card:nth-child(4) {border-top:5px solid var(--garden-yellow)}
+  body.eog-redesign .eog-card .eog-icon {width:46px;height:46px;border-radius:15px;background:var(--garden-peach);color:var(--garden-ink)}
+  body.eog-redesign .eog-card:nth-child(2) .eog-icon {background:var(--garden-mint)}
+  body.eog-redesign .eog-card:nth-child(3) .eog-icon {background:var(--garden-coral)}
+  body.eog-redesign .eog-card:nth-child(4) .eog-icon {background:var(--garden-yellow)}
+  body.eog-redesign .eog-card .eog-text-button {color:var(--garden-ink);font-weight:650}
+  body.eog-redesign .eog-iris-strip {background:#e5f1eb;border:1px solid #cadfd5;border-radius:20px}
+  body.eog-redesign .eog-iris-mark {background:var(--garden-peach);border-color:#d8b18a;color:var(--garden-ink)}
+  body.eog-redesign .eog-iris-strip p {color:var(--eog-muted)}
+  body.eog-redesign .night-entry {border-radius:20px;border-color:var(--garden-teal)}
+  body.eog-redesign .night-entry h3 {color:#fffdf8}
+  body.eog-redesign .night-entry .eog-button {background:var(--garden-mint);color:var(--garden-ink);border-color:var(--garden-mint)}
+
+  body.eog-redesign #medication {
+    --eog-forest:var(--garden-ink);--eog-muted:#526966;--eog-line:#d4dfd7;
+    --med-yellow:var(--garden-yellow);--med-gold:var(--garden-peach);--med-lemon:#fff1c1;
+    --med-soft:#e4eee1;--med-paper:var(--garden-paper);--med-orange:var(--garden-orange);
+    --med-peach:var(--garden-peach);--med-blue:var(--garden-mint);
+    color:var(--garden-ink);
+  }
+  body.eog-redesign #medication .patient-day-summary {position:relative;isolation:isolate;overflow:hidden;background:var(--garden-teal);color:white;border:0;border-radius:24px;box-shadow:0 10px 28px #183f4610;padding:30px}
+  body.eog-redesign #medication .patient-day-summary:after {content:"";position:absolute;z-index:-1;right:-45px;top:-68px;width:215px;height:215px;border:36px solid #8ec9bb20;border-radius:50%;pointer-events:none}
+  body.eog-redesign #medication .patient-day-summary strong {font-family:system-ui,sans-serif;font-size:clamp(24px,3vw,32px);font-weight:650;letter-spacing:-.6px}
+  body.eog-redesign #medication .patient-scope {background:#fffdf8;color:var(--garden-ink);border-color:#fffdf8;font-weight:600}
+  body.eog-redesign #medication .patient-quick-links a {background:var(--garden-yellow);color:var(--garden-ink)!important;border-color:transparent;border-radius:12px}
+  body.eog-redesign #medication .patient-quick-links a[href="#patient-profile"] {background:var(--garden-peach)}
+  body.eog-redesign #medication .patient-quick-links a[href="#patient-voice"] {background:var(--garden-mint)}
+  body.eog-redesign #medication .patient-quick-links a:hover {background:white}
+  body.eog-redesign #medication .tracker-tabs {gap:8px;padding:7px;border:1px solid var(--eog-line);background:#eaf0e9;border-radius:16px}
+  body.eog-redesign #medication .tracker-tabs button {flex:1;border:1px solid transparent;background:transparent;color:var(--garden-ink);box-shadow:none}
+  body.eog-redesign #medication .tracker-tabs button[aria-pressed=true] {background:var(--garden-mint)!important;color:var(--garden-ink)!important;border-color:#648b80;box-shadow:0 2px 5px #183f4609}
+  body.eog-redesign #medication .tracker-stats>div {background:var(--garden-paper);border-color:var(--eog-line);border-radius:16px;border-top-width:4px}
+  body.eog-redesign #medication .tracker-stats>div:nth-child(1) {background:#fff7db;border-top-color:var(--garden-yellow)}
+  body.eog-redesign #medication .tracker-stats>div:nth-child(2) {border-top-color:var(--garden-mint)}
+  body.eog-redesign #medication .tracker-stats>div:nth-child(3) {border-top-color:var(--garden-peach)}
+  body.eog-redesign #medication .tracker-stats>div:nth-child(4) {border-top-color:var(--garden-coral)}
+  body.eog-redesign #medication .tracker-stats>div:nth-child(5) {border-top-color:var(--garden-sage)}
+  body.eog-redesign #medication .tracker-stats strong {font-family:system-ui,sans-serif;font-weight:650}
+  body.eog-redesign #medication button,body.eog-redesign #medication .eog-button,body.eog-redesign #medication #patient-tools button,body.eog-redesign #medication #med-doctor-summary {background:var(--garden-teal);border-color:var(--garden-teal);color:white;border-radius:12px}
+  body.eog-redesign #medication button:hover,body.eog-redesign #medication .eog-button:hover,body.eog-redesign #medication #patient-tools button:hover {background:var(--garden-ink)}
+  body.eog-redesign #medication .eog-button.eog-secondary {background:var(--garden-paper);color:var(--garden-ink);border-color:#829f97}
+  body.eog-redesign #medication .eog-button.eog-secondary:hover {background:#e5f1eb}
+  body.eog-redesign #medication #med-doctor-summary,body.eog-redesign #medication #plan-copy {background:var(--garden-yellow);color:var(--garden-ink);border-color:#9c8535}
+  body.eog-redesign #medication #med-doctor-summary:hover,body.eog-redesign #medication #plan-copy:hover {background:var(--garden-peach)}
+  body.eog-redesign #medication .med-time-group {background:var(--garden-paper);border-color:var(--eog-line)!important;box-shadow:0 4px 18px #183f4606}
+  body.eog-redesign #medication .med-time-group>h3 {background:var(--garden-mint);color:var(--garden-ink)!important;border-radius:12px;font:700 23px/1.3 system-ui!important}
+  body.eog-redesign #medication .med-time-group:first-child>h3 {background:var(--garden-yellow)}
+  body.eog-redesign #medication .med-slot-date {font-size:14px;color:var(--eog-muted)}
+  body.eog-redesign #medication .med-dose {border-bottom-color:#e0e7df}
+  body.eog-redesign #medication .med-dose[data-status=taken] {background:#eef5eb}
+  body.eog-redesign #medication .med-dose[data-status=missed] {background:#fff0e7}
+  body.eog-redesign #medication .tracker-week-day {background:var(--garden-paper)!important;color:var(--garden-ink)!important;border-color:var(--eog-line)!important}
+  body.eog-redesign #medication .tracker-week-day[aria-pressed=true] {background:#e2eee6!important;border-color:var(--garden-teal)!important}
+  body.eog-redesign #medication .patient-tools-nav a {background:var(--garden-yellow);border-color:#9c8535;color:var(--garden-ink)}
+  body.eog-redesign #medication .patient-tools-nav a[href="#patient-profile"] {background:var(--garden-peach);border-color:#b59170}
+  body.eog-redesign #medication .patient-tools-nav a[href="#patient-voice"] {background:var(--garden-mint);border-color:#648b80}
+  body.eog-redesign #medication #patient-profile {background:#fff2e5;border-color:#e6c8a8}
+  body.eog-redesign #medication #patient-voice {background:#eaf4ef;border-color:#c8dfd4}
+  body.eog-redesign #medication input:not([type=checkbox]),body.eog-redesign #medication select,body.eog-redesign #medication textarea {background:white;color:var(--garden-ink);border-color:#829f97;border-radius:10px}
+  body.eog-redesign #medication input[type=checkbox] {accent-color:var(--garden-teal)}
+  body.eog-redesign #medication .med-notice {background:#fff3e1;border-color:var(--garden-orange);color:var(--garden-ink);border-radius:0 12px 12px 0}
+  body.eog-redesign #medication #private-account [data-status],body.eog-redesign #medication #patient-tools [role=status] {background:#e4eee1;color:var(--garden-ink);border-color:#829f97}
+  body.eog-redesign #medication .doctor-summary-totals {background:#e4eee1;border-left-color:var(--garden-teal)}
+  body.eog-redesign #medication .review-table th {background:#e4eee1}
+  body.eog-redesign #medication dialog::backdrop {background:#183f467a}
+}
+@media screen and (max-width:650px) {
+  body.eog-redesign .eog-header {padding:14px 16px}
+  body.eog-redesign .eog-header nav {gap:4px}
+  body.eog-redesign .eog-header nav button {font-size:13px;padding:9px 5px}
+  body.eog-redesign .eog-hero-grid {padding:30px 0 25px;gap:30px}
+  body.eog-redesign #home.eog-welcome h1 {font-size:43px!important;letter-spacing:-1.4px!important}
+  body.eog-redesign .eog-hero-photo {min-height:280px;margin-right:10px;border-width:6px;border-radius:70px 24px 70px 24px;box-shadow:8px 8px 0 var(--garden-peach)}
+  body.eog-redesign .eog-card {padding:20px 16px}
+  body.eog-redesign .eog-welcome-line {padding:20px}
+  body.eog-redesign #medication .patient-day-summary {padding:23px}
+  body.eog-redesign #medication .tracker-tabs button {padding:12px 9px;font-size:15px}
+}
+
