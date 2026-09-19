@@ -5,3 +5,5 @@
 @media print{body.printing-patient-report *{visibility:hidden!important}body.printing-patient-report #patient-report,body.printing-patient-report #patient-report *{visibility:visible!important}body.printing-patient-report #patient-report{position:absolute;inset:0;width:100%;display:block!important}.doctor-page main> :not(#patient-report){display:none!important}.review-table-wrap{overflow:visible}.review-table{font-size:10pt}.review-table th,.review-table td{min-width:0;padding:5px}thead{display:table-header-group}tr{break-inside:avoid}}
 
 .patient-quick-links{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}.patient-quick-links a{padding:10px 12px;min-height:44px;display:flex;align-items:center;border:1px solid #ffffff70;border-radius:9px;color:#fff!important;text-decoration:none;font:600 15px system-ui}.patient-quick-links a:hover{background:#ffffff20}
+
+.doctor-summary-totals{padding:18px;border-left:5px solid #315d46;background:#edf0e5;font-weight:600;line-height:1.8}#med-doctor-summary{background:#234b3d;border:2px solid #234b3d;font-weight:700}

@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import {cleanProfile,buildReport,reportSummary,medicationSummary,validDate} from './records.mjs';
+const data={version:1,profile:{name:'  Patient  ',notes:'private',doctor:'Not shared'},schedules:[{id:'a',name:'Example A',dose:'as prescribed',start:'2026-09-01',end:null,times:['01:00','06:00','10:00–12:00']},{id:'b',name:'Example B',dose:'as prescribed',start:'2026-09-01',end:null,times:['04:00'],asNeeded:true}],records:{'a|2026-09-19|06:00':{status:'taken',actual:'2026-09-18T22:04:00Z',note:'private dose note',revisions:[]}},remarks:[{date:'2026-09-19',kind:'doctorAdvice',text:'My recollection of advice'},{date:'2026-09-18',kind:'noteType',text:'outside range'}]};
+const report=buildReport(data,'2026-09-19','2026-09-19');assert.deepEqual(report.rows.map(r=>r.time),['06:00','10:00–12:00','01:00','04:00']);assert.equal(report.patient,'Patient');assert.equal(report.notes,undefined);assert.equal(report.doctor,undefined);assert.equal(report.rows[0].note,'');assert.equal(report.remarks.length,0);assert.deepEqual(reportSummary(report),{scheduled:3,taken:1,skipped:0,missed:0,unknown:2,asNeededTaken:0});
+const withNotes=buildReport(data,'2026-09-19','2026-09-19',{includeNotes:true});assert.equal(withNotes.rows[0].note,'private dose note');assert.equal(withNotes.remarks.length,1);
+const cloned=structuredClone(data);cloned.dayPlans={'2026-09-19':[]};assert.equal(buildReport(cloned,'2026-09-19','2026-09-19').rows.length,0);
+assert.throws(()=>buildReport(data,'2026-09-20','2026-09-19'));assert.throws(()=>buildReport(data,'2026-01-01','2026-09-19'));assert.equal(validDate('2026-02-30'),false);assert.throws(()=>cleanProfile({role:'admin'}));assert.equal(cleanProfile({name:'x'.repeat(200)}).name.length,100);
+console.log('PASS: report range, 6am-first order, PRN separation, no inferred missed doses, private fields excluded, opt-in notes, day overrides and profile validation.');
+const twoDays=buildReport(data,'2026-09-18','2026-09-19');
+const overview=medicationSummary(twoDays);
+assert.deepEqual(overview.map(r=>r.time),['06:00','10:00–12:00','01:00','04:00']);
+assert.equal(overview[0].days,2);assert.equal(overview[0].taken,1);assert.equal(overview[0].unknown,1);assert.equal(overview[0].missed,0);assert.equal(overview[3].asNeeded,true);
+assert.equal(overview[0].from,'2026-09-18');assert.equal(overview[0].to,'2026-09-19');
+const changedDose={rows:[...twoDays.rows,{...twoDays.rows[0],dose:'different prescribed dose'}]};
+assert.equal(medicationSummary(changedDose).length,overview.length+1);
+assert.deepEqual(medicationSummary({rows:[]}),[]);
+console.log('PASS: doctor summary combines matching doses across days, preserves dose changes and timing order, and never infers missed doses.');

@@ -18,14 +18,35 @@ export function buildReport(data,from,to,{includeNotes=false,timezone=Intl.DateT
   return {version:1,patient:cleanProfile(data.profile).name,from,to,timezone,generatedAt:new Date().toISOString(),rows,remarks:includeNotes?(data.remarks||[]).filter(r=>r.date>=from&&r.date<=to).map(({date,kind,text})=>({date,kind,text})):[]};
 }
 export function reportSummary(report){const count={scheduled:0,taken:0,skipped:0,missed:0,unknown:0,asNeededTaken:0};for(const r of report.rows){if(r.asNeeded){if(r.status==='taken')count.asNeededTaken++;continue;}count.scheduled++;count[['taken','skipped','missed','unknown'].includes(r.status)?r.status:'unknown']++;}return count;}
-export function renderReport(host,report){
+export function medicationSummary(report){
+  const groups=new Map();
+  for(const row of report.rows){
+    const key=JSON.stringify([row.time,row.medicine,row.dose,!!row.asNeeded]);
+    if(!groups.has(key))groups.set(key,{time:row.time,medicine:row.medicine,dose:row.dose,asNeeded:!!row.asNeeded,from:row.date,to:row.date,days:new Set(),taken:0,skipped:0,missed:0,unknown:0});
+    const group=groups.get(key);group.from=group.from<row.date?group.from:row.date;group.to=group.to>row.date?group.to:row.date;group.days.add(row.date);
+    group[['taken','skipped','missed','unknown'].includes(row.status)?row.status:'unknown']++;
+  }
+  return [...groups.values()].map(g=>({...g,days:g.days.size})).sort((a,b)=>(a.time<'06:00'?1:0)-(b.time<'06:00'?1:0)||a.time.localeCompare(b.time)||a.medicine.localeCompare(b.medicine)||a.dose.localeCompare(b.dose));
+}
+export function renderReport(host,report,{includeDetails=true}={}){
   host.replaceChildren();const add=(tag,text,parent=host)=>{const el=document.createElement(tag);el.textContent=text;parent.append(el);return el;};
-  add('h2',report.patient?report.patient+' — medication review':'Medication review');add('p',report.from+' to '+report.to+' · Recorded time zone: '+report.timezone);
+  add('h2',report.patient?report.patient+' — doctor summary':'Medication summary for doctor review');add('p',report.from+' to '+report.to+' · Recorded time zone: '+report.timezone);
   add('p','Patient-entered records for clinical discussion. Unrecorded doses are not assumed missed. Overnight entries keep their actual calendar dates.');
-  const summary=reportSummary(report);add('p',`${summary.taken} recorded taken · ${summary.unknown} not recorded · ${summary.skipped} skipped · ${summary.missed} marked missed · ${summary.asNeededTaken} as-needed doses recorded taken.`);
-  add('p','Report prepared: '+new Date(report.generatedAt).toLocaleString()+'. This is the last report the patient chose to share; it does not update automatically.');
+  const summary=reportSummary(report);add('p',`${summary.scheduled} scheduled doses · ${summary.taken} recorded taken · ${summary.unknown} not recorded · ${summary.skipped} skipped · ${summary.missed} marked missed · ${summary.asNeededTaken} as-needed doses recorded taken.`).className='doctor-summary-totals';
+  add('p','Report prepared: '+new Date(report.generatedAt).toLocaleString()+'. This report is a snapshot and does not update automatically.');
+  if(report.rows.length){
+    add('h3','Medication and timing overview');
+    add('p','Each line summarises one medicine, dose and planned time across the selected dates. Different doses remain separate. As-needed doses are counted separately from scheduled medication.');
+    const overview=add('div','');overview.className='review-table-wrap';const overviewTable=add('table','',overview);overviewTable.className='review-table';
+    const headings=add('tr','',add('thead','',overviewTable));for(const label of ['Planned time','Medicine / dose','Days planned','Taken','Not recorded','Skipped / missed'])add('th',label,headings).scope='col';
+    const overviewBody=add('tbody','',overviewTable);
+    for(const group of medicationSummary(report)){const tr=add('tr','',overviewBody);for(const text of [group.time,group.medicine+' — '+group.dose+(group.asNeeded?' (as needed)':''),group.days+' day(s) · '+group.from+(group.to!==group.from?' to '+group.to:''),String(group.taken),group.asNeeded?'Not applicable':String(group.unknown),group.asNeeded?'Not applicable':group.skipped+' / '+group.missed])add('td',text,tr);}
+  }
+  if(report.remarks.length){add('h3','Daily notes for discussion');for(const r of report.remarks)add('p',r.date+' · '+(r.kind==='doctorAdvice'?'Doctor advice (patient note): ':'')+r.text);}
+  if(!includeDetails&&report.rows.some(r=>r.note)){add('h3','Dose notes for discussion');for(const r of report.rows.filter(r=>r.note))add('p',r.date+' · '+r.time+' · '+r.medicine+': '+r.note);}
+  if(!report.rows.length)add('p','No planned doses in this date range.');
+  if(!includeDetails)return;
+  add('h3','Detailed dose record');
   const wrap=add('div','');wrap.className='review-table-wrap';const table=add('table','',wrap);table.className='review-table';const head=add('tr','',add('thead','',table));for(const title of ['Date / planned time','Medicine / dose','Record','Actual time','Note'])add('th',title,head).scope='col';const body=add('tbody','',table);
   for(const r of report.rows){const tr=add('tr','',body);add('td',r.date+' · '+r.time,tr);add('td',r.medicine+' — '+r.dose+(r.asNeeded?' (as needed)':''),tr);add('td',r.status==='unknown'?'Not recorded':r.status,tr);let actual='—';if(r.actual){try{actual=new Intl.DateTimeFormat('en-GB',{dateStyle:'short',timeStyle:'short',timeZone:report.timezone}).format(new Date(r.actual));}catch{actual=r.actual;}}add('td',actual,tr);add('td',r.note+(r.corrections?' · '+r.corrections+' correction(s) recorded':''),tr);}
-  if(!report.rows.length)add('p','No planned doses in this date range.');
-  if(report.remarks.length){add('h3','Notes selected by the patient');for(const r of report.remarks)add('p',r.date+' · '+r.text);}
 }
