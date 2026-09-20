@@ -1,5 +1,5 @@
 export function cleanProfile(value={}) {
-  const limits={name:100,role:24,condition:120,doctor:100,clinic:120,notes:500};
+  const limits={name:100,role:24,condition:120,doctor:100,clinic:120,notes:500,nickname:60,bio:240,location:100,languages:100,interests:240,diagnosisYear:4,allergies:500,mobility:500,supportName:100,supportRelationship:60,supportPhone:60};
   const result={};for(const [key,max] of Object.entries(limits)){if(value[key]!==undefined&&typeof value[key]!=='string')throw Error('Check your profile fields.');result[key]=(value[key]||'').trim().slice(0,max);}
   if(!['','patient','care-partner'].includes(result.role))throw Error('Choose patient or care partner.');
   return result;

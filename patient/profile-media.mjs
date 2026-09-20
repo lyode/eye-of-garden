@@ -1,0 +1,5 @@
+let opening;
+function database(){if(!opening)opening=new Promise((resolve,reject)=>{const request=indexedDB.open('eog-profile-media-v1',1);request.onupgradeneeded=()=>request.result.createObjectStore('media',{keyPath:'key'});request.onsuccess=()=>resolve(request.result);request.onerror=()=>{opening=null;reject(request.error);};});return opening;}
+export const mediaKey=(scope,kind)=>JSON.stringify([scope,kind]);
+export async function readMedia(scope,kind){const db=await database();return new Promise((resolve,reject)=>{const r=db.transaction('media').objectStore('media').get(mediaKey(scope,kind));r.onsuccess=()=>resolve(r.result||null);r.onerror=()=>reject(r.error);});}
+export async function writeMedia(scope,kind,file){const db=await database();await new Promise((resolve,reject)=>{const tx=db.transaction('media','readwrite');const store=tx.objectStore('media'),key=mediaKey(scope,kind);if(file)store.put({key,scope,kind,name:file.name,type:file.type,blob:file,updatedAt:new Date().toISOString()});else store.delete(key);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error||Error('Media could not be saved.'));});}

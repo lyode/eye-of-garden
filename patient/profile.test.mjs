@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import {cleanProfile,buildReport} from './records.mjs';
+import {cleanAppearance,accentInk,checkMedia} from './profile-model.mjs';
+import {mediaKey} from './profile-media.mjs';
+const p=cleanProfile({name:' Preview ',nickname:'Alex',allergies:'Private allergy',supportPhone:'Private contact',bio:'<img onerror=alert(1)>'});
+assert.equal(p.name,'Preview');assert.equal(p.nickname,'Alex');assert.equal(p.notes,'');
+assert.throws(()=>cleanProfile({supportPhone:123}));assert.equal(cleanProfile({bio:'x'.repeat(300)}).bio.length,240);
+const report=buildReport({profile:p,schedules:[],records:{}},'2026-09-19','2026-09-19');
+assert.equal(report.patient,'Preview');assert.ok(!JSON.stringify(report).includes('Private'));assert.ok(!JSON.stringify(report).includes('onerror'));
+assert.deepEqual(cleanAppearance(),{palette:'garden',mode:'day',accent:'',fit:'cover',textSize:'standard'});
+for(const a of [{palette:'__proto__'},{mode:'automatic'},{accent:'url(evil)'},{fit:'stretch'},{textSize:'tiny'}])assert.throws(()=>cleanAppearance(a));
+assert.equal(accentInk('#ffffff'),'#111111');assert.equal(accentInk('#000000'),'#ffffff');
+assert.equal(checkMedia({size:100,type:'image/jpeg'},'avatar'),'image');assert.equal(checkMedia({size:1024,type:'video/mp4'},'cover'),'video');
+for(const [file,kind] of [[{size:0,type:'image/jpeg'},'avatar'],[{size:100,type:'video/mp4'},'avatar'],[{size:100,type:'image/svg+xml'},'cover'],[{size:9*1024*1024,type:'image/png'},'cover'],[{size:41*1024*1024,type:'video/mp4'},'cover']])assert.throws(()=>checkMedia(file,kind));
+assert.notEqual(mediaKey('account-a','cover'),mediaKey('account-b','cover'));assert.notEqual(mediaKey('device','cover'),mediaKey('account-a','cover'));
+console.log('PASS: extended profile privacy, appearance validation, media size/type limits and separate account media keys.');
