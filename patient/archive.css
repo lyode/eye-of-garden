@@ -1,0 +1,10 @@
+@media screen{
+body.eog-redesign #medication #patient-archive{border-top:5px solid var(--garden-mint)}
+.archive-day-list{display:grid;gap:14px;margin:22px 0;max-height:650px;overflow:auto;padding:3px}
+.archive-day{border:1px solid var(--eog-line,#d4dfd7);border-radius:16px;padding:18px;background:var(--garden-paper,#fffdf8);overflow-wrap:anywhere}
+.archive-day h4{margin:0 0 8px;font:650 19px/1.4 system-ui,sans-serif}.archive-day p{margin:8px 0}.archive-day .eog-actions{margin-top:14px}
+.archive-correction{padding:12px;border-left:4px solid var(--garden-yellow,#f2cf59)}
+#patient-archive details>summary{cursor:pointer;font-weight:650;min-height:44px}
+#patient-archive dialog{width:min(620px,calc(100% - 32px));max-height:85dvh;overflow:auto;box-sizing:border-box}
+#med-lock-status{border-left:5px solid var(--garden-mint,#8ec9bb);padding:12px 16px;background:var(--garden-paper,#fffdf8);margin:12px 0}
+}

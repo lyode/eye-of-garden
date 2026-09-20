@@ -10,7 +10,7 @@ export function prepareHistory(data,file,now=new Date().toISOString()){
   for(const entry of file.days){
     const date=entry.date;
     if(!validDate(date)||seen.has(date)||typeof entry.intakeDay!=='boolean'||!Array.isArray(entry.medicines)||entry.medicines.length>100||!Array.isArray(entry.notes)||entry.notes.length>10)throw Error('Check the dates and medicines in the history file.');
-    seen.add(date);
+    seen.add(date);if(data.lockedDays?.[date])throw Error(date+' is locked. Add a correction note instead. No days were changed.');
     if(Object.keys(data.records).some(key=>key.split('|')[1]===date))throw Error(date+' already has intake records. No days were changed.');
     const prefix='history-'+file.id+'-'+date+'-';
     if(data.schedules.some(s=>s.id.startsWith(prefix)))throw Error('This history has already been added. Use Edit this day for corrections.');
