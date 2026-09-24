@@ -4,7 +4,7 @@ const data={version:1,profile:{name:'  Patient  ',notes:'private',doctor:'Not sh
 const report=buildReport(data,'2026-09-19','2026-09-19');assert.deepEqual(report.rows.map(r=>r.time),['06:00','10:00–12:00','01:00','04:00']);assert.equal(report.patient,'Patient');assert.equal(report.notes,undefined);assert.equal(report.doctor,undefined);assert.equal(report.rows[0].note,'');assert.equal(report.remarks.length,0);assert.deepEqual(reportSummary(report),{scheduled:3,taken:1,skipped:0,missed:0,unknown:2,asNeededTaken:0});
 const withNotes=buildReport(data,'2026-09-19','2026-09-19',{includeNotes:true});assert.equal(withNotes.rows[0].note,'private dose note');assert.equal(withNotes.remarks.length,1);
 const cloned=structuredClone(data);cloned.dayPlans={'2026-09-19':[]};assert.equal(buildReport(cloned,'2026-09-19','2026-09-19').rows.length,0);
-assert.throws(()=>buildReport(data,'2026-09-20','2026-09-19'));assert.throws(()=>buildReport(data,'2026-01-01','2026-09-19'));assert.equal(validDate('2026-02-30'),false);assert.throws(()=>cleanProfile({role:'admin'}));assert.equal(cleanProfile({name:'x'.repeat(200)}).name.length,100);
+assert.throws(()=>buildReport(data,'2026-09-20','2026-09-19'));assert.throws(()=>buildReport(data,'2025-01-01','2026-09-19'));assert.equal(validDate('2026-02-30'),false);assert.throws(()=>cleanProfile({role:'admin'}));assert.equal(cleanProfile({name:'x'.repeat(200)}).name.length,100);
 console.log('PASS: report range, 6am-first order, PRN separation, no inferred missed doses, private fields excluded, opt-in notes, day overrides and profile validation.');
 const twoDays=buildReport(data,'2026-09-18','2026-09-19');
 const overview=medicationSummary(twoDays);

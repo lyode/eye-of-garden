@@ -1,0 +1,24 @@
+@media screen{
+body.eog-redesign #medication [data-focus]{display:none!important}
+body.eog-redesign #medication[data-workspace=daily] [data-focus=daily]:not([hidden]),body.eog-redesign #medication[data-workspace=history] [data-focus=history]:not([hidden]),body.eog-redesign #medication[data-workspace=summary] [data-focus=summary]:not([hidden]),body.eog-redesign #medication[data-workspace=more] [data-focus=more]:not([hidden]){display:block!important}
+body.eog-redesign #medication .tracker-tabs,body.eog-redesign #medication .patient-tools-nav,body.eog-redesign #medication .patient-quick-links{display:none!important}
+body.eog-redesign #medication[data-workspace=daily] #tracker-stats{display:grid!important}
+body.eog-redesign #medication #med-focus{margin:22px 0}
+#med-focus nav{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:7px;border-radius:17px;background:var(--garden-paper,#fffdf8);border:1px solid var(--eog-line,#d4dfd7)}
+body.eog-redesign #medication #med-focus nav button{background:transparent;color:var(--garden-ink);border-color:transparent;box-shadow:none;padding:15px 8px}
+body.eog-redesign #medication #med-focus nav button[aria-pressed=true]{background:var(--garden-yellow);color:var(--space-accent-ink,#183f46);border-color:#8a783e}
+.focus-save{display:flex;gap:15px;align-items:center;justify-content:space-between;padding:15px 3px}.focus-save p{margin:0;font-size:14px}.focus-save .eog-actions{flex-shrink:0;gap:8px}
+body.eog-redesign #medication .focus-save button{font-size:14px;min-height:44px;padding:10px 14px}
+body.eog-redesign #medication .patient-day-summary{padding:18px 22px;margin:0 0 18px;border-radius:18px}
+body.eog-redesign #medication .patient-day-summary strong{font-size:22px}.patient-day-summary p{margin:8px 0}
+body.eog-redesign #medication .patient-scope{display:none}
+body.eog-redesign #medication #tracker-stats{gap:8px;margin-block:15px}
+body.eog-redesign #medication #tracker-stats>div{padding:12px}
+body.eog-redesign #medication #tracker-stats strong{font-size:24px}
+body.eog-redesign #medication .eog-small{line-height:1.55}
+body.eog-redesign #medication #patient-review>h3{font-size:27px}
+.garden-more{position:relative}.garden-more summary{cursor:pointer;padding:12px;min-height:44px;font:600 14px system-ui}.garden-more-menu{position:absolute;right:0;top:100%;z-index:20;display:grid;min-width:210px;padding:10px;border-radius:14px;background:var(--garden-paper,#fffdf8);border:1px solid var(--eog-line,#d4dfd7);box-shadow:0 12px 35px #183f4622}
+.plan-period{margin:18px 0;padding:18px;border:1px solid var(--eog-line,#d4dfd7);border-left:5px solid var(--garden-mint,#8ec9bb);border-radius:12px;break-inside:avoid}.plan-period h4{font-size:18px;margin:0 0 12px}.plan-period li{margin:10px 0}.plan-change{padding:12px 0;border-top:1px solid var(--eog-line,#d4dfd7)}.plan-change p{margin:6px 0}
+@media(max-width:650px){#med-focus nav{grid-template-columns:1fr 1fr}.focus-save{align-items:stretch;flex-direction:column}.focus-save .eog-actions{display:grid;grid-template-columns:1fr 1fr}body.eog-redesign #medication .patient-day-summary strong{font-size:20px}body.eog-redesign #medication #tracker-stats{grid-template-columns:repeat(3,1fr)}.garden-more-menu{right:0}.plan-period{padding:13px}.plan-period ul{padding-left:18px}}
+}
+@media print{#med-focus{display:none!important}.plan-period{break-inside:avoid;margin:12px 0;padding:10px;border:1px solid #bbb}.plan-change{margin:10px 0}}

@@ -1,3 +1,4 @@
+import {renderPlanChanges} from './plan-changes.mjs?v=20260924-simple1';
 import {schedulesFor,recordFor,remarksFor} from './archive-model.mjs?v=20260920-lock1';
 export function cleanProfile(value={}) {
   const limits={name:100,role:24,condition:120,doctor:100,clinic:120,notes:500,nickname:60,bio:240,location:100,languages:100,interests:240,diagnosisYear:4,allergies:500,mobility:500,supportName:100,supportRelationship:60,supportPhone:60};
@@ -7,7 +8,7 @@ export function cleanProfile(value={}) {
 }
 export function validDate(value){if(!/^\d{4}-\d{2}-\d{2}$/.test(value))return false;const d=new Date(value+'T12:00:00Z');return Number.isFinite(+d)&&d.toISOString().slice(0,10)===value;}
 export function buildReport(data,from,to,{includeNotes=false,timezone=Intl.DateTimeFormat().resolvedOptions().timeZone}={}){
-  if(!validDate(from)||!validDate(to)||to<from||Date.parse(to)-Date.parse(from)>92*86400000)throw Error('Choose a date range of up to 93 days.');
+  if(!validDate(from)||!validDate(to)||to<from||Date.parse(to)-Date.parse(from)>365*86400000)throw Error('Choose a date range of up to 366 days.');
   const rows=[],remarks=[],lockedDates=[];
   for(let date=from;date<=to;date=new Date(Date.parse(date+'T12:00:00Z')+86400000).toISOString().slice(0,10)){
     const schedules=schedulesFor(data,date);if(data.lockedDays?.[date])lockedDates.push(date);if(includeNotes)remarks.push(...remarksFor(data,date).map(({date,kind,text,recordedAt})=>({date,kind,text,recordedAt})));
@@ -34,6 +35,7 @@ export function renderReport(host,report,{includeDetails=true}={}){
   add('p','Patient-entered records for clinical discussion. Unrecorded doses are not assumed missed. Intake-day plans run from 6am to 5:59am the following morning. Overnight doses stay under their intake day; the following calendar date is shown in the details. Other plans keep calendar dates.');
   const summary=reportSummary(report);add('p',`${summary.scheduled} scheduled doses · ${summary.taken} recorded taken · ${summary.unknown} not recorded · ${summary.skipped} skipped · ${summary.missed} marked missed · ${summary.asNeededTaken} as-needed doses recorded taken.`).className='doctor-summary-totals';
   add('p','Report prepared: '+new Date(report.generatedAt).toLocaleString()+'. This report is a snapshot and does not update automatically.');
+  renderPlanChanges(host,report);
   if(report.rows.length){
     add('h3','Medication and timing overview');
     add('p','Each line summarises one medicine, dose and planned time across the selected dates. Different doses remain separate. As-needed doses are counted separately from scheduled medication.');
